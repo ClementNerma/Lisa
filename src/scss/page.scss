@@ -1,0 +1,93 @@
+// Load all fonts
+@import url('https://fonts.googleapis.com/css?family=Roboto|Tinos');
+
+// Define background and foreground colors
+$background: #222;
+$foreground: #F8F8F2;
+$font: "Roboto";
+
+// Colors the messages' corners
+$lisaCorner: #1AD6FD;
+$userCorner: #DBDDDE;
+
+// The <body> style
+body {
+  // Take the entire web page
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  // Style the page's background
+  background-color: $background;
+  // Hide the eventual scroll bar due to the right corner's overflow
+  overflow-x: hidden;
+}
+
+// The discussion area style
+#discuss {
+  // Place it with an absolute positionning
+  position: absolute;
+  top: 3%;
+  left: 2%;
+  right: 2%;
+  bottom: 3%;
+  // Put a border and a padding within
+  border: 1px solid lightgray;
+  padding: 5px;
+  // Style the discussion area
+  color: $foreground;
+  font-family: $font;
+  // Put a padding in the corners
+  padding: 10px;
+  // Increase the font's size
+  font-size: 16px;
+}
+
+// Style all messages
+.message {
+  padding: 15px 20px;
+  border-radius: 15px 15px 15px 15px;
+  width: 70%;
+  position: relative;
+  // Put a veritcal spacing between each message
+  // (In the first message that'll do an equivalent of padding-top)
+  margin-top: 10px;
+}
+
+.message:before {
+  border-color: $userCorner;
+  border-radius: 50% 50% 50% 50%;
+  border-style: solid;
+  border-width: 0 20px;
+  bottom: 0;
+  clip: rect(20px, 35px, 42px, 0px);
+  content: " ";
+  height: 40px;
+  position: absolute;
+  right: -50px;
+  width: 30px;
+  z-index: 2;
+}
+
+// Lisa's messages
+.message-lisa {
+  background: linear-gradient(to right, $lisaCorner, #1D62F0);
+  color: white;
+}
+
+// + Corner
+.message-lisa:before {
+  border-color: $lisaCorner;
+  left: -50px;
+  transform: rotateY(180deg);
+}
+
+// User's messages
+.message-user {
+  background: linear-gradient(to right, #898C90, $userCorner);
+  color: white;
+  float: right;
+  padding-left: 15px;
+}
