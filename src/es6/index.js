@@ -10,7 +10,7 @@ const Lisa = (new (function(area) {
     // Throw an error
     throw new Error('[Lisa] Invalid DOM area provided');
 
-  // Set the DOM discussion area
+  // Set the DOM discussion area (DDA)
   const discuss = (area || document.createElement('div'));
 
   /**
@@ -54,6 +54,8 @@ const Lisa = (new (function(area) {
     dom.innerHTML = '<strong>Lisa : </strong>' + this.format(message);
     // Append the element to the area
     discuss.appendChild(dom);
+    // Scroll to the end of the container
+    this.scrollToEnd();
   };
 
   /**
@@ -70,8 +72,25 @@ const Lisa = (new (function(area) {
     dom.innerHTML = '<strong>You : </strong>' + this.format(message);
     // Append the element to the area
     discuss.appendChild(dom);
+    // Scroll to the end of the container
+    this.scrollToEnd();
   };
 
-  // Get the DOM discussion area
+  /**
+   * Scroll to the end of the discussion area
+   * @param {number} [speed] The time to take for the scroll (default: 1000 ms)
+   * @returns {void}
+   */
+  this.scrollToEnd = () => {
+    // Get the amount of pixels until the scroll's maximum value
+    let remaining = discuss.scrollHeight - discuss.scrollTop;
+    // For a duration of 2000 ms (2 seconds), regurarily scroll near to the
+    // bottom of the discussion area
+    let interval = setInterval(() => discuss.scrollTop ++, Math.floor(2000 / remaining));
+    // After this delay, don't scroll anymore
+    setTimeout(() => clearInterval(interval), 2000);
+  };
+
+  // Get the DDA and its children
   this.__defineGetter__('dom', () => discuss);
 })());
