@@ -12,6 +12,13 @@ const Lisa = (new (function() {
   const discuss = document.createElement('div');
 
   /**
+   * The Lisa's private memory
+   * @param {Object}
+   * @private
+   */
+  let memory = {};
+
+  /**
    * The list of all handler in use
    * @type {Array.<string>}
    * @private
@@ -130,6 +137,53 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Assign a value to a cell in the memory
+   * @param {string} cell The memory's cell
+   * @param {string|number|boolean} value The cell's value
+   * @returns {void}
+   */
+  this.remembers = (cell, value) => {
+    // If the cell is not valid...
+    if (typeof cell !== 'string' || !cell.length || ({})[cell])
+      throw new Error('[Lisa] Illegal name provided for memory\'s cell');
+
+    // If the value is not valid...
+    if (!['string', 'number', 'boolean'].includes(typeof value))
+      throw new Error(`[Lisa] Illegal value provided for memory's cell "${cell}"`);
+
+    // Store the value into the memory
+    memory[cell] = value;
+  };
+
+  /**
+   * Get a value from a cell in the memory
+   * @param {string} cell The cell to get
+   * @returns {string|number|boolean|void} The cell's value (undefined if the cell is not found)
+   */
+  this.thinksTo = cell => memory[cell];
+
+  /**
+   * Remove a cell from the memory
+   * @param {string} cell The cell to remove
+   * @returns {string|number|bolean|void} The cell's value before removing
+   */
+  this.forgets = cell => {
+    // If the cell doesn't exist...
+    if (!memory.hasOwnProperty(cell))
+      // Throw an error
+      throw new Error('[Lisa] The provided cell doesn\'t exist');
+
+    // Get the cell's value
+    let value = memory[cell];
+
+    // Remove the cell from the memory
+    delete memory[cell];
+
+    // Return the cell's value before deletion
+    return value;
+  };
+
+  /**
    * Display a message from Lisa
    * @param {string} message The message's content
    * @returns {void}
@@ -202,4 +256,6 @@ const Lisa = (new (function() {
 
   // Get the DDA and its children
   this.__defineGetter__('dom', () => discuss);
+  // Get the whole Lisa's memory (could be slow)
+  this.__defineGetter__('memory', () => JSON.parse(JSON.stringify(memory)));
 })());
