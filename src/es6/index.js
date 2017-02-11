@@ -1,21 +1,15 @@
 /**
  * The Lisa's interface
  * @type {Object}
- * @param {HTMLDivElement} [area] The area to write the discussion in
  * @constant
  */
-const Lisa = (new (function(area) {
-  // If a DOM discussion area was specified and if the area is not valid...
-  if (area && !(area instanceof HTMLDivElement))
-    // Throw an error
-    throw new Error('[Lisa] Invalid DOM area provided');
-
+const Lisa = (new (function() {
   /**
    * The DOM discussion area (DDA)
    * @type {HTMLDivElement}
    * @constant
    */
-  const discuss = (area || document.createElement('div'));
+  const discuss = document.createElement('div');
 
   /**
    * The list of all handler in use
