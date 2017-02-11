@@ -23,6 +23,8 @@ input.addEventListener('keydown', e => {
     input.value = '';
     // Display the request
     Lisa.hears(request);
+    // Perform the request
+    Lisa.does(request);
   }
 });
 // Display the input field into the web page
