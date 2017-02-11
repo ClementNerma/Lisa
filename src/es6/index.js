@@ -90,7 +90,7 @@ const Lisa = (new (function(area) {
    * @param {function} callback A function to call when the handler is used, and which must return a string or a DOM element
    * @returns {RegExp} A regex made from the handler (the result of the .makeHandlerRegex(handler) function)
    */
-  this.register = (handler, callback) => {
+  this.understands = (handler, callback) => {
     // If this handler is already in used...
     if (handled.includes(handler))
       // Throw an error
