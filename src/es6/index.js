@@ -4,9 +4,9 @@
  * @constant
  */
 const RegexCatchers = {
-  // NOTE: Some of the regex used for catchers can certainly be optimised.
+  // NOTE 1: Some of the regex used for catchers can certainly be optimised.
   // So feel free to contact me if you have ideas !
-  // NOTE: All regex are isolated in functions because they use Lisa's memory,
+  // NOTE 2: All regex are isolated in functions because they use Lisa's memory,
   // which can change at any moment. This way, the memory is called again each
   // time a regex is called, without losing much performances.
 
@@ -15,7 +15,7 @@ const RegexCatchers = {
   // Number (integer or floating)
   number: () => `(\\d+[.]?|\\d*\\.\\d+)`,
   // Integer
-  integer: () => `(\\d+)`,
+  integer: () =>  `(\\d+)`,
   // Time (hours and minutes)
   short_time: () => `((?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?:| +${Lisa.thinksTo('MINUTES_NAME')}))`,
   // Time (hours, minutes and seconds)
@@ -61,6 +61,18 @@ const Lisa = (new (function() {
   let handlers = [];
 
   /**
+   * Make a string number having a length of a fixed amount characters (digits). Used in @.getStandard().
+   * @example "2" -> "02" (add a zero) / "23" -> "23" (the same)
+   * @param {string} strnum The number to make having a fixed length
+   * @param {number} length The length the number should have (default: 2)
+   * @returns {void}
+   */
+  function zero(strnum, length = 2) {
+    // Add one or more '0' if needed, then return the number as a string
+    return '0'.repeat(length - strnum.length) + strnum;
+  }
+
+  /**
    * Espace HTML special characters from a string
    * @param {string} unsafe The string to espace
    * @returns {string} The string, escaped
@@ -71,6 +83,81 @@ const Lisa = (new (function() {
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
+
+  /**
+   * Format a string in standard format
+   * @example "28 february 2000", "date" => "28/02/2000"
+   * @param {string} input The string to format
+   * @param {string} catcher The catcher used to get this string
+   * @returns {string} The string, in standard format
+   */
+  this.getStandard = (input, catcher) => {
+    // If the provided catcher is not known...
+    if (!RegexCatchers.hasOwnProperty(catcher))
+      // Throw an error
+      throw new Error(`[Lisa] Unknown catcher "${catcher}"`);
+
+    // Get the string, in standard format
+    if (['*', 'number', 'integer'].includes(catcher))
+      // Nothing to change for these catchers
+      return input;
+
+    // Declare a variable which will contain the list of the months in year
+    // This variable won't be used by all catchers but must be defined here
+    // because it's not possible to declare local (let) variables in a 'switch'
+    // block. Also, this variable can't be initialized here because that would
+    // take time (see the code which assigns to this variable below).
+    // So, we just define an empty and potentially useless variable here.
+    let months;
+
+    // Depending on the catcher...
+    switch(catcher) {
+      // NOTE: The format described besides the catcher is the "standard" format,
+      // which is returned.
+
+      // Time (hh:mm)
+      case 'short_time':
+        return input.replace(/^([0-9]+).*([0-9]+)$/, ($0, $1, $2) => zero($1) + ':' + zero($2));
+
+      // Time (hh:mm:ss)
+      case 'time':
+        return input.replace(/^([0-9]+).*([0-9]+).*([0-9]+)$/, zero($1) + ':' + zero($2) + ':' + zero($3));
+
+      // Date (dd/mm)
+      case 'short_date':
+        // Get all months of the year
+        months = Lisa.thinksTo('MONTHS').split(',');
+        // For each existing month...
+        for (let i = 0; i < months.length; i++)
+          // If it is contained in the string...
+          if (input.includes(months))
+            // Return the corresponding string
+            return input.replace(/\d+/, ($0) => zero($0) + '/' + zero(i.toString()));
+
+        // Else...
+        return input.replace(/(\d+).*?(\d+)/, ($0, $1, $2) => zero($1) + '/' + zero($2));
+
+      // Date (dd/mm/yyyy)
+      case 'date':
+        // Get all months of the year
+        months = Lisa.thinksTo('MONTHS').split(',');
+
+        // For each existing month...
+        for (let i = 0; i < months.length; i++)
+          // If it is contained in the string...
+          if (input.includes(months[i]))
+            // Return the corresponding string
+            return input.replace(/(\d+).*?(\d+)/, ($0, $1, $2) => zero($1) + '/' + zero((i /* starts at 0 */ + 1).toString()) + '/' + zero($2, 4 /* 4 digits */));
+
+        // Else...
+        return input.replace(/(\d+).*?(\d+).*?(\d+)/, ($0, $1, $2, $3) => zero($1) + '/' + zero($2) + '/' + zero($3, 4 /* 4 digits */));
+
+      // Unknown catcher ! This is a bug, all catchers should be referenced with
+      // their standard format.
+      default:
+        throw new Error(`[Lisa] [BUG] Unreferenced catcher "${catcher}"`);
+    }
+  };
 
   /**
    * Format a message
@@ -209,16 +296,16 @@ const Lisa = (new (function() {
       throw new Error('[Lisa] Illegal handler\'s callback provided');
 
     // Make a RegExp from this handler
-    let regex = this.makeHandlerRegex(handler);
+    let regexArr = this.makeHandlerRegex(handler, true);
 
     // Register it in the handlers array
-    handlers.push([regex, callback]);
+    handlers.push([regexArr[0], regexArr[1], callback]);
 
     // Mark this handler as already used
     handled.push(handler);
 
     // Return the regex made from the handler
-    return regex;
+    return regexArr[0];
   };
 
   /**
@@ -324,9 +411,43 @@ const Lisa = (new (function() {
     for (let handler of handlers) {
       // If the handler matches with the request
       if (match = request.match(handler[0])) {
+        // Prepare the arguments to send to the callback
+        let prepare = {
+          // The whole request
+          whole: request,
+          // The original request, with spaces (before trimming)
+          originalRequest: arguments[0]
+          // All catchers' values
+          caught: match.slice(1),
+          // The catcher's values, in standard format (see below)
+          standard: [],
+          // The handler used for this request
+          handler: handler,
+          // The original handler (a string)
+          // NOTE: Because the 'Hello' and 'Hello !' handlers will give the same
+          // regex handler, the 'originalHandler' can contain a bad handler.
+          // But, it will be an equivalent of this original string.
+          originalHandler: handled[handlers.indexOf(handler)],
+          // Will the message be displayed as a Lisa's one ?
+          display: !!display,
+        };
+
+        // NOTE: This step could be ignored, that would be to the callback to
+        // get the "standard" format of the variables given to it. But generally
+        // callbacks will only treat standardly-formatted string (even if they
+        // use the original string from time to time). Also, this operation
+        // doesn't take a very long time, there's only a few regex to do
+        // (one regex replacement per given argument)
+        // For each catcher used in the handler...
+        for (let i = 0; i < handler[1].length; i++)
+          // Get the string associated to this handler
+          // Then, transform it to the standard format (e.g. "28 february 2012" -> "28/02/2012")
+          // Finally, push it to the 'standard' array
+          prepare.standard.push(this.getStandard(match[i + 1] /* Value */, handler[1][i] /* Catcher's name */));
+
         // Select this handler !
         // Call its callback and get the result
-        let output = handler[1].apply(this, match.slice(1).concat(match[0]));
+        let output = handler[2].call(this, prepare);
 
         // Is the result an HTML content ?
         let html = false;
