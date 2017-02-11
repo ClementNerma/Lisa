@@ -1,4 +1,32 @@
 /**
+ * The catcher usable in regex
+ * @type {Object.<string, string>}
+ * @constant
+ */
+const RegexCatchers = {
+  // NOTE: Some of the regex used for catchers can certainly be optimised.
+  // So feel free to contact me if you have ideas !
+  // NOTE: All regex are isolated in functions because they use Lisa's memory,
+  // which can change at any moment. This way, the memory is called again each
+  // time a regex is called, without losing much performances.
+
+  // Anything
+  '*': () => `(.*?)`,
+  // Number (integer or floating)
+  number: () => `(\\d+[.]?|\\d*\\.\\d+)`,
+  // Integer
+  integer: () => `(\\d+)`,
+  // Time (hours and minutes)
+  short_time: () => `((?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?:| +${Lisa.thinksTo('MINUTES_NAME')}))`,
+  // Time (hours, minutes and seconds)
+  time: () => `((?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?: *: *| +${Lisa.thinksTo('MINUTES_NAME')} +)[0-5]\\d))(?:|${Lisa.thinksTo('SECONDS_NAME')})`,
+  // Date (dd.mm dd-mm dd/mm)
+  short_date: () => `((?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}))`,
+  // Date (dd.mm.yyyy dd-mm-yyyy dd/mm/yyyy)
+  date: () => `((?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}) +)\\d{4})`
+};
+
+/**
  * The Lisa's interface
  * @type {Object}
  * @constant
@@ -62,18 +90,41 @@ const Lisa = (new (function() {
   /**
    * Make a regex from an handler
    * @param {string} handler The handler to make a regex with
-   * @returns {RegExp} The regex made from the handler
+   * @param {boolean} [getCatchers] Get the list of all catchers use in the regex (from left to right, in the right order, default: false)
+   * @returns {RegExp|Array} The regex made from the handler and, if asked, the list of catchers use
    */
-  this.makeHandlerRegex = handler =>
+  this.makeHandlerRegex = (handler, getCatchers = false) => {
+    // Declare a variable which will contain the list of catchers used in the
+    // handler
+    let catchers = [];
+
     // Create a RegExp object
-    new RegExp('^' + handler
+    let regex = new RegExp('^' + handler
       // Espace all regex characters from it
       .replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
       // Allow any space to be written multiple times
       .replace(/ /g, ' +')
       // === Catchers ===
-      // Everything catchers
-      .replace(/\\\*/g, '(.*?)')
+      .replace(/\\\^(.*?)\\\^/g, (match, catcher) => {
+        // If the catcher is '\\*'...
+        if (catcher === '\\*')
+          // Remove the '\' symbol ; this catcher was escaped because the '*'
+          // symbol is a RegExp-exclusive characters
+          catcher = '*';
+
+        // If this catcher is not known...
+        if (!RegexCatchers.hasOwnProperty(catcher))
+          // Throw an error
+          throw new Error(`[Lisa] Unknown catcher "${catcher}"`);
+
+        // Mark this catcher as used
+        // Because JavaScript regex searches from left to right, the 'catchers'
+        // array will contain all catchers used in the right order
+        catchers.push(catcher);
+
+        // Return the catcher's RegExp equivalent
+        return RegexCatchers[catcher]();
+      })
       // ================
       // Allow any '.' or '?' symbol at the end of the handler to be ignored
       // Also, allow them to be preceded by one or more spaces, or nothing
@@ -84,6 +135,10 @@ const Lisa = (new (function() {
     // Finish the instanciation
     // Make the regex case-insensitive
     + '$', 'i');
+
+    // Return the result
+    return (getCatchers ? [ regex, catchers ] : regex);
+  };
 
   /**
    * Register a callback for a given request
@@ -112,7 +167,7 @@ const Lisa = (new (function() {
             // Espace all '"' symbols
             .replace(/"/g, '\\"')
             // Variables calling
-            .replace(/\$\^([0-9]|[1-9][0-9]+)/g, (match, n) => '"+arguments[' + n + ']+"')
+            .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => '"+arguments[' + n + ']+"')
           // Finish the @.remember call
           + '");'
         )
@@ -123,7 +178,7 @@ const Lisa = (new (function() {
             // Espace all '"' symbols
             .replace(/"/g, '\\"')
             // Variables calling
-            .replace(/\$\^([0-9]|[1-9][0-9]+)/g, (match, n) => '"+arguments[' + n + ']+"')
+            .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => '"+arguments[' + n + ']+"')
         + '"');
     // Else, if it's a function...
     else if (typeof callback === 'function') {
@@ -141,7 +196,7 @@ const Lisa = (new (function() {
           // For each variable in 'store'...
           for (let variable of Reflect.ownKeys(store))
             // Store its value in the memory
-            Lisa.remembers(variable, store[variable].replace(/\$\^([0-9]|[1-9][0-9]+)/g, (match, n) => arguments[n]));
+            Lisa.remembers(variable, store[variable].replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => arguments[n]));
 
           // Run the original callback and return its result as the Lisa's
           // answer
@@ -309,6 +364,12 @@ const Lisa = (new (function() {
     //       is removed from the source code.
     this.says('I didn\'t understand your request.', true);
   };
+
+  // Initialize some memory's variables
+  this.remembers('HOURS_NAME', 'hours');
+  this.remembers('MINUTES_NAME', 'minutes');
+  this.remembers('SECONDS_NAME', 'secondes');
+  this.remembers('MONTHS', 'january,february,march,april,may,june,july,august,september,october,november,december');
 
   // Get the DDA and its children
   this.__defineGetter__('dom', () => discuss);
