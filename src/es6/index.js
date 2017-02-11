@@ -88,14 +88,70 @@ const Lisa = (new (function() {
   /**
    * Register a callback for a given request
    * @param {string} handler The request to handle, in Lisa's parser format
-   * @param {function} callback A function to call when the handler is used, and which must return a string or a DOM element
+   * @param {string|function} callback A function to call when the handler is used, and which must return a string or a DOM element
+   * @param {Object.<string, string>} [store] When this handler is used, store some answer's variables in the memory
    * @returns {RegExp} A regex made from the handler (the result of the .makeHandlerRegex(handler) function)
    */
-  this.understands = (handler, callback) => {
+  this.understands = (handler, callback, store = {}) => {
     // If this handler is already in used...
     if (handled.includes(handler))
       // Throw an error
       throw new Error('[Lisa] Handler is already in use');
+
+    // If the callback is a string...
+    if (typeof callback === 'string')
+      // Make it becoming a callback
+      callback = new Function([],
+        // For each variable of the store...
+        Reflect.ownKeys(store).map(variable =>
+          // Make Lisa remember the variable...
+          'Lisa.remembers("' + variable + '","'
+          + store[variable]
+            // Espace all '\' symbols
+            .replace(/\\/g, '\\\\')
+            // Espace all '"' symbols
+            .replace(/"/g, '\\"')
+            // Variables calling
+            .replace(/\$\^([0-9]|[1-9][0-9]+)/g, (match, n) => '"+arguments[' + n + ']+"')
+          // Finish the @.remember call
+          + '");'
+        )
+        // Add a return statement which will return the Lisa's answer
+        + 'return "' + callback
+            // Espace all '\' symbols
+            .replace(/\\/g, '\\\\')
+            // Espace all '"' symbols
+            .replace(/"/g, '\\"')
+            // Variables calling
+            .replace(/\$\^([0-9]|[1-9][0-9]+)/g, (match, n) => '"+arguments[' + n + ']+"')
+        + '"');
+    // Else, if it's a function...
+    else if (typeof callback === 'function') {
+      // If the 'store' argument was provided...
+      if (store) {
+        // Save the original callback under an other name
+        let original = callback;
+        // Define an alias to the current instance
+        let that = this;
+        // Make the callback a new function
+        // Here a lambda function is used instead of an arrow function
+        // because in this last case the 'arguments' variable cannot be
+        // accessed (that may be due to the fact this file is babelified)
+        callback = function () {
+          // For each variable in 'store'...
+          for (let variable of Reflect.ownKeys(store))
+            // Store its value in the memory
+            Lisa.remembers(variable, store[variable].replace(/\$\^([0-9]|[1-9][0-9]+)/g, (match, n) => arguments[n]));
+
+          // Run the original callback and return its result as the Lisa's
+          // answer
+          return original.apply(that, arguments);
+        };
+      }
+    }
+    // Else, that's not a valid callback
+    else
+      throw new Error('[Lisa] Illegal handler\'s callback provided');
 
     // Make a RegExp from this handler
     let regex = this.makeHandlerRegex(handler);
