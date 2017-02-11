@@ -4,7 +4,9 @@
 // Define background and foreground colors
 $background: #222;
 $foreground: #F8F8F2;
+// Define the font to use in the whole page
 $font: "Roboto";
+$fontSize: 16px;
 
 // Colors the messages' corners
 $lisaCorner: #1AD6FD;
@@ -32,12 +34,12 @@ body {
   top: 3%;
   left: 10%;
   right: 10%;
-  bottom: 3%;
+  bottom: calc(3% - 50px);
   // Style the discussion area
   color: $foreground;
   font-family: $font;
   // Increase the font's size
-  font-size: 16px;
+  font-size: $fontSize;
   // Put a border and a padding within
   border: 1px solid lightgray;
   // If needed, display a scroll bar
@@ -110,4 +112,27 @@ body {
   width: 50%;
   left: calc(50% - 50px);
   padding-left: 15px;
+}
+
+// User's input field
+#input {
+  // Display it at the page's bottom
+  // In the #discuss' style we put a calc(... - 50px) to allow the input field
+  // having enough space to display itself
+  position: absolute;
+  bottom: 3%;
+  // Let a space at the left and the right of this input
+  // Decrease the left positionning by 15px to let space for the discussion
+  // area's scrollbar
+  left: calc(15% - 15px);
+  // Set its dimensions
+  display: inline-block;
+  // NOTE: The final height will be 40px, because we add a 5px-padding (see below)
+  height: 30px;
+  width: 70%;
+  // Set the font
+  font-family: $font;
+  font-size: $fontSize;
+  // Set a padding
+  padding: 5px;
 }
