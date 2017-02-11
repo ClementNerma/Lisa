@@ -10,7 +10,7 @@ $font: "Roboto";
 $lisaCorner: #1AD6FD;
 $userCorner: #DBDDDE;
 
-// The <body> style
+// The <body>'s style
 body {
   // Take the entire web page
   position: absolute;
@@ -25,37 +25,56 @@ body {
   overflow-x: hidden;
 }
 
-// The discussion area style
+// The discussion area's style
 #discuss {
   // Place it with an absolute positionning
   position: absolute;
   top: 3%;
-  left: 2%;
-  right: 2%;
+  left: 10%;
+  right: 10%;
   bottom: 3%;
-  // Put a border and a padding within
-  border: 1px solid lightgray;
-  padding: 5px;
   // Style the discussion area
   color: $foreground;
   font-family: $font;
-  // Put a padding in the corners
-  padding: 10px;
   // Increase the font's size
   font-size: 16px;
+  // Put a border and a padding within
+  border: 1px solid lightgray;
+  // If needed, display a scroll bar
+  overflow-y: scroll;
+  // Put a padding...
+  padding: 50px;
+  // Excepted in the top line
+  padding-top: 0;
 }
 
 // Style all messages
 .message {
   padding: 15px 20px;
   border-radius: 15px 15px 15px 15px;
-  width: 70%;
+  width: 50%;
   position: relative;
   // Put a veritcal spacing between each message
   // (In the first message that'll do an equivalent of padding-top)
   margin-top: 10px;
+  // Fade in the message
+  animation: spone 1.5s 1;
 }
 
+// Keyframe for fading
+@keyframes spone {
+  from {
+    opacity: 0;
+    margin-left: -20px;
+  }
+
+  to {
+    opacity: 1;
+    margin-left: 0;
+  }
+}
+
+// Messages' corner
 .message:before {
   border-color: $userCorner;
   border-radius: 50% 50% 50% 50%;
@@ -88,6 +107,7 @@ body {
 .message-user {
   background: linear-gradient(to right, #898C90, $userCorner);
   color: white;
-  float: right;
+  width: 50%;
+  left: calc(50% - 50px);
   padding-left: 15px;
 }
