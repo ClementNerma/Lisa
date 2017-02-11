@@ -80,7 +80,7 @@ const Lisa = (new (function() {
       .replace(/( \+)?\\\.$/, ' *[\\.]?')
       .replace(/( \+)?\\\?$/, ' *[\\?]?')
       // Allow to put '!' and '.' symbols with spaces at the end of a string
-      .replace(/$/, '( *[!|\\.])*')
+      .replace(/$/, '( *[!\\.])*')
     // Finish the instanciation
     // Make the regex case-insensitive
     + '$', 'i');
