@@ -110,40 +110,44 @@ const Lisa = (new (function(area) {
   };
 
   /**
+   * Display a message from anyone
+   * @param {string} author The message's author
+   * @param {string} message The message's content
+   * @param {string} className A CSS class to add to the message's <div> (will be prefixed by 'message-')
+   */
+  this.displayMessage = (author, message, className) => {
+    // Inject a DOM element
+    let dom = document.createElement('div');
+    // Set its attributes
+    dom.setAttribute('class', `message message-${className}`);
+    // Set the message, with the author's name
+    dom.innerHTML = `<strong>${author} : </strong>` + this.format(message);
+    // Append the element to the area
+    discuss.appendChild(dom);
+
+    // Scroll to the end of the container
+    // Get the amount of pixels until the scroll's maximum value
+    let remaining = discuss.scrollHeight - discuss.scrollTop;
+    // For a duration of 2000 ms (2 seconds), regurarily scroll near to the
+    // bottom of the discussion area
+    let interval = setInterval(() => discuss.scrollTop ++, Math.floor(2000 / remaining));
+    // After this delay, don't scroll anymore
+    setTimeout(() => clearInterval(interval), 2000);
+  };
+
+  /**
    * Display a message from Lisa
    * @param {string} message The message's content
    * @returns {void}
    */
-  this.says = message => {
-    // Inject a DOM element
-    let dom = document.createElement('div');
-    // Set its attributes
-    dom.setAttribute('class', 'message message-lisa');
-    // Set the message, with the author's name
-    dom.innerHTML = '<strong>Lisa : </strong>' + this.format(message);
-    // Append the element to the area
-    discuss.appendChild(dom);
-    // Scroll to the end of the container
-    this.scrollToEnd();
-  };
+  this.says = message => this.displayMessage('Lisa', message, 'lisa');
 
   /**
    * Display a message from the user
    * @param {string} message The message's content
    * @returns {void}
    */
-  this.hears = message => {
-    // Inject a DOM element
-    let dom = document.createElement('div');
-    // Set its attributes
-    dom.setAttribute('class', 'message message-user');
-    // Set the message, with the author's name
-    dom.innerHTML = '<strong>You : </strong>' + this.format(message);
-    // Append the element to the area
-    discuss.appendChild(dom);
-    // Scroll to the end of the container
-    this.scrollToEnd();
-  };
+  this.hears = message => this.displayMessage('You', message, 'user');
 
   /**
    * Perform a request
@@ -200,21 +204,6 @@ const Lisa = (new (function(area) {
     //       so that line is here to prevent potential problem if this handler
     //       is removed from the source code.
     this.says('I didn\'t understand your request.', true);
-  };
-
-  /**
-   * Scroll to the end of the discussion area
-   * @param {number} [speed] The time to take for the scroll (default: 1000 ms)
-   * @returns {void}
-   */
-  this.scrollToEnd = () => {
-    // Get the amount of pixels until the scroll's maximum value
-    let remaining = discuss.scrollHeight - discuss.scrollTop;
-    // For a duration of 2000 ms (2 seconds), regurarily scroll near to the
-    // bottom of the discussion area
-    let interval = setInterval(() => discuss.scrollTop ++, Math.floor(2000 / remaining));
-    // After this delay, don't scroll anymore
-    setTimeout(() => clearInterval(interval), 2000);
   };
 
   // Get the DDA and its children
