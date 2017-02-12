@@ -236,10 +236,10 @@ const Lisa = (new (function() {
       // ================
       // Allow any '.' or '?' symbol at the end of the handler to be ignored
       // Also, allow them to be preceded by one or more spaces, or nothing
-      .replace(/( \+)?\\\.$/, ' *[\\.]?')
-      .replace(/( \+)?\\\?$/, ' *[\\?]?')
-      // Allow to put '!' and '.' symbols with spaces at the end of a string
-      .replace(/$/, '(?: *[!\\.])*')
+      .replace(/( \+)?\\\.$/, ' *(?:[\\.]*)?')
+      .replace(/( \+)?\\\?$/, ' *(?:[\\?]*)?')
+      // Allow to put '!', '.' and '?' symbols with spaces at the end of a string
+      + '(?: *[!\\.])*'
     // Finish the instanciation
     // Make the regex case-insensitive
     + '$', 'i');
