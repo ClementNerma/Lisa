@@ -54,7 +54,10 @@ for %%f in (src\es6\*.js) do (
 :: That extends the game's compatibility with older browsers, with no ES6 support
 cd build
 echo [ build ] Transpiling to ES5...
-call babel lisa.fusion.js --out-file lisa.min.js --presets=es2015,babili
+:: If minifying is not forbidden, do it
+if NOT "%2" == "--beautify" call babel lisa.fusion.js --out-file lisa.min.js --presets=es2015,babili
+:: Else, don't minify the ES5 code
+if "%2" == "--beautify" call babel lisa.fusion.js --out-file lisa.min.js --presets=es2015
 
 :: Remove unneeded file
 del lisa.fusion.js
