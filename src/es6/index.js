@@ -350,6 +350,10 @@ const Lisa = (new (function() {
     }
 
     // Register it in the handlers array
+    // 0: Handler, as a regex
+    // 1: Catchers used by the handler
+    // 2: Callback
+    // 3: Help texts (can be the NULL value)
     handlers.push([regexArr[0], regexArr[1], callback, helpTexts || null]);
 
     // Mark this handler as already used
@@ -642,6 +646,34 @@ const Lisa = (new (function() {
 
     // Return the message (cloned to prevent modifications)
     return messages.slice(0);
+  };
+
+  /**
+   * Export the whole Lisa's state (could take time if there is many data to
+   *  export - e.g. messages and requests history, memory, ...)
+   * @returns {string} The whole Lisa's state
+   */
+  this.export = () => {
+    // Declare a variable which will contain the handlers (as strings)
+    let _handlers = [];
+
+    // For each known handler...
+    for (let handler of handlers)
+      // Copy it into the '_handlers' array, and a an array of strings
+      _handlers.push([
+        // Regex, as a string
+        handler[0].toString(),
+        // Catchers (which are already strings)
+        handler[1],
+        // Callback, as a string
+        handler[2].toString(),
+        // Optionnal help texts (which are already strings)
+        handler[3]
+      ]);
+
+    // Then, stringify this data (that makes a string and prevent modifications from
+    // outside)
+    return JSON.stringify({ memory, handled, handlers: _handlers, rememberMessages, messages, requests });
   };
 
   // Initialize some memory's variables
