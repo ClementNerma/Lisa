@@ -54,7 +54,7 @@ const Lisa = (new (function() {
   let handled = [];
 
   /**
-   * The association of handlers with their respective callback
+   * The association of handlers with their respective callback and help message
    * @type {Array.<Array>}
    * @private
    */
@@ -232,9 +232,10 @@ const Lisa = (new (function() {
    * @param {string} handler The request to handle, in Lisa's parser format
    * @param {string|function} callback A function to call when the handler is used, and which must return a string or a DOM element
    * @param {Object.<string, string>} [store] When this handler is used, store some answer's variables in the memory
+   * @param {Array.<string>} [helpTexts] The help text for each part of the command (see the doc. for explanation)
    * @returns {RegExp} A regex made from the handler (the result of the .makeHandlerRegex(handler) function)
    */
-  this.understands = (handler, callback, store = {}) => {
+  this.understands = (handler, callback, store = {}, helpTexts) => {
     // If this handler is already in used...
     if (handled.includes(handler))
       // Throw an error
@@ -298,8 +299,28 @@ const Lisa = (new (function() {
     // Make a RegExp from this handler
     let regexArr = this.makeHandlerRegex(handler, true);
 
+    // If an help text was specified...
+    if (helpTexts) {
+      // If it's not an array...
+      if (!Array.isArray(helpTexts))
+        // Throw an error
+        throw new Error('[Lisa] Illegal help text argument provided');
+
+      // If its length is not valid...
+      if (helpTexts.length !== regexArr[1].length)
+        // Throw an error
+        throw new Error(`[Lisa] Insufficient help for parameters in handler "${handler}"`);
+
+      // For each help text given...
+      for (let text of helpTexts)
+        // If it's not a string or a function...
+        if (!['string', 'function'].includes(typeof text))
+          // Throw an error
+          throw new Error(`[Lisa] Illegal help text given for handler "${handler}"`);
+    }
+
     // Register it in the handlers array
-    handlers.push([regexArr[0], regexArr[1], callback]);
+    handlers.push([regexArr[0], regexArr[1], callback, helpTexts]);
 
     // Mark this handler as already used
     handled.push(handler);
@@ -332,6 +353,40 @@ const Lisa = (new (function() {
     let interval = setInterval(() => discuss.scrollTop ++, Math.floor(2000 / remaining));
     // After this delay, don't scroll anymore
     setTimeout(() => clearInterval(interval), 2000);
+  };
+
+  /**
+   * Get help text about any handler
+   * @param {string} handler The handler to get help on
+   * @param {boolean} [getArray] Get the array of help texts instead of a full message (default: false)
+   * @returns {string|boolean} The help message, FALSE if there is no message
+   */
+  this.helpsAbout = (handler, getArray = false) => {
+    // If the handler is not known...
+    if (!handled.includes(handler))
+      // Throw an error
+      throw new Error(`[Lisa] Unknown handler "${handler}"`);
+
+    // Get the help array about this handler
+    let helpTexts = handlers[handled.indexOf(handler)][3]
+
+    // If there is no help text...
+    if (!helpTexts)
+      // Return false
+      return false;
+
+    // If asked for, just return the array of help texts (cloned to make code
+    // unable to change the texts)
+    if (getArray)
+      // Return the cloned array
+      return helpTexts.slice(0);
+
+    // Declare a variable that contains the current help text's index
+    let i = 0;
+
+    // Replace every catcher by the corresponding help text
+    // Then, return the help text
+    return handler.replace(/\^(.*?)\^/g, catcher => '[' + helpTexts[i ++] + ']');
   };
 
   /**
