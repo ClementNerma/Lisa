@@ -416,7 +416,7 @@ const Lisa = (new (function() {
           // The whole request
           whole: request,
           // The original request, with spaces (before trimming)
-          originalRequest: arguments[0]
+          originalRequest: arguments[0],
           // All catchers' values
           caught: match.slice(1),
           // The catcher's values, in standard format (see below)
