@@ -40,9 +40,30 @@ const Lisa = (new (function() {
   const discuss = document.createElement('div');
 
   /**
-   * The Lisa's private memory
-   * @param {Object}
-   * @private
+   * The list of all messages received by Lisa
+   * NOTE: This array will only get data if the 'rememberMessages' variable is
+   *       turned on.
+   * @type {Array.<Array>}
+   */
+  let messages = [];
+
+  /**
+   * The list of all requests performed by Lisa
+   * NOTE: This array will only get data if the 'rememberMessages' variable is
+   *       turned on.
+   * @type {Array.<Array>}
+   */
+  let requests = [];
+
+  /**
+   * Should the messages be remembered?
+   * @type {boolean}
+   */
+  let rememberMessages = true;
+
+  /**
+   * The Lisa's memory
+   * @type {Object}
    */
   let memory = {};
 
@@ -295,7 +316,6 @@ const Lisa = (new (function() {
                 .replace(/\$_(\d|[1-9]\d+)/g, (match, n) => requested.caught[n])
             );
 
-          console.log(original.toString());
           // Run the original callback and return its result as the Lisa's
           // answer
           return original.call(that, requested);
@@ -363,6 +383,11 @@ const Lisa = (new (function() {
     let interval = setInterval(() => discuss.scrollTop ++, Math.floor(2000 / remaining));
     // After this delay, don't scroll anymore
     setTimeout(() => clearInterval(interval), 2000);
+
+    // If allowed to...
+    if (rememberMessages)
+      // Remember this message
+      messages.push([ Date.now(), author, message, className ]);
   };
 
   /**
@@ -547,6 +572,29 @@ const Lisa = (new (function() {
           // display it as an HTML content
           this.says(output, html);
 
+        // If allowed to...
+        if (rememberMessages)
+          // Remember this request
+          // NOTE: Only a few fields of the 'prepare' object are remembered,
+          // because all the others can be found from these ones.
+          // e.g. "formatted": only needs to @.getStandard() every string of
+          //      "caught", etc.
+          // NOTE: Technically, the "handler" and "caught" fields too, but it
+          //       would takes time to find them, especially if there is a lot
+          //       of requests to treat.
+          requests.push([
+            // The request's date (depending on the computer's one)
+            Date.now(),
+            // The original request, without trimming its spaces
+            prepare.requestWithSpaces,
+            // The handler (as a string) used to catch this request
+            prepare.handler,
+            // The different parts handled by the handler thanks to its catchers
+            prepare.caught,
+            // Was the message displayed? (boolean)
+            prepare.display
+          ]);
+
         // Return the result
         return output;
       }
@@ -559,6 +607,43 @@ const Lisa = (new (function() {
     this.says('I didn\'t understand your request.', true);
   };
 
+  /**
+   * Make Lisa remembering all messages and requests
+   * @returns {void}
+   */
+  this.nowRemembersMessages = () => { rememberMessages = true; return ; };
+
+  /**
+   * Don't make Lisa remembering all messages and requests
+   * @returns {void}
+   */
+  this.doesntRememberMessages = () => { rememberMessages = false; return ; };
+
+  /**
+   * Get a message displayed in the web page
+   * @param {number} [id] An integer, which is the message you want from the very end (default: 0 = last message)
+   * @returns {Array}
+   */
+  this.getMessage = (id = 0) => {
+    // If the ID is not valid...
+    if (typeof id !== 'number' || Math.floor(id) !== id)
+      // Throw an error
+      throw new Error('[Lisa] Invalid ID given while getting message');
+
+    // If the ID is a negative number...
+    if (id < 0)
+      // Just get its opposite
+      id = -id;
+
+    // If the message is not found...
+    if (messages.length <= id)
+      // Throw an error
+      throw new Error(`[Lisa] There is no message with id "${id}"`);
+
+    // Return the message (cloned to prevent modifications)
+    return messages.slice(0);
+  };
+
   // Initialize some memory's variables
   this.remembers('HOURS_NAME', 'hours');
   this.remembers('MINUTES_NAME', 'minutes');
@@ -569,4 +654,12 @@ const Lisa = (new (function() {
   this.__defineGetter__('dom', () => discuss);
   // Get the whole Lisa's memory (could be slow)
   this.__defineGetter__('memory', () => JSON.parse(JSON.stringify(memory)));
+  // Get the whole messages' history (could be slow)
+  this.__defineGetter__('messages', () => JSON.parse(JSON.stringify(messages)));
+  // Get the whole requests' history (could be slow)
+  this.__defineGetter__('history', () => JSON.parse(JSON.stringify(requests)));
+  // Are the messages remembered? (NOTE: The code below isn't misspelled)
+  this.__defineGetter__('remembersMessages', () => rememberMessages);
+  // Remember messages or not
+  this.__defineSetter__('remembersMessages', (b) => b ? this.nowRemembersMessages() : this.doesntRememberMessages());
 })());
