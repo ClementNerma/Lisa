@@ -254,8 +254,10 @@ const Lisa = (new (function() {
             .replace(/\\/g, '\\\\')
             // Espace all '"' symbols
             .replace(/"/g, '\\"')
-            // Variables calling
-            .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => '"+arguments[' + n + ']+"')
+            // Standardly-formatted variables calling
+            .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => '"+arguments[0].standard[' + n + ']+"')
+            // Original variables calling
+            .replace(/\$_(\d|[1-9]\d+)/g, (match, n) => '"+arguments[0].caught[' + n + ']+"')
           // Finish the @.remember call
           + '");'
         )
@@ -265,8 +267,10 @@ const Lisa = (new (function() {
             .replace(/\\/g, '\\\\')
             // Espace all '"' symbols
             .replace(/"/g, '\\"')
-            // Variables calling
-            .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => '"+arguments[' + n + ']+"')
+            // Standardly-formatted variables calling
+            .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => '"+arguments[0].standard[' + n + ']+"')
+            // Original variables calling
+            .replace(/\$_(\d|[1-9]\d+)/g, (match, n) => '"+arguments[0].caught[' + n + ']+"')
         + '"');
     // Else, if it's a function...
     else if (typeof callback === 'function') {
@@ -280,15 +284,20 @@ const Lisa = (new (function() {
         // Here a lambda function is used instead of an arrow function
         // because in this last case the 'arguments' variable cannot be
         // accessed (that may be due to the fact this file is babelified)
-        callback = function () {
+        callback = function (requested) {
           // For each variable in 'store'...
           for (let variable of Reflect.ownKeys(store))
             // Store its value in the memory
-            Lisa.remembers(variable, store[variable].replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => arguments[n]));
+            Lisa.remembers(variable, store[variable]
+                // Standardly-formatted variables
+                .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => requested.standard[n])
+                // Original variables
+                .replace(/\$_(\d|[1-9]\d+)/g, (match, n) => requested.caught[n])
+            );
 
           // Run the original callback and return its result as the Lisa's
           // answer
-          return original.apply(that, arguments);
+          return original.call(that, requested);
         };
       }
     }
