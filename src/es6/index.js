@@ -255,7 +255,7 @@ const Lisa = (new (function() {
             // Espace all '"' symbols
             .replace(/"/g, '\\"')
             // Standardly-formatted variables calling
-            .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => '"+arguments[0].standard[' + n + ']+"')
+            .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => '"+arguments[0].formatted[' + n + ']+"')
             // Original variables calling
             .replace(/\$_(\d|[1-9]\d+)/g, (match, n) => '"+arguments[0].caught[' + n + ']+"')
           // Finish the @.remember call
@@ -268,7 +268,7 @@ const Lisa = (new (function() {
             // Espace all '"' symbols
             .replace(/"/g, '\\"')
             // Standardly-formatted variables calling
-            .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => '"+arguments[0].standard[' + n + ']+"')
+            .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => '"+arguments[0].formatted[' + n + ']+"')
             // Original variables calling
             .replace(/\$_(\d|[1-9]\d+)/g, (match, n) => '"+arguments[0].caught[' + n + ']+"')
         + '"');
@@ -290,11 +290,12 @@ const Lisa = (new (function() {
             // Store its value in the memory
             Lisa.remembers(variable, store[variable]
                 // Standardly-formatted variables
-                .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => requested.standard[n])
+                .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => requested.formatted[n])
                 // Original variables
                 .replace(/\$_(\d|[1-9]\d+)/g, (match, n) => requested.caught[n])
             );
 
+          console.log(original.toString());
           // Run the original callback and return its result as the Lisa's
           // answer
           return original.call(that, requested);
@@ -329,7 +330,7 @@ const Lisa = (new (function() {
     }
 
     // Register it in the handlers array
-    handlers.push([regexArr[0], regexArr[1], callback, helpTexts]);
+    handlers.push([regexArr[0], regexArr[1], callback, helpTexts || null]);
 
     // Mark this handler as already used
     handled.push(handler);
@@ -480,20 +481,26 @@ const Lisa = (new (function() {
         // Prepare the arguments to send to the callback
         let prepare = {
           // The whole request
-          whole: request,
+          request: request,
           // The original request, with spaces (before trimming)
-          originalRequest,
+          requestWithSpaces: originalRequest,
           // All catchers' values
           caught: match.slice(1),
           // The catcher's values, in standard format (see below)
-          standard: [],
-          // The handler used for this request
-          handler: handler,
+          formatted: [],
+          // The handler (as a regex) used for this request
+          handlerRegex: handler[0],
+          // All catchers used by the hanlder
+          catchers: handler[1],
+          // The callback used by the handler (the one which will be runned)
+          callback: handler[2],
+          // All help texts about this handler
+          help: handler[3],
           // The original handler (a string)
           // NOTE: Because the 'Hello' and 'Hello !' handlers will give the same
           // regex handler, the 'originalHandler' can contain a bad handler.
           // But, it will be an equivalent of this original string.
-          originalHandler: handled[handlers.indexOf(handler)],
+          handler: handled[handlers.indexOf(handler)],
           // Will the message be displayed as a Lisa's one ?
           display: !!display,
         };
@@ -509,7 +516,7 @@ const Lisa = (new (function() {
           // Get the string associated to this handler
           // Then, transform it to the standard format (e.g. "28 february 2012" -> "28/02/2012")
           // Finally, push it to the 'standard' array
-          prepare.standard.push(this.getStandard(match[i + 1] /* Value */, handler[1][i] /* Catcher's name */));
+          prepare.formatted.push(this.getStandard(match[i + 1] /* Value */, handler[1][i] /* Catcher's name */));
 
         // Select this handler !
         // Call its callback and get the result
