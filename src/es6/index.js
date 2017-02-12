@@ -466,6 +466,8 @@ const Lisa = (new (function() {
    * @returns {string} An HTML code
    */
   this.does = (request, display = true) => {
+    // Save the original request, before trimming
+    let originalRequest = request;
     // Trim the spaces at the beginning and the end of the request
     request = request.trim();
     // Declare a variable which will contain the regex match's result
@@ -480,7 +482,7 @@ const Lisa = (new (function() {
           // The whole request
           whole: request,
           // The original request, with spaces (before trimming)
-          originalRequest: arguments[0],
+          originalRequest,
           // All catchers' values
           caught: match.slice(1),
           // The catcher's values, in standard format (see below)
