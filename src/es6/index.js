@@ -213,7 +213,7 @@ const Lisa = (new (function() {
       // Allow any space to be written multiple times
       .replace(/ /g, ' +')
       // === Catchers ===
-      .replace(/\\\^(.*?)\\\^/g, (match, catcher) => {
+      .replace(/\\\{(.*?)\\\}/g, (match, catcher) => {
         // If the catcher is '\\*'...
         if (catcher === '\\*')
           // Remove the '\' symbol ; this catcher was escaped because the '*'
@@ -425,7 +425,7 @@ const Lisa = (new (function() {
 
     // Replace every catcher by the corresponding help text
     // Then, return the help text
-    return handler.replace(/\^(.*?)\^/g, catcher => '[' + helpTexts[i ++] + ']');
+    return handler.replace(/\{(.*?)\}/g, catcher => '[' + helpTexts[i ++] + ']');
   };
 
   /**
