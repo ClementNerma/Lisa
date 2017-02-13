@@ -193,7 +193,14 @@ const Lisa = (new (function() {
     // Italic
       .replace(/_(.*?)_/g, '<em>$1</em>')
     // Strike
-      .replace(/~(.*?)~/g, '<del>$1</del>');
+      .replace(/~(.*?)~/g, '<del>$1</del>')
+    // Variables
+      .replace(/%([a-zA-Z][a-zA-Z0-9_]*)%/g, (match, variable) => {
+        if (Lisa.knows(variable))
+          return Lisa.thinksTo(variable)
+        else
+          throw new Error(`[Lisa] Variable "${variable}" is not defined in message "${message}"`);
+      });
 
   /**
    * Make a regex from an handler
@@ -446,6 +453,13 @@ const Lisa = (new (function() {
     // Store the value into the memory
     memory[cell] = value;
   };
+
+  /**
+   * Check if Lisa knows something
+   * @param {string} cell The cell to check
+   * @returns {boolean} TRUE if the cell is found, FALSE else
+   */
+  this.knows = cell => memory.hasOwnProperty(cell);
 
   /**
    * Get a value from a cell in the memory
