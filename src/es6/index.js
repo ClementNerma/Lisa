@@ -80,6 +80,28 @@ const Lisa = (new (function() {
   let handlers = [];
 
   /**
+   * Callbacks that handle some events
+   * @param {Object.<string, Function>}
+   */
+  let eventsHandler = {
+    // When a message is displayed
+    // @.displayMessage()
+    message: null,
+    // When Lisa did an action
+    // @.does()
+    did: null,
+    // When Lisa learnt something
+    // @.remembers()
+    remembered: null,
+    // When Lisa forgot something
+    // @.forgots()
+    forgot: null,
+    // When Lisa understood something
+    // @.understands()
+    understood: null
+  };
+
+  /**
    * Make a string number having a length of a fixed amount characters (digits). Used in @.getStandard().
    * @example "2" -> "02" (add a zero) / "23" -> "23" (the same)
    * @param {string} strnum The number to make having a fixed length
@@ -282,6 +304,28 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Run a callback when a specific event occures
+   * @param {string} event Event's name (listed in the private variable 'eventsHandler')
+   * @param {Function} callback The callback to run when the event ocurres
+   * @returns {void}
+   */
+  this.when = (event, callback) => {
+    // If the event is not known...
+    if (!eventsHandler.hasOwnProperty(event))
+      // Throw an error
+      throw new Error('[Lisa] Unknown event name');
+
+    // If the callback is not valid...
+    if (typeof callback !== 'function')
+      // Throw an error
+      throw new Error('[Lisa] Illegal callback provided, must be a function');
+
+    // Register the callback as the handler of this event
+    // NOTE: If there was a callback previously registered, it will be removed
+    eventsHandler[event] = callback;
+  };
+
+  /**
    * Register a callback for a given request
    * @param {string} handler The request to handle, in Lisa's parser format
    * @param {string|function} callback A function to call when the handler is used, and which must return a string or a DOM element
@@ -392,6 +436,11 @@ const Lisa = (new (function() {
     // Mark this handler as already used
     handled.push(handler);
 
+    // If the related event has a handler...
+    if (eventsHandler['understood'])
+      // Trigger its callback
+      eventsHandler['understood'](new RegExp(regexArr[0].toString().slice(1, -2)), regexArr[1].slice(0), callback, helpTexts ? helpTexts.slice(0) : null);
+
     // Return the regex made from the handler
     return regexArr[0];
   };
@@ -425,6 +474,11 @@ const Lisa = (new (function() {
     if (rememberMessages)
       // Remember this message
       messages.push([ Date.now(), author, message, className ]);
+
+    // If the related event has a handler...
+    if (eventsHandler['message'])
+      // Trigger its callbackhor, message, className);
+      eventsHandler['message'](Date.now(), author, message, className);
   };
 
   /**
@@ -478,6 +532,11 @@ const Lisa = (new (function() {
 
     // Store the value into the memory
     memory[cell] = value;
+
+    // If the related event has a handler...
+    if (eventsHandler['remembered'])
+      // Trigger its callback
+      eventsHandler['remembered'](cell, value);
   };
 
   /**
@@ -503,13 +562,18 @@ const Lisa = (new (function() {
     // If the cell doesn't exist...
     if (!memory.hasOwnProperty(cell))
       // Throw an error
-      throw new Error('[Lisa] The provided cell doesn\'t exist');
+      throw new Error('[Lisa] Can\'t forget unexisting cell doesn\'t exist');
 
     // Get the cell's value
     let value = memory[cell];
 
     // Remove the cell from the memory
     delete memory[cell];
+
+    // If the related event has a handler...
+    if (eventsHandler['forgot'])
+      // Trigger its callback
+      eventsHandler['forgot'](cell, value);
 
     // Return the cell's value before deletion
     return value;
@@ -634,10 +698,18 @@ const Lisa = (new (function() {
             // The handler (as a string) used to catch this request
             prepare.handler,
             // The different parts handled by the handler thanks to its catchers
-            prepare.caught,
+            prepare.caught.slice(0),
             // Was the message displayed? (boolean)
             prepare.display
           ]);
+
+        // Make a cloned version of the 'prepare' object
+        // After a few tests, it seems the cloning takes less than a milisecond
+        // to perform with a very big 'prepare' object and a low-end computer
+        // If the related event has a handler...
+        if (eventsHandler['did'])
+          // Trigger its callback
+          eventsHandler['did'](requests.slice(-1)[0] /* Date.now() */, JSON.parse(JSON.stringify(prepare)));
 
         // Return the result
         return output;
