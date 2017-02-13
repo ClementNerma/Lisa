@@ -70,14 +70,12 @@ const Lisa = (new (function() {
   /**
    * The list of all handler in use
    * @type {Array.<string>}
-   * @private
    */
   let handled = [];
 
   /**
    * The association of handlers with their respective callback and help message
    * @type {Array.<Array>}
-   * @private
    */
   let handlers = [];
 
