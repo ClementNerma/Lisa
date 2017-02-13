@@ -91,8 +91,8 @@ const Lisa = (new (function() {
     // @.does()
     did: null,
     // When Lisa learnt something
-    // @.remembers()
-    remembered: null,
+    // @.learns()
+    learnt: null,
     // When Lisa forgot something
     // @.forgots()
     forgot: null,
@@ -521,7 +521,7 @@ const Lisa = (new (function() {
    * @param {string|number|boolean} value The cell's value
    * @returns {void}
    */
-  this.remembers = (cell, value) => {
+  this.learns = (cell, value) => {
     // If the cell is not valid...
     if (typeof cell !== 'string' || !cell.length || ({})[cell])
       throw new Error('[Lisa] Illegal name provided for memory\'s cell');
@@ -789,10 +789,10 @@ const Lisa = (new (function() {
   };
 
   // Initialize some memory's variables
-  this.remembers('HOURS_NAME', 'hours');
-  this.remembers('MINUTES_NAME', 'minutes');
-  this.remembers('SECONDS_NAME', 'secondes');
-  this.remembers('MONTHS', 'january,february,march,april,may,june,july,august,september,october,november,december');
+  this.learns('HOURS_NAME', 'hours');
+  this.learns('MINUTES_NAME', 'minutes');
+  this.learns('SECONDS_NAME', 'secondes');
+  this.learns('MONTHS', 'january,february,march,april,may,june,july,august,september,october,november,december');
 
   // Get the DDA and its children
   this.__defineGetter__('dom', () => discuss);
