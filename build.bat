@@ -40,15 +40,11 @@ echo [ build ] Fusionning all ES6 scripts...
 
 :: Enable strict mode in the bundle
 echo "use strict"; > build\lisa.fusion.js
-:: Also bundle (at the beginning) the 'index.js' file
+:: Bundle every single file in the 'src\es6' folder
 type src\es6\index.js >> build\lisa.fusion.js
-
-:: For each source file (JavaScript), bundle it
-for %%f in (src\es6\*.js) do (
-  if NOT %%f == src\es6\index.js (
-    type %%f >> build\lisa.fusion.js
-  )
-)
+type src\es6\lzstring.js >> build\lisa.fusion.js
+type src\es6\discuss.js >> build\lisa.fusion.js
+type src\es6\localdata.js >> build\lisa.fusion.js
 
 :: Babelify the ES6 bundle to make an ES5 one
 :: That extends the game's compatibility with older browsers, with no ES6 support
