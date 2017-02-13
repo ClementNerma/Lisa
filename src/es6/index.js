@@ -114,12 +114,13 @@ const Lisa = (new (function() {
    */
   this.getStandard = (input, catcher) => {
     // If the provided catcher is not known...
-    if (!RegexCatchers.hasOwnProperty(catcher))
+    if (!RegexCatchers.hasOwnProperty(catcher) && catcher !== '?')
       // Throw an error
       throw new Error(`[Lisa] Unknown catcher "${catcher}"`);
 
-    // Get the string, in standard format
-    if (['*', 'number', 'integer'].includes(catcher))
+    // For some catchers, there is nothing to change between the formatted
+    // string and the original one
+    if (['*', '?',  'number', 'integer'].includes(catcher))
       // Nothing to change for these catchers
       return input;
 
@@ -221,6 +222,33 @@ const Lisa = (new (function() {
       .replace(/ /g, ' +')
       // === Catchers ===
       .replace(/\\\{(.*?)\\\}/g, (match, catcher) => {
+        // If the catcher starts with the '?' symbol...
+        // (Because it's a regex symbol it has been escaped so a backslash is
+        //  added before the symbol itself)
+        if (catcher.startsWith('\\?')) {
+          // This catcher lists different texts that can be put this place.
+          // e.g. "I am some{?one|thing}" propose two texts two be written :
+          //      "one" or "thing" after the "I am some" text.
+          // There aren't optionnal, excepted if there is only one proposition
+          // e.g. "I am something [?strange]" make the "strange" part optionnal.
+          // Register this part as a catcher
+          catchers.push('?');
+
+          // These propositions make a part of the regex, so return a regex
+          // as a string here :
+          // If there is a single proposed text...
+          return !catcher.substr(2).includes('\\|') ?
+            // Just return it as an optionnal text
+            `(${catcher.substr(2)}|)` :
+          // Else, return it as multiple possible texts
+          // If the list starts by a ':' symbol...
+            catcher.substr(2, 1) === ':' ?
+              // Return it as a list of optionnal texts
+              '(' + catcher.substr(3).split('\\|').join('|') + '|)' :
+              // Else, return the list as it's
+              '(' + catcher.substr(2).split('\\|').join('|') + ')';
+        }
+
         // If the catcher is '\\*'...
         if (catcher === '\\*')
           // Remove the '\' symbol ; this catcher was escaped because the '*'
