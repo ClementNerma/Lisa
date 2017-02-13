@@ -346,7 +346,7 @@ const Lisa = (new (function() {
         // For each variable of the store...
         Reflect.ownKeys(store).map(variable =>
           // Make Lisa remember the variable...
-          'Lisa.remembers("' + variable + '","'
+          'Lisa.learns("' + variable + '","'
           + store[variable]
             // Espace all '\' symbols
             .replace(/\\/g, '\\\\')
@@ -386,7 +386,7 @@ const Lisa = (new (function() {
           // For each variable in 'store'...
           for (let variable of Reflect.ownKeys(store))
             // Store its value in the memory
-            Lisa.remembers(variable, store[variable]
+            Lisa.learns(variable, store[variable]
                 // Standardly-formatted variables
                 .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => requested.formatted[n])
                 // Original variables
@@ -691,7 +691,7 @@ const Lisa = (new (function() {
           //       would takes time to find them, especially if there is a lot
           //       of requests to treat.
           requests.push([
-            // The request's date (depending on the computer's one)
+            // The request's date
             Date.now(),
             // The original request, without trimming its spaces
             prepare.requestWithSpaces,
