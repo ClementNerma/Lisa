@@ -466,7 +466,7 @@ const Lisa = (new (function() {
    * @param {string} cell The cell to get
    * @returns {string|number|boolean|void} The cell's value (undefined if the cell is not found)
    */
-  this.thinksTo = cell => memory[cell];
+  this.thinksTo = cell => memory.hasOwnProperty(cell) ? memory[cell] : undefined;
 
   /**
    * Remove a cell from the memory
