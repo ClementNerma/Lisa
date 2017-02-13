@@ -376,13 +376,12 @@ const Lisa = (new (function() {
       if (store) {
         // Save the original callback under an other name
         let original = callback;
-        // Define an alias to the current instance
-        let that = this;
         // Make the callback a new function
         // Here a lambda function is used instead of an arrow function
         // because in this last case the 'arguments' variable cannot be
         // accessed (that may be due to the fact this file is babelified)
-        callback = function (requested) {
+        callback = new Function(['requested'], '(' + (function(store) {
+          console.log(store);
           // For each variable in 'store'...
           for (let variable of Reflect.ownKeys(store))
             // Store its value in the memory
@@ -395,8 +394,8 @@ const Lisa = (new (function() {
 
           // Run the original callback and return its result as the Lisa's
           // answer
-          return original.call(that, requested);
-        };
+        }).toString() + ')(' + JSON.stringify(store) + ');return (' + original.toString() + ')(requested);');
+        console.log(callback);
       }
     }
     // Else, that's not a valid callback

@@ -6,7 +6,6 @@
  * @returns {void}
  */
 function loadState(state) {
-  console.log(state);
   // If the state is not a valid object...
   if (typeof state !== 'object' || !state || Array.isArray(state))
     // Throw an error
@@ -39,6 +38,8 @@ function loadState(state) {
           // The callback's code
           extracted[2]
       ),
+      // The store (there is no store in the current case)
+      null,
       // The optionnal help texts
       handler[2]
     );
