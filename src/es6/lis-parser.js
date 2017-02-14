@@ -174,6 +174,15 @@ const LisaInterface = {
         indented ++;
       }
 
+      // -> If it's a comparative condition...
+      else if (match = line.match(/^if +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z_][a-zA-Z0-9_]*) *(=|==|\!|\!=|\!==|is not|isnt|is) *("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z_][a-zA-Z0-9_]*)$/)) {
+        // Write it
+        //ast.push([ 'if', this.comparators[match[2]] || match[2], match[1], match[3] ]);
+        program += `if(${formatVar(match[1])}${this.comparators[match[2]]}${formatVar(match[3])}){`;
+        // Expect for a new indentation
+        indented ++;
+      }
+
       // Else...
       else
         // That's a syntax error -> throw an error
