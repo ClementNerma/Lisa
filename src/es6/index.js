@@ -639,6 +639,16 @@ const Lisa = (new (function() {
   this.thinksToList = cell => memory['$'].hasOwnProperty(cell) ? memory[cell].slice(0) : undefined;
 
   /**
+   * Get a specific value of a list
+   * @param {string} cell The memory's cell
+   * @param {number} index The value's index in the memory (starts at 0)
+   * @returns {*} The list's value (undefined if the cell or the value is not found)
+   */
+  this.thinksToListValue = (cell, index) =>
+    memory['$'].hasOwnProperty(cell) && memory[cell].length > index ?
+    memory[cell][index] : undefined;
+
+  /**
    * Get the type of a list
    * @param {string} cell The memory's cell
    * @returns {string} The list's type (undefined if the cell is not found)
