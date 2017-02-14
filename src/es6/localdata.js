@@ -105,7 +105,7 @@ function saveState() {
   data = null;
   // Remove the unneeded fields
   // If its length is under 100 kb, and if the LZString library is present...
-  if (toExport < 100 * 1024 || typeof LZString !== 'object' || typeof LZString.compressToUTF16 !== 'function')
+  if (toExport.length < 100 * 1024 || typeof LZString !== 'object' || typeof LZString.compressToUTF16 !== 'function')
     // Don't compress it and write it as plain data
     localStorage.setItem('lisa_state', 'P' /* Data type indicator */ + toExport);
   // Else...
