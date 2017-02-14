@@ -205,6 +205,15 @@ const LisaInterface = {
         indented ++;
       }
 
+      // Test if a cell is a list
+      else if (match = line.match(/^if( +NOT *|) +(islist|is_list|list) +([a-zA-Z[a-zA-Z0-9_]*)$/)) {
+        // Write it
+        //ast.push([ 'if', match[1] ? true : false, 'islist', match[3] ])
+        program += `if(${match[1]?'!':''}Lisa.isList("${match[3]}")){`;
+        // Expect for a new indentatino
+        indented ++;
+      }
+
       // -> If it's a mathematical condition...
       else if (match = line.match(/^if +([a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+) *(<=|>=|<|>) *(\d+[.]?|\d*\.\d+)$/)) {
         // Write it
