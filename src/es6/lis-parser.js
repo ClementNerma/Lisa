@@ -206,7 +206,7 @@ const LisaInterface = {
       }
 
       // -> Test if a cell is a list
-      else if (match = line.match(/^if( +NOT *|) +(islist|is_list|list) +([a-z[a-z0-9_]*)$/i)) {
+      else if (match = line.match(/^if( +NOT *|) +(islist|is_list|list) +([a-z][a-z0-9_]*)$/i)) {
         // Write it
         //ast.push([ 'if', match[1] ? true : false, 'islist', match[3] ])
         program += `if(${match[1]?'!':''}Lisa.isList("${match[3]}")){`;
