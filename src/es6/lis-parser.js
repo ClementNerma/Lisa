@@ -263,8 +263,14 @@ const LisaInterface = {
       // -> If it's an unstore instruction...
       else if (match = line.match(/^(unstore|unset|unlearn|unremember|unmemorize|unsave|forget)[s]? +([a-zA-Z][a-zA-Z0-9_]*)$/))
         // Write it
-        //ast.push([ 'forget', match[1] ])
+        //ast.push([ 'forget', match[2] ])
         program += `Lisa.forgets("${match[2]}");`;
+
+      // -> List creation
+      else if (match = line.match(/^(makelist|createlist|setlist) (bool|boolean|int|integer|float|floating|str|string) +([a-zA-Z][a-zA-Z0-9_]*)$/))
+        // Write it
+        //ast.push([ 'makelist', match[2], match[3] ])
+        program += `Lisa.learnsList("${match[3]}",[],"${match[2]}");`;
 
       // Else...
       else
