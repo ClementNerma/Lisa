@@ -1,0 +1,11 @@
+You can put in this folder LIS programs, with the '.lis' extension.
+These files can be loaded using `LisaInterface.download('presets://<program>[.lis]')`.
+
+Example:
+========
+
+LisaInterface.download('presets://HelloWorld')
+OR LisaInterface.download('presets://HelloWorld.lis')
+
+  -> Loads the 'presets/HelloWorld.lis' program, compile it and run the
+     built JavaScript code
