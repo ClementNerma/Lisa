@@ -195,6 +195,12 @@ const LisaInterface = {
           // Finish the function call
           + '");';
 
+      // -> If it's a return instruction...
+      else if (match = line.match(/^(end|return|die|output) +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z_][a-zA-Z0-9_]*)$/))
+        // Write it
+        //ast.push([ 'return', match[2] ]);
+        program += 'return ' + formatVar(match[2]) + ';';
+
       // Else...
       else
         // That's a syntax error -> throw an error
