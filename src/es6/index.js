@@ -689,6 +689,15 @@ const Lisa = (new (function() {
   this.knows = cell => cell !== '$' && memory.hasOwnProperty(cell);
 
   /**
+   * Check if Lisa knows a specific value
+   * NOTE: This function ses strict equalities ; "3" and 3 are considered as different values
+   * NOTE: This function does not search through the lists ; use the 'searchesValue' function for that
+   * @param {string|number|boolean} value The value to search
+   * @returns {boolean} TRUE if the memory contains this value, FALSE else
+   */
+  this.knowsValue = value => Object.values(memory).includes(value);
+
+  /**
    * Check if Lisa knows a specific value and get its location
    * NOTE: This function uses strict equalities ; "3" and 3 are considered as different values
    * @param {string|number|boolean} value The value to search
