@@ -169,7 +169,7 @@ if (data) {
   }
 
   // If the data starts by the 'L' symbol...
-  if (data.startsWith('L')) // 'L' for 'LZString'
+  if (data.startsWith('L')) { // 'L' for 'LZString'
     // That's a compressed data (using the LZString library)
     data =
       // Step 4: Reverse the decompressed string
@@ -183,6 +183,7 @@ if (data) {
           )
         )
       );
+  }
   // Else, if the data starts by the 'P' symbol...
   else if(data.startsWith('P')) // 'P' for 'Plain'
     // That's a plain data
