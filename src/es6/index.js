@@ -689,6 +689,38 @@ const Lisa = (new (function() {
   this.knows = cell => cell !== '$' && memory.hasOwnProperty(cell);
 
   /**
+   * Check if Lisa knows a specific value and get its location
+   * NOTE: This function uses strict equalities ; "3" and 3 are considered as different values
+   * @param {string|number|boolean} value The value to search
+   * @param {boolean} [searchInList] Search through the lists (default: false)
+   * @returns {string|boolean} The cell or list's name or FALSE if the value is not found
+   */
+  this.searchesValue = (value, searchInList) => {
+    // For each known cell...
+    for (let cell of Reflect.ownKeys(memory))
+      // If it's a plain value, perform the test. If it's a list, the test will
+      // fail, so it will perform the second test (see below)
+      if (memory[cell] === value)
+        // It worked!
+        return cell;
+      // If the cell is a list
+      else if (memory['$'][cell]) {
+        // If the function is not allowed to search through...
+        if (!searchInList)
+          // Ignore it
+          continue ;
+
+        // If the value is found in the list...
+        if (memory[cell].includes(value))
+          // It worked!
+          return cell;
+      }
+
+    // The value wasn't found in the memory -> return FALSE
+    return false;
+  };
+
+  /**
    * Get a value from a cell in the memory
    * @param {string} cell The cell to get
    * @returns {string|number|boolean|void} The cell's value (undefined if the cell is not found)
