@@ -789,6 +789,13 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Get the length of a list
+   * @param {string} cell The memory's cell
+   * @returns {number|void} The length of the list, undefined if the list is not found
+   */
+  this.thinksToListLength = cell => memory['$'].hasOwnProperty(cell) ? memory[cell].length : undefined;
+
+  /**
    * Display a message from Lisa
    * @param {string} message The message's content
    * @returns {void}
