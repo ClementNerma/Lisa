@@ -806,6 +806,34 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Reverse a list
+   * @param {string} cell The list to reverse
+   * @param {boolean} [assign] Write the result as the list's new value (default: false)
+   * @returns {Array}
+   */
+  this.reversesList = (cell, assign) => {
+    // If the list is not found...
+    if (!memory['$'].hasOwnProperty(cell))
+      // Throw an error
+      throw new Error(`[Lisa] List "${cell}" was not found`);
+
+    // Get the list and clone it if it won't be assigned as the list's new
+    // value, because the sort will override the 'list' array
+    // Then, reverse the got array
+    let list = (assign ? memory[cell] : memory[cell].slice(0)).reverse();
+
+    // If the 'assign' parameter is turned on...
+    return assign
+      // There's no need to assign the new array to memory[cell] because the
+      // sort has already affected the original list
+      // Then, return the list, cloned to prevent modifications from the outside
+      ? list.slice(0)
+      // Else, return the sorted list without cloning it (the list was already
+      // cloned before sorting)
+      : list;
+  };
+
+  /**
    * Check if a cell exists in Lisa's memory
    * @param {string} cell The cell to check
    * @returns {boolean} TRUE if the cell is found, FALSE else
