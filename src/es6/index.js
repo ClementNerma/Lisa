@@ -708,6 +708,53 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Sort a list
+   * @param {string} cell The list to sort
+   * @param {boolean} [assign] Write the result as the list's new value (default: false)
+   * @param {boolean} [asc] Ascendant order if true, descendant order else (default: true)
+   * @returns {Array}
+   */
+  this.sortsList = (cell, assign, asc = true) => {
+    // If the list is not found...
+    if (!memory['$'].hasOwnProperty(cell))
+      // Throw an error
+      throw new Error(`[Lisa] List "${cell}" was not found`);
+
+    // Get the list and sort it
+    // Use a different sorting method, depending on the list's type
+    // NOTE: The performed sort will be ascendant, if the 'asc' parameter is set
+    // to false a .reverse() will be made on the new array.
+    // NOTE: If the new array will be assigned as the list's new value, there's
+    // no need to clone the array (the .sort() method directly affects the
+    // original array)
+    let sorted = (assign ? memory[cell] : memory[cell].slice(0)).sort(
+      // If that's a list of number...
+      ['integer', 'floating'].includes(memory['$'][cell])
+        // Use a custom sort method
+        ? (a, b) => a - b
+        // Else, use the native .sort() function, wich only sorts following the
+        // Unicode equivalent of the values (which is not adapted to numbers
+        // because they are sorted as strings : [ 10, 2, 1 ] make [ 1, 10, 2 ])
+        : null
+    );
+
+    // If the order must be 'desc'...
+    if (!asc)
+      // Reverse the array
+      sorted = sorted.reverse();
+
+    // If the 'asc' parameter is turned on...
+    if (assign)
+      // Assign the sorted list as the list's new value
+      // Then, return the list, cloned to prevent modifications from the outside
+      return (memory[cell] = sorted).slice(0);
+
+    // Else, return the sorted list without cloning it (the list was already
+    // cloned before sorting)
+    return sorted;
+  };
+
+  /**
    * Check if a cell exists in Lisa's memory
    * @param {string} cell The cell to check
    * @returns {boolean} TRUE if the cell is found, FALSE else
