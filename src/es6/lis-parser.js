@@ -147,6 +147,18 @@ const LisaInterface = {
         // Throw an error
         error('Wrong indentation, expecting no tab');
 
+      // If the line starts by a 'ELSE' block (with something after)...
+      if (match = line.match(/^else +/)) {
+        // Write it
+        program += 'else '
+
+        // NOTE: This syntax doesn't expect for a new indentation because it's
+        // an 'inline' else block, so there won't be any '{' or '}' symbol.
+
+        // Remove the 'else' part from the line
+        line = line.substr(match[0].length);
+      }
+
       // Test the line
 
       // -> If it's a 'ELSE' block...
