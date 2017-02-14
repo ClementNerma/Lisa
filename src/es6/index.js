@@ -532,6 +532,15 @@ const Lisa = (new (function() {
       // Throw an error
       throw new Error(`[Lisa] Illegal value provided for memory's cell "${cell}"`);
 
+    // If the cell already exists...
+    if (memory.hasOwnProperty(cell))
+      // Remove it
+      // Calling the @.forgets() function permit, if the cell is a list, to
+      // remove its type in memory['$']. If this data remains after the list's
+      // deletion, it will make some bugs happening (like @.isList() for
+      // example). Also, it calls the 'forgot' handler (if there is one).
+      this.forgets(cell);
+
     // Store the value into the memory
     memory[cell] = value;
 
