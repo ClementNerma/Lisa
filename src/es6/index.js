@@ -693,7 +693,7 @@ const Lisa = (new (function() {
   };
 
   /**
-   * Check if Lisa knows something
+   * Check if a cell exists in Lisa's memory
    * @param {string} cell The cell to check
    * @returns {boolean} TRUE if the cell is found, FALSE else
    */
@@ -707,6 +707,14 @@ const Lisa = (new (function() {
    * @returns {boolean} TRUE if the memory contains this value, FALSE else
    */
   this.knowsValue = value => Object.values(memory).includes(value);
+
+  /**
+   * Check is a value is contained in a list
+   * @param {string} cell The memory's cell which is the list to test
+   * @param {*} value The value to search in the list
+   * @returns {boolean} TRUE if the list exists and contains this value, FALSE else
+   */
+  this.knowsValueInList = (cell, value) => memory['$'].hasOwnProperty(cell) && memory[cell].includes(value);
 
   /**
    * Check if Lisa knows a specific value and get its location
