@@ -65,7 +65,7 @@ const Lisa = (new (function() {
    * The Lisa's memory
    * @type {Object}
    */
-  let memory = {};
+  let memory = { $: {} };
 
   /**
    * The list of all handler in use
@@ -107,6 +107,7 @@ const Lisa = (new (function() {
    * @param {string} strnum The number to make having a fixed length
    * @param {number} length The length the number should have (default: 2)
    * @returns {void}
+   * @private
    */
   function zero(strnum, length = 2) {
     // Add one or more '0' if needed, then return the number as a string
@@ -522,11 +523,13 @@ const Lisa = (new (function() {
    */
   this.learns = (cell, value) => {
     // If the cell is not valid...
-    if (typeof cell !== 'string' || !cell.length || ({})[cell])
+    if (typeof cell !== 'string' || !cell.length || ({})[cell] || cell === '$')
+      // Throw an error
       throw new Error('[Lisa] Illegal name provided for memory\'s cell');
 
     // If the value is not valid...
     if (!['string', 'number', 'boolean'].includes(typeof value))
+      // Throw an error
       throw new Error(`[Lisa] Illegal value provided for memory's cell "${cell}"`);
 
     // Store the value into the memory
@@ -539,18 +542,153 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Check if a value is valid in a list
+   * @param {*} value The value to check
+   * @param {string} type The value's expected type
+   * @returns {boolean} TRUE if the value's type is the expected one, FALSE else
+   */
+  function isValidInList(value, type) {
+    // Depending on the expected type...
+    switch (type) {
+      // NOTE: Here a '!' operator is used because when one (and only one) of
+      // the conditions written here is seen as FALSE, the other conditions
+      // won't be tested. With a suite of conditions linked by the '&&' operator,
+      // all conditions would have to be tested, which can be significantly
+      // slower.
+      case 'integer': return !(typeof value !== 'number' || Math.floor(value) !== value || value < 0);
+      // These two tests are just check the value's type
+      case 'floating': return typeof value === 'number';
+      case 'string': return typeof value === 'string';
+    }
+  }
+
+  /**
+   * Learn a list of values
+   * @param {string} cell The memory's cell
+   * @param {Array} list List of values
+   * @param {string} type Values' type
+   * @returns {void}
+   */
+  this.learnsList = (cell, list, type) => {
+    // If the cell is not valid...
+    if (typeof cell !== 'string' || !cell.length || ({})[cell] || cell === '$')
+      // Throw an error
+      throw new Error('[Lisa] Illegal name provided for memory\'s cell');
+
+    // If the provided type is not valid...
+    if (!['integer', 'floating', 'string'].includes(type))
+      // Throw an error
+      throw new Error(`[Lisa] Unknown type "${type}", must be "integer", "floating" or "string"`);
+
+    // If the list is not valid...
+    if (!Array.isArray(list))
+      // Throw an error
+      throw new Error('[Lisa] Illegal list provided, must be an array');
+
+    // Clone the list to prevent every modification from the outside
+    list = list.slice(0);
+
+    // For each value in the list...
+    for (let i = 0; i < list.length; i++)
+      // If the value is not valid...
+      if (!isValidInList(list[i], type))
+        // Throw an error
+        throw new Error(`[Lisa] Value at index ${i} is not a ${type}`);
+
+    // Store the list into the memory
+    memory[cell] = list;
+
+    // Remember the list's type
+    memory['$'][cell] = type;
+
+    // If the related event has a handler...
+    if (eventsHandler['remembered'])
+      // Trigger its callback
+      eventsHandler['remembered'](cell, list.slice(0));
+  }
+
+  /**
+   * Learns a list of integer values
+   * @param {string} cell The memory's cell
+   * @param {Array.<number>} list List of integers
+   * @returns {void}
+   */
+  this.learnsIntList = (cell, list) => this.learnsList(cell, list, 'integer');
+
+  /**
+   * Learns a list of floating numbers
+   * @param {string} cell The memory's cell
+   * @param {Array.<number>} list List of floating numbers
+   * @returns {void}
+   */
+  this.learnsFloatList = (cell, list) => this.learnsList(cell, list, 'floating');
+
+  /**
+   * Learns a list of string values
+   * @param {string} cell The memory's cell
+   * @param {Array.<string>} list List of strings
+   * @returns {void}
+   */
+  this.learnsStrList = (cell, list) => this.learnsList(cell, list, 'string');
+
+  /**
+   * Get a list as an array
+   * @param {string} cell The memory's cell
+   * @returns {Array} The list (undefined if the cell is not found)
+   */
+  this.thinksToList = cell => memory['$'].hasOwnProperty(cell) ? memory[cell].slice(0) : undefined;
+
+  /**
+   * Get the type of a list
+   * @param {string} cell The memory's cell
+   * @returns {string} The list's type (undefined if the cell is not found)
+   */
+  this.thinksToListType = cell => memory['$'].hasOwnProperty(cell) ? memory['$'][cell] : undefined;
+
+  /**
+   * Push a value into a list
+   * @param {string} cell The memory's cell
+   * @param {*} value The value to push
+   * @returns {void}
+   */
+  this.learnsListValue = (cell, value) => {
+    // If the cell is not found...
+    if (!memory['$'].hasOwnProperty(cell))
+      // Throw an error
+      throw new Error(`[Lisa] Unknown list "${cell}"`);
+
+    // If the value is not valid...
+    if (!isValidInList(value, memory['$'][cell]))
+      // Throw an error
+      throw new Error(`[Lisa] Provided value for list "${cell}" is not an ${memory['$'][cell]}`);
+
+    // Append the value to the end of the list
+    memory[cell].push(value);
+
+    // If the related event has a handler...
+    if (eventsHandler['remembered'])
+      // Trigger its callback
+      eventsHandler['remembered'](cell, value, memory[cell].length - 1);
+  };
+
+  /**
    * Check if Lisa knows something
    * @param {string} cell The cell to check
    * @returns {boolean} TRUE if the cell is found, FALSE else
    */
-  this.knows = cell => memory.hasOwnProperty(cell);
+  this.knows = cell => cell !== '$' && memory.hasOwnProperty(cell);
 
   /**
    * Get a value from a cell in the memory
    * @param {string} cell The cell to get
    * @returns {string|number|boolean|void} The cell's value (undefined if the cell is not found)
    */
-  this.thinksTo = cell => memory.hasOwnProperty(cell) ? memory[cell] : undefined;
+  this.thinksTo = cell =>
+    // If the cell exists in Lisa's memory..
+    memory.hasOwnProperty(cell) && cell !== '$' ?
+      // If that's a list, join its values with the semi-colon ';' symbol
+      Array.isArray(memory[cell]) ? memory[cell].join(';') : memory[cell]
+    : undefined;
 
   /**
    * Remove a cell from the memory
@@ -559,7 +697,7 @@ const Lisa = (new (function() {
    */
   this.forgets = cell => {
     // If the cell doesn't exist...
-    if (!memory.hasOwnProperty(cell))
+    if (!memory.hasOwnProperty(cell) || cell === '$')
       // Throw an error
       throw new Error('[Lisa] Can\'t forget unexisting cell');
 
@@ -568,6 +706,8 @@ const Lisa = (new (function() {
 
     // Remove the cell from the memory
     delete memory[cell];
+    // If it exists, the list's type must also be deleted
+    delete memory['$'][cell];
 
     // If the related event has a handler...
     if (eventsHandler['forgot'])

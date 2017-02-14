@@ -46,9 +46,21 @@ function loadState(state) {
   }
 
   // For each cell in the backuped memory...
-  for (let cell of Reflect.ownKeys(state.memory))
-    // Copy it into the real memory
-    Lisa.learns(cell, state.memory[cell]);
+  for (let cell of Reflect.ownKeys(state.memory)) {
+    // If that's the '$' cell...
+    if (cell === '$')
+      // Ignore it
+      continue ;
+
+    // If that's a list...
+    if (state.memory['$'].hasOwnProperty(cell))
+      // Copy it into the real memory
+      Lisa.learnsList(cell, state.memory[cell], state.memory['$'][cell]);
+    // Else...
+    else
+      // Copy it into the real memory
+      Lisa.learns(cell, state.memory[cell]);
+  }
 
   // For now, turn on the messages history because all of the backuped messages
   // were stored into. Because it's empty for now, the messages must be copied
