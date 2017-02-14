@@ -248,7 +248,7 @@ const LisaInterface = {
       else if (match = line.match(/^(store|set|learn|rem|remember|mem|memorize|save)[s]? +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z_][a-zA-Z0-9_]*) *=> *([a-zA-Z][a-zA-Z0-9_]*)$/))
         // Write it
         //ast.push([ 'store', match[1], match[2] ]),
-        program += `Lisa.learns("${match[3]}",${formatVar(match[2])})`;
+        program += `Lisa.learns("${match[3]}",${formatVar(match[2])});`;
 
       // -> If it's a new hanlder...
       else if (match = line.match(/^"(.*)" *=>$/)) {
