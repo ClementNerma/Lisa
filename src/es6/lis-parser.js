@@ -210,6 +210,16 @@ const LisaInterface = {
         //ast.push([ 'store', match[1], match[2] ]),
         program += `Lisa.learns("${match[3]}",${formatVar(match[2])})`;
 
+      // -> If it's a new hanlder...
+      else if (match = line.match(/^"(.*)" *=>$/)) {
+        // Write it
+        program += `Lisa.understands("${match[1]}",function(){var _a=arguments[0];`;
+        // Mark this indentation as closing a handler
+        closing.push(indented);
+        // Expect for a new indentation
+        indented ++;
+      }
+
       // Else...
       else
         // That's a syntax error -> throw an error
