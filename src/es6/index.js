@@ -561,7 +561,7 @@ const Lisa = (new (function() {
     // If the cell doesn't exist...
     if (!memory.hasOwnProperty(cell))
       // Throw an error
-      throw new Error('[Lisa] Can\'t forget unexisting cell doesn\'t exist');
+      throw new Error('[Lisa] Can\'t forget unexisting cell');
 
     // Get the cell's value
     let value = memory[cell];
