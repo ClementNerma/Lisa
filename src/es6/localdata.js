@@ -104,8 +104,8 @@ function saveState() {
   // Free the memory
   data = null;
   // Remove the unneeded fields
-  // If its length is under 100 kb
-  if (toExport < 100 * 1024)
+  // If its length is under 100 kb, and if the LZString library is present...
+  if (toExport < 100 * 1024 || typeof LZString !== 'object' || typeof LZString.compressToUTF16 !== 'function')
     // Don't compress it and write it as plain data
     localStorage.setItem('lisa_state', 'P' /* Data type indicator */ + toExport);
   // Else...
@@ -170,19 +170,26 @@ if (data) {
 
   // If the data starts by the 'L' symbol...
   if (data.startsWith('L')) { // 'L' for 'LZString'
-    // That's a compressed data (using the LZString library)
-    data =
-      // Step 4: Reverse the decompressed string
-      reverse(
-        // Step 3: Decompress the data using the 'LZString' object
-        LZString.decompressFromUTF16(
-          // Step 2: Reverse it
-          reverse(
-            // Step 1: Get the data in the local storage
-            data.substr(1)
+    // If the LZString library is not present...
+    if (typeof LZString !== 'object' || typeof LZString.decompressFromUTF16 !== 'function')
+      // If errors can be logged into a console...
+      if (typeof console === 'object' && typeof console.error === 'function')
+        // Log the error
+        console.error('Found compressed data in local storage, but the LZString library was not found.');
+    else
+      // That's a compressed data (using the LZString library)
+      data =
+        // Step 4: Reverse the decompressed string
+        reverse(
+          // Step 3: Decompress the data using the 'LZString' object
+          LZString.decompressFromUTF16(
+            // Step 2: Reverse it
+            reverse(
+              // Step 1: Get the data in the local storage
+              data.substr(1)
+            )
           )
-        )
-      );
+        );
   }
   // Else, if the data starts by the 'P' symbol...
   else if(data.startsWith('P')) // 'P' for 'Plain'
