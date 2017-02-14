@@ -245,7 +245,7 @@ const LisaInterface = {
       // NOTE: In the store's target the '_' symbol is not allowed at the
       // beginning of the target's name, because it's reserved to the function's
       // arguments, which cannot be the store's target
-      else if (match = line.match(/^(store|learn|rem|remember|mem|memorize|save) +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z_][a-zA-Z0-9_]*) *=> *([a-zA-Z][a-zA-Z0-9_]*)$/))
+      else if (match = line.match(/^(store|set|learn|rem|remember|mem|memorize|save)[s]? +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z_][a-zA-Z0-9_]*) *=> *([a-zA-Z][a-zA-Z0-9_]*)$/))
         // Write it
         //ast.push([ 'store', match[1], match[2] ]),
         program += `Lisa.learns("${match[3]}",${formatVar(match[2])})`;
@@ -259,6 +259,12 @@ const LisaInterface = {
         // Expect for a new indentation
         indented ++;
       }
+
+      // -> If it's an unstore instruction...
+      else if (match = line.match(/^(unstore|unset|unlearn|unremember|unmemorize|unsave|forget)[s]? +([a-zA-Z][a-zA-Z0-9_]*)$/))
+        // Write it
+        //ast.push([ 'forget', match[1] ])
+        program += `Lisa.forgets("${match[2]}");`;
 
       // Else...
       else
