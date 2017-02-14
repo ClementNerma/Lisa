@@ -1,5 +1,13 @@
 /** @file Load and save the Lisa's data from and to the browser's localStorage */
 
+// NOTE: Plain saves are reversed and compressed ones are reversed two times
+// (before and after compression with the LZString object). This reversion
+// aims to prevent malicious programs such as viruses to find private data
+// when scanning the whole disk: because the data are reversed, they are
+// unredeable. If the data are compressed, you're sure the data won't be found
+// out by any virus, because it needs to reverse the string, decompress it using
+// the right algorithm, then reverse it again to extract some informations.
+
 /**
  * Load Lisa's state from an object
  * @param {Object} state The state to load
