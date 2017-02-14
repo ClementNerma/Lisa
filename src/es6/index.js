@@ -755,6 +755,56 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Sort a list in a random order
+   * @param {string} cell The list to sort
+   * @param {boolean} [assign] Write the result as the list's new value (default: false)
+   * @returns {void}
+   */
+  this.shufflesList = (cell, assign) => {
+    // If the list is not found...
+    if (!memory['$'].hasOwnProperty(cell))
+      // Throw an error
+      throw new Error(`[Lisa] List "${cell}" was not found`);
+
+    // Get the list and clone it if it won't be assigned as the list's new
+    // value, because the sort will override the 'list' array
+    let list = assign ? memory[cell] : memory[cell].slice(0);
+
+    // Credits to Frank Mitchell
+    // (https://www.frankmitchell.org/2015/01/fisher-yates/)
+    // Credits to @ChristopheD from StackOverflow
+    // (http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array#answer-2450976)
+    // The code below uses the Fisher-Yates shuffle algorithm
+    // NOTE: This code is not mine but the @ChristopheD's one
+
+    // Get the list's lengt
+    let currentIndex = list.length,
+        // Define two local variables for the algorithm
+        temporaryValue, randomIndex;
+
+    // While there remain elements to shuffle...
+    while (currentIndex) {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex --;
+
+      // And swap it with the current element.
+      temporaryValue = list[currentIndex];
+      list[currentIndex] = list[randomIndex];
+      list[randomIndex] = temporaryValue;
+    }
+
+    // If the 'assign' parameter is turned on...
+    return assign ?
+      // Assign the sorted list as the list's new value
+      // Then, return the list, cloned to prevent modifications from the outside
+      list.slice(0) :
+      // Else, return the sorted list without cloning it (the list was already
+      // cloned before sorting)
+      list;
+  };
+
+  /**
    * Check if a cell exists in Lisa's memory
    * @param {string} cell The cell to check
    * @returns {boolean} TRUE if the cell is found, FALSE else
