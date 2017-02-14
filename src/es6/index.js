@@ -744,14 +744,14 @@ const Lisa = (new (function() {
       sorted = sorted.reverse();
 
     // If the 'asc' parameter is turned on...
-    if (assign)
-      // Assign the sorted list as the list's new value
-      // Then, return the list, cloned to prevent modifications from the outside
-      return (memory[cell] = sorted).slice(0);
-
-    // Else, return the sorted list without cloning it (the list was already
-    // cloned before sorting)
-    return sorted;
+    return assign
+      // There's no need to assign the new array to memory[cell] because the
+      // sort has already affected the original list
+      // Return the list, cloned to prevent modifications from the outside
+      ? sorted.slice(0)
+      // Else, return the sorted list without cloning it (the list was already
+      // cloned before sorting)
+      : sorted;
   };
 
   /**
@@ -795,13 +795,15 @@ const Lisa = (new (function() {
     }
 
     // If the 'assign' parameter is turned on...
-    return assign ?
+    return assign
+      // There's no need to assign the new array to memory[cell] because the
+      // sort has already affected the original list
       // Assign the sorted list as the list's new value
       // Then, return the list, cloned to prevent modifications from the outside
-      list.slice(0) :
+      ? list.slice(0)
       // Else, return the sorted list without cloning it (the list was already
       // cloned before sorting)
-      list;
+      : list;
   };
 
   /**
