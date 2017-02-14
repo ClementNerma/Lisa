@@ -587,6 +587,9 @@ const Lisa = (new (function() {
       // Throw an error
       throw new Error('[Lisa] Illegal name provided for memory\'s cell');
 
+    // Allow aliases for types
+    type = ({bool: 'boolean', int: 'integer', float: 'floating', str: 'string'})[type] || type;
+
     // If the provided type is not valid...
     if (!['boolean', 'integer', 'floating', 'string'].includes(type))
       // Throw an error
