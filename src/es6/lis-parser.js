@@ -1,6 +1,21 @@
 /** @file Parse and run LIS (Lisa's Interface Script) programs */
 
 /**
+ * Get an insance of the XMLHttpRequest Object
+ * @returns {XMLHttpRequest}
+ */
+function getXMLHttpRequest() {
+  if (window.ActiveXObject) {
+		try {
+			return new ActiveXObject("Msxml2.XMLHTTP");
+		} catch(e) {
+			return new ActiveXObject("Microsoft.XMLHTTP");
+		}
+	} else
+		return new XMLHttpRequest();
+}
+
+/**
  * A suite of tools built around the LIS features
  * @type {Object}
  * @constant
@@ -268,5 +283,48 @@ const LisaInterface = {
   exec(source) {
     // Compile the source code and run it
     new Function([], this.compile(source))();
+  },
+
+  /**
+   * Load a LIS program from a specific URL
+   * @param {string} url The program's URL
+   * @returns {string} The program's source code
+   */
+  download(url) {
+    // Declare a local variable to test the URL's protocol
+    let match;
+
+    // If the URL is not a string or is empty...
+    if (typeof url !== 'string' || !url)
+      // Throw an error
+      throw new Error('[LIS:download] Illegal URL provided, must be a not-empty string');
+
+    // If the request refers to the 'file' protocol...
+    // NOTE: There may be a third slash after the second one, but there's no
+    // need to test its presence.
+    if (url.startsWith('file://'))
+      // Throw an error
+      throw new Error('[LIS:download] Protocol "file:///" is forbidden: Lisa is not allowed to load local computer\'s resources');
+
+    // Initialize an Ajax object
+    let xhr = getXMLHttpRequest();
+    // Set up its URL
+    xhr.open('GET', url, true);
+    // When the request's state changes...
+    xhr.addEventListener('readystatechange', e => {
+      // If the request is done...
+      if (xhr.readyState === 4) {
+        // If the LIS program was downloaded successfully...
+        if (xhr.status === 200)
+          // Compile and run it
+          this.exec(xhr.responseText);
+        // Else...
+        else
+          // Throw an error
+          throw new Error(`[LIS:download] Failed to download the LIS program (status code: ${xhr.status})`);
+      }
+    });
+    // Launch the request
+    xhr.send(null);
   }
 };
