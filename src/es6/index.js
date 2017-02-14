@@ -798,7 +798,6 @@ const Lisa = (new (function() {
     return assign
       // There's no need to assign the new array to memory[cell] because the
       // sort has already affected the original list
-      // Assign the sorted list as the list's new value
       // Then, return the list, cloned to prevent modifications from the outside
       ? list.slice(0)
       // Else, return the sorted list without cloning it (the list was already
