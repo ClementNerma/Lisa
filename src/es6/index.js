@@ -532,14 +532,17 @@ const Lisa = (new (function() {
       // Throw an error
       throw new Error(`[Lisa] Illegal value provided for memory's cell "${cell}"`);
 
-    // If the cell already exists...
-    if (memory.hasOwnProperty(cell))
-      // Remove it
-      // Calling the @.forgets() function permit, if the cell is a list, to
-      // remove its type in memory['$']. If this data remains after the list's
-      // deletion, it will make some bugs happening (like @.isList() for
-      // example). Also, it calls the 'forgot' handler (if there is one).
-      this.forgets(cell);
+    // If the cell already exists and is a cell...
+    if (memory['$'].hasOwnProperty(cell))
+      // This line permits, if the cell is a list, to remove its type from
+      // memory['$']. If this data remains after the list's deletion, it will
+      // make some bugs happening (like @.isList() for example).
+      // The previous fix was calling the @.forgets() function, which was
+      // taking too much time by performing a second remove on memory[cell]
+      // and calling the 'forgot' callback, which was an error because the
+      // cell is not forgot at all, its value is simply changed.
+      // So this new fix allows better performances.
+      delete memory['$'][cell];
 
     // Store the value into the memory
     memory[cell] = value;
