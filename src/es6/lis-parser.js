@@ -205,7 +205,7 @@ const LisaInterface = {
         indented ++;
       }
 
-      // Test if a cell is a list
+      // -> Test if a cell is a list
       else if (match = line.match(/^if( +NOT *|) +(islist|is_list|list) +([a-zA-Z[a-zA-Z0-9_]*)$/)) {
         // Write it
         //ast.push([ 'if', match[1] ? true : false, 'islist', match[3] ])
@@ -276,7 +276,7 @@ const LisaInterface = {
         program += `Lisa.forgets("${match[2]}");`;
 
       // -> List creation
-      else if (match = line.match(/^(makelist|createlist|setlist) (bool|boolean|int|integer|float|floating|str|string) +([a-zA-Z][a-zA-Z0-9_]*)$/))
+      else if (match = line.match(/^(makelist|createlist|setlist) +(bool|boolean|int|integer|float|floating|str|string) +([a-zA-Z][a-zA-Z0-9_]*)$/))
         // Write it
         //ast.push([ 'makelist', match[2], match[3] ])
         program += `Lisa.learnsList("${match[3]}",[],"${match[2]}");`;
