@@ -147,8 +147,19 @@ const LisaInterface = {
         // Throw an error
         error('Wrong indentation, expecting no tab');
 
-      // That's a syntax error -> throw an error
-      error('Syntax error');
+      // -> If it's a boolean condition...
+      else if (match = line.match(/^if( +NOT *|) +([a-zA-Z_][a-zA-Z0-9_]*)$/)) {
+        // Write it
+        //ast.push([ 'if', match[1] ? true : false, 'true', match[2] ]);
+        program += `if(${match[1]?'!':''}${formatVar(match[2])}){`;
+        // Expect for a new indentation
+        indented ++;
+      }
+
+      // Else...
+      else
+        // That's a syntax error -> throw an error
+        error('Syntax error');
     }
 
     // Set the indentation as null
