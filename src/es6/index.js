@@ -550,6 +550,9 @@ const Lisa = (new (function() {
   function isValidInList(value, type) {
     // Depending on the expected type...
     switch (type) {
+      // NOTE: Testing these two values may be faster than using the 'typeof'
+      // operator, which needs to call a native function to perform the test
+      case 'boolean': return value === false || value === true;
       // NOTE: Here a '!' operator is used because when one (and only one) of
       // the conditions written here is seen as FALSE, the other conditions
       // won't be tested. With a suite of conditions linked by the '&&' operator,
@@ -576,9 +579,9 @@ const Lisa = (new (function() {
       throw new Error('[Lisa] Illegal name provided for memory\'s cell');
 
     // If the provided type is not valid...
-    if (!['integer', 'floating', 'string'].includes(type))
+    if (!['boolean', 'integer', 'floating', 'string'].includes(type))
       // Throw an error
-      throw new Error(`[Lisa] Unknown type "${type}", must be "integer", "floating" or "string"`);
+      throw new Error(`[Lisa] Unknown type "${type}", must be "boolean", "integer", "floating" or "string"`);
 
     // If the list is not valid...
     if (!Array.isArray(list))
@@ -608,7 +611,15 @@ const Lisa = (new (function() {
   }
 
   /**
-   * Learns a list of integer values
+   * Learn a list of boolean values
+   * @param {string} cell The memory's cell
+   * @param {Array.<boolean>} list List of booleans
+   * @returns {void}
+   */
+  this.learnsBoolList = (cell, list) => this.learnsList(cell, list, 'boolean');
+
+  /**
+   * Learn a list of integer values
    * @param {string} cell The memory's cell
    * @param {Array.<number>} list List of integers
    * @returns {void}
@@ -616,7 +627,7 @@ const Lisa = (new (function() {
   this.learnsIntList = (cell, list) => this.learnsList(cell, list, 'integer');
 
   /**
-   * Learns a list of floating numbers
+   * Learn a list of floating numbers
    * @param {string} cell The memory's cell
    * @param {Array.<number>} list List of floating numbers
    * @returns {void}
@@ -624,7 +635,7 @@ const Lisa = (new (function() {
   this.learnsFloatList = (cell, list) => this.learnsList(cell, list, 'floating');
 
   /**
-   * Learns a list of string values
+   * Learn a list of string values
    * @param {string} cell The memory's cell
    * @param {Array.<string>} list List of strings
    * @returns {void}
