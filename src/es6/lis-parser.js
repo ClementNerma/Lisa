@@ -147,6 +147,19 @@ const LisaInterface = {
         // Throw an error
         error('Wrong indentation, expecting no tab');
 
+      // Test the line
+
+      // -> If it's a 'ELSE' block...
+      // NOTE: This condition is the first of the chain because it's the faster
+      //       to test
+      if (line === 'else') {
+        // Write it
+        //ast.push([ 'else' ]);
+        program += 'else{';
+        // Expect for a new indentation
+        indented ++;
+      }
+
       // -> If it's a boolean condition...
       else if (match = line.match(/^if( +NOT *|) +([a-zA-Z_][a-zA-Z0-9_]*)$/)) {
         // Write it
