@@ -183,6 +183,18 @@ const LisaInterface = {
         indented ++;
       }
 
+      // -> If it's a Lisa's message to display...
+      else if (match = line.match(/^say +"(.*)"$/))
+        // Write it
+        //ast.push([ 'say', match[1] ]);
+        program += 'Lisa.says("' +
+            // Caught part
+            match[1].replace(/%_(\d|[1-9]\d*)%/g, '"+_a.caught[$1]+"')
+            // Standardly-formatted part
+                    .replace(/%\^(\d|[1-9]\d*)%/g, '"+_a.formatted[$1]+"')
+          // Finish the function call
+          + '");';
+
       // Else...
       else
         // That's a syntax error -> throw an error
