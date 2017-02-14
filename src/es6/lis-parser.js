@@ -188,7 +188,7 @@ const LisaInterface = {
       }
 
       // -> If it's a boolean condition...
-      else if (match = line.match(/^if( +NOT *|) +([a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+)$/)) {
+      else if (match = line.match(/^if( +NOT *|) +([a-z][a-z0-9_]*|_\d+|\^\d+)$/i)) {
         // Write it
         //ast.push([ 'if', match[1] ? true : false, 'true', match[2] ]);
         program += `if(${match[1]?'!':''}${formatVar(match[2])}){`;
@@ -197,7 +197,7 @@ const LisaInterface = {
       }
 
       // -> If it's an existance condition...
-      else if (match = line.match(/^if( +NOT *|) +knows +([a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+)$/)) {
+      else if (match = line.match(/^if( +NOT *|) +knows +([a-z][a-z0-9_]*|_\d+|\^\d+)$/i)) {
         // Write it
         //ast.push([ 'if', match[1] ? true : false, 'know', match[2] ]);
         program += `if(${match[1]?'!':''}Lisa.knows("${match[2]}")){`;
@@ -206,7 +206,7 @@ const LisaInterface = {
       }
 
       // -> Test if a cell is a list
-      else if (match = line.match(/^if( +NOT *|) +(islist|is_list|list) +([a-zA-Z[a-zA-Z0-9_]*)$/)) {
+      else if (match = line.match(/^if( +NOT *|) +(islist|is_list|list) +([a-z[a-z0-9_]*)$/i)) {
         // Write it
         //ast.push([ 'if', match[1] ? true : false, 'islist', match[3] ])
         program += `if(${match[1]?'!':''}Lisa.isList("${match[3]}")){`;
@@ -215,7 +215,7 @@ const LisaInterface = {
       }
 
       // -> If it's a mathematical condition...
-      else if (match = line.match(/^if +([a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+) *(<=|>=|<|>) *(\d+[.]?|\d*\.\d+)$/)) {
+      else if (match = line.match(/^if +([a-z][a-z0-9_]*|_\d+|\^\d+) *(<=|>=|<|>) *(\d+[.]?|\d*\.\d+)$/i)) {
         // Write it
         //ast.push([ 'if', match[2], match[1], match[3] ]);
         program += `if(Lisa.thinksTo("${match[1]}")${match[2]}${match[3]}){`;
@@ -224,7 +224,7 @@ const LisaInterface = {
       }
 
       // -> If it's a comparative condition...
-      else if (match = line.match(/^if +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+) *(=|==|\!|\!=|\!==|is not|isnt|is) *("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+)$/)) {
+      else if (match = line.match(/^if +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-z][a-z0-9_]*|_\d+|\^\d+) *(=|==|\!|\!=|\!==|is not|isnt|is) *("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+)$/i)) {
         // Write it
         //ast.push([ 'if', this.comparators[match[2]] || match[2], match[1], match[3] ]);
         program += `if(${formatVar(match[1])}${this.comparators[match[2]]}${formatVar(match[3])}){`;
@@ -245,7 +245,7 @@ const LisaInterface = {
           + '");';
 
       // -> If it's a return instruction...
-      else if (match = line.match(/^(end|return|die|output) +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+)$/))
+      else if (match = line.match(/^(end|return|die|output) +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-z][a-z0-9_]*|_\d+|\^\d+)$/i))
         // Write it
         //ast.push([ 'return', match[2] ]);
         program += 'return ' + formatVar(match[2]) + ';';
@@ -254,7 +254,7 @@ const LisaInterface = {
       // NOTE: In the store's target the '_' symbol is not allowed at the
       // beginning of the target's name, because it's reserved to the function's
       // arguments, which cannot be the store's target
-      else if (match = line.match(/^(store|set|learn|rem|remember|mem|memorize|save)[s]? +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+) *=> *([a-zA-Z][a-zA-Z0-9_]*)$/))
+      else if (match = line.match(/^(store|set|learn|rem|remember|mem|memorize|save)[s]? +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-z][a-z0-9_]*|_\d+|\^\d+) *=> *([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'store', match[1], match[2] ]),
         program += `Lisa.learns("${match[3]}",${formatVar(match[2])});`;
@@ -270,19 +270,19 @@ const LisaInterface = {
       }
 
       // -> If it's an unstore instruction...
-      else if (match = line.match(/^(unstore|unset|unlearn|unremember|unmemorize|unsave|forget)[s]? +([a-zA-Z][a-zA-Z0-9_]*)$/))
+      else if (match = line.match(/^(unstore|unset|unlearn|unremember|unmemorize|unsave|forget)[s]? +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'forget', match[2] ])
         program += `Lisa.forgets("${match[2]}");`;
 
       // -> List creation
-      else if (match = line.match(/^(makelist|createlist|setlist) +(bool|boolean|int|integer|float|floating|str|string) +([a-zA-Z][a-zA-Z0-9_]*)$/))
+      else if (match = line.match(/^(makelist|createlist|setlist) +(bool|boolean|int|integer|float|floating|str|string) +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'makelist', match[2], match[3] ]);
         program += `Lisa.learnsList("${match[3]}",[],"${match[2]}");`;
 
       // -> Push a value into a list
-      else if (match = line.match(/^(pushlist|push|append|add) +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+) +in +([a-zA-Z][a-zA-Z0-9_]*)$/))
+      else if (match = line.match(/^(pushlist|push|append|add) +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-z][a-z0-9_]*|_\d+|\^\d+) +in +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'push', match[3], match[2] ]);
         program += `Lisa.learnsListValue("${match[3]}",${formatVar(match[2])});`;
