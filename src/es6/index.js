@@ -536,9 +536,9 @@ const Lisa = (new (function() {
     memory[cell] = value;
 
     // If the related event has a handler...
-    if (eventsHandler['remembered'])
+    if (eventsHandler['learnt'])
       // Trigger its callback
-      eventsHandler['remembered'](cell, value);
+      eventsHandler['learnt'](cell, value);
   };
 
   /**
@@ -602,9 +602,9 @@ const Lisa = (new (function() {
     memory['$'][cell] = type;
 
     // If the related event has a handler...
-    if (eventsHandler['remembered'])
+    if (eventsHandler['learnt'])
       // Trigger its callback
-      eventsHandler['remembered'](cell, list.slice(0));
+      eventsHandler['learnt'](cell, list.slice(0));
   }
 
   /**
@@ -666,9 +666,9 @@ const Lisa = (new (function() {
     memory[cell].push(value);
 
     // If the related event has a handler...
-    if (eventsHandler['remembered'])
+    if (eventsHandler['learnt'])
       // Trigger its callback
-      eventsHandler['remembered'](cell, value, memory[cell].length - 1);
+      eventsHandler['learnt'](cell, value, memory[cell].length - 1);
   };
 
   /**
