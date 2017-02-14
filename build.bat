@@ -45,6 +45,7 @@ type src\es6\index.js >> build\lisa.fusion.js
 type src\es6\lzstring.js >> build\lisa.fusion.js
 type src\es6\discuss.js >> build\lisa.fusion.js
 type src\es6\localdata.js >> build\lisa.fusion.js
+type src\es6\lis-parser.js >> build\lisa.fusion.js
 
 :: Babelify the ES6 bundle to make an ES5 one
 :: That extends the game's compatibility with older browsers, with no ES6 support
