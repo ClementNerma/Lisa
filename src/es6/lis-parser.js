@@ -165,6 +165,15 @@ const LisaInterface = {
         indented ++;
       }
 
+      // -> If it's a mathematical condition...
+      else if (match = line.match(/^if +([a-zA-Z_][a-zA-Z0-9_]*) *(<=|>=|<|>) *(\d+[.]?|\d*\.\d+)$/)) {
+        // Write it
+        //ast.push([ 'if', match[2], match[1], match[3] ]);
+        program += `if(Lisa.thinksTo("${match[1]}")${match[2]}${match[3]}){`;
+        // Expect for a new indentation
+        indented ++;
+      }
+
       // Else...
       else
         // That's a syntax error -> throw an error
