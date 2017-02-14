@@ -216,6 +216,8 @@ const Lisa = (new (function() {
     // Strike
       .replace(/~(.*?)~/g, '<del>$1</del>')
     // Variables
+    // NOTE: Here, variables can't start by the '_' symbol because that's a
+    // reserved notation which is used by the LIS programs.
       .replace(/%([a-zA-Z][a-zA-Z0-9_]*)%/g, (match, variable) => {
         if (Lisa.knows(variable))
           return Lisa.thinksTo(variable)
@@ -381,7 +383,6 @@ const Lisa = (new (function() {
         // because in this last case the 'arguments' variable cannot be
         // accessed (that may be due to the fact this file is babelified)
         callback = new Function(['requested'], '(' + (function(store) {
-          console.log(store);
           // For each variable in 'store'...
           for (let variable of Reflect.ownKeys(store))
             // Store its value in the memory
@@ -395,7 +396,6 @@ const Lisa = (new (function() {
           // Run the original callback and return its result as the Lisa's
           // answer
         }).toString() + ')(' + JSON.stringify(store) + ');return (' + original.toString() + ')(requested);');
-        console.log(callback);
       }
     }
     // Else, that's not a valid callback
@@ -667,20 +667,23 @@ const Lisa = (new (function() {
           output = html.innerHTML;
           // Consider the message as a HTML content instead of a string
           html = true;
-        // Else, if that's not a string that's not a valid content
-        } else if (typeof output !== 'string')
+        // Else, if that's not a string or the FALSE value that's not a valid
+        // content
+      } else if (typeof output !== 'string' && output !== false)
           // Set the default result
           output = 'Sorry, I encountered a problem. Please try again.';
 
-        // If asked for in the function's arguments...
-        if (display)
+        // If asked for in the function's arguments, and if the callback didn't
+        // refuse to output a message...
+        if (display && output !== false)
           // Display the answer as a Lisa's message
           // If the answer is an HTML message, indicates to the function to
           // display it as an HTML content
           this.says(output, html);
 
-        // If allowed to...
-        if (rememberMessages)
+        // If allowed to, and if the callback didn't refuse to output a message
+        // ...
+        if (rememberMessages && output !== false)
           // Remember this request
           // NOTE: Only a few fields of the 'prepare' object are remembered,
           // because all the others can be found from these ones.
@@ -708,7 +711,7 @@ const Lisa = (new (function() {
         // If the related event has a handler...
         if (eventsHandler['did'])
           // Trigger its callback
-          eventsHandler['did'](requests.slice(-1)[0] /* Date.now() */, JSON.parse(JSON.stringify(prepare)));
+          eventsHandler['did'](requests.slice(-1)[0] /* Date.now() */, JSON.parse(JSON.stringify(prepare)), output);
 
         // Return the result
         return output;
