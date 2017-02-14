@@ -278,8 +278,14 @@ const LisaInterface = {
       // -> List creation
       else if (match = line.match(/^(makelist|createlist|setlist) +(bool|boolean|int|integer|float|floating|str|string) +([a-zA-Z][a-zA-Z0-9_]*)$/))
         // Write it
-        //ast.push([ 'makelist', match[2], match[3] ])
+        //ast.push([ 'makelist', match[2], match[3] ]);
         program += `Lisa.learnsList("${match[3]}",[],"${match[2]}");`;
+
+      // -> Push a value into a list
+      else if (match = line.match(/^(pushlist|push|append|add) +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+) +in +([a-zA-Z][a-zA-Z0-9_]*)$/))
+        // Write it
+        //ast.push([ 'push', match[3], match[2] ]);
+        program += `Lisa.learnsListValue("${match[3]}",${formatVar(match[2])});`;
 
       // Else...
       else
