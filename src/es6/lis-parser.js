@@ -336,7 +336,7 @@ const LisaInterface = {
     // If the request refers to the 'presets' protocol...
     // NOTE: This regex make the '.lis' file extension optionnal.
     // NOTE: Also, it forbids the '..' path, as much as the '/<...>' path
-    if (match = url.match(/^presets?:\/\/\/?((?:[a-zA-Z_0-9][\/\\]?)+)(\.lis|)$/))
+    if (match = url.match(/^presets?:\/\/\/?((?:[a-zA-Z_0-9][\/\\]?)+)(\.lis|)$/i))
       // Set the URL to the Lisa's 'presets' path
       url = location.href.split('/').slice(0, -1).join('/') + '/presets/' + match[1].split('\\').join('/') + '.lis';
 
