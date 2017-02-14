@@ -749,6 +749,13 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Check if a cell is a list or not
+   * @param {string} cell The memory's cell
+   * @returns {boolean} TRUE if the cell is a list, FALSE else or if the cell is not found
+   */
+  this.isList = cell => memory['$'].hasOwnProperty(cell);
+
+  /**
    * Get a value from a cell in the memory
    * @param {string} cell The cell to get
    * @returns {string|number|boolean|void} The cell's value (undefined if the cell is not found)
