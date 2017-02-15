@@ -171,7 +171,10 @@ Lisa.Script = {
     let lines = source.split(/\r\n|\r|\n/g);
 
     // The JavaScript code
-    let program = 'var stack=null;';
+    let program = '';
+
+    // The program's variables
+    let vars = [ 'stack' ];
 
     // The expected line's indentation
     let indented = 0;
@@ -252,6 +255,20 @@ Lisa.Script = {
         program += 'else{';
         // Expect for a new indentation
         indented ++;
+      }
+
+      // -> Variable assignment
+      // NOTE: This condition is placed as one of the first of the chain because
+      // it matches a very commonly used syntax and because it's faster to test
+      else if (match = line.match(/^([a-z][a-z0-9_]*) *= *(.*)$/i)) {
+        // Write it
+        //ast.push([ 'assign', match[1], match[2] ]);
+        program += `${match[1]}=${transpile(match[2])};`;
+
+        // If this variable is not defined in the function...
+        if (!vars.includes(match[1]))
+          // List it as a variable to declare
+          vars.push(match[1]);
       }
 
       // -> If it's a boolean condition...
@@ -390,7 +407,7 @@ Lisa.Script = {
     closeIndent();
 
     // Return the built code
-    return program;
+    return `var ${vars.join(',')};${program}`;
   },
 
   /**
