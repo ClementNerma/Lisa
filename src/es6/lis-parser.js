@@ -57,8 +57,12 @@ const LisaInterface = {
      * @returns {string} Compiled JavaScript code
      */
     function formatVar(variable) {
+      // If that's the 'stack' variable...
+      if (variable === 'stack')
+        // Return it as it is
+        return 'stack';
       // If that's a caught argument...
-      if (variable.startsWith('_'))
+      else if (variable.startsWith('_'))
         return '_a.caught[' + variable.substr(1) + ']';
       // Else, if that's a standardly-formatted argument...
       else if (variable.startsWith('^'))
@@ -104,7 +108,7 @@ const LisaInterface = {
     let lines = source.split(/\r\n|\r|\n/g);
 
     // The JavaScript code
-    let program = '';
+    let program = 'var stack=null;';
 
     // The expected line's indentation
     let indented = 0;
@@ -262,7 +266,7 @@ const LisaInterface = {
       // -> If it's a new hanlder...
       else if (match = line.match(/^"(.*)" *=>$/)) {
         // Write it
-        program += `Lisa.understands("${match[1]}",function(){var _a=arguments[0];`;
+        program += `Lisa.understands("${match[1]}",function(){var _a=arguments[0],stack;`;
         // Mark this indentation as closing a handler
         closing.push(indented);
         // Expect for a new indentation
