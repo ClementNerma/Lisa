@@ -18,9 +18,8 @@ function getXMLHttpRequest() {
 /**
  * A suite of tools built around the LIS features
  * @type {Object}
- * @constant
  */
-const LisaInterface = {
+Lisa.Script = {
   /**
    * Equivalent in JavaScript code for LIS comparators
    * @type {Object.<string, string>}
@@ -80,7 +79,7 @@ const LisaInterface = {
      * @param {string} str The content to transpile
      * @returns {string} Compiled JavaScript code
      */
-    function transpile(str) {
+    const transpile = str => {
       // A quote is put at the beginning and the end of the string to transpile,
       // so the regex put below can capture originally unquoted contents to
       // transpile them!
@@ -103,9 +102,9 @@ const LisaInterface = {
             // behaviors. In all cases, the 'that' alias is used instead to
             // prevent the keyword to be 'undefined' and throw a fatal
             // JavaScript error inside this block of code.
-            if (that.functions.hasOwnProperty(call))
+            if (this.functions.hasOwnProperty(call))
               // Return it with an opening parenthesis for the call
-              return that.functions[call] + '(';
+              return this.functions[call] + '(';
             // Else...
             else
               // Throw an error
@@ -454,6 +453,3 @@ const LisaInterface = {
     xhr.send(null);
   }
 };
-
-// A temporary workaround until the next commit
-const that = LisaInterface;
