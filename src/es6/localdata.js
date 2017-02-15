@@ -228,9 +228,21 @@ if (data) {
 Lisa.when('message', saveState);
 // When Lisa answered to a request
 Lisa.when('did', saveState);
-// When Lisa learnt something new (@.learns())
-Lisa.when('learnt', saveState);
-// When Lisa forgot something (@.forgets())
-Lisa.when('forgot', saveState);
 // When Lisa understood a new request (@.understands())
 Lisa.when('understood', saveState);
+
+// NOTE: In a previous version, a save of the Lisa's state was performed
+// after she learnt or forgot something. But, that made Lisa saving its state
+// even while scripts where running ; and because that uses synchronous methods
+// the performances were terribly down.
+// The removing of these two handlers permitted to increase performances, in
+// this simple test :
+//
+// var a = performance.now();
+// for (var i = 0; i < 10000; i++)
+//  Lisa.learns('something', 'strange');
+// performance.now() - a;
+//
+// On my low-end computer it takes more than 2000 miliseconds to run in that
+// previous version, after the events' handlers removing it takes only about
+// 4 ms to run. See the improvement?
