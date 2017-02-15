@@ -287,6 +287,12 @@ const LisaInterface = {
         //ast.push([ 'push', match[3], match[2] ]);
         program += `Lisa.learnsListValue("${match[3]}",${formatVar(match[2])});`;
 
+      // -> Sort a list with ascending order
+      else if (match = line.match(/^(sorts?a?|sorts?_?asc|sorts?_?list|sorts?_?list_?asc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
+        // Write
+        //ast.push([ 'sortasc', match[2] ])
+        program += `Lisa.sortsList("${match[2]}",true);`;
+
       // Else...
       else
         // That's a syntax error -> throw an error
