@@ -37,6 +37,12 @@ const LisaInterface = {
   },
 
   /**
+   * Equivalent in JavaScript code for LIS functions
+   * @type {Object.<string, string>}
+   */
+  functions: {},
+
+  /**
    * Make a JavaScript code from a LIS program
    * @param {string} source The LIS program
    * @returns {string} The built JavaScript code
@@ -80,7 +86,34 @@ const LisaInterface = {
       // transpile them!
       // Else, that regex would capture quoted strings, which are the contents
       // that doesn't have to be transpiled (strings are immutable contents).
-      return str
+      return ('"' + str + '"')
+        // Get the originally unquoted parts of the string to transpile
+        .replace(/"(.*?)"/g, match =>
+          // In this expression, replace all function calls by their JavaScript
+          // equivalent.
+          // NOTE: The 'match' variable contains the quotes at the beginning
+          // and the end of the part, because they need to be saved. Else, the
+          // content will be considered as a originally quoted string for the
+          // next regex tests and will be confused with the really originally
+          // quoted strings (complex, right?)
+          match.replace(/([a-z]+) *\(/i, (m, call) => {
+            // If this function is known...
+            // NOTE: Here, the 'this' keyword wasn't working. This may be due
+            // to the 'babel' usage, but it can also be due to JavaScript's
+            // behaviors. In all cases, the 'that' alias is used instead to
+            // prevent the keyword to be 'undefined' and throw a fatal
+            // JavaScript error inside this block of code.
+            if (that.functions.hasOwnProperty(call))
+              // Return it with an opening parenthesis for the call
+              return that.functions[call] + '(';
+            // Else...
+            else
+              // Throw an error
+              error(`Unknown function "${call}"`);
+          })
+        )
+        // Remove the first and last quotes in the string
+        .slice(1, -1)
         // Replace all variables (all [a-z\^_0-9]+ content which is not followed
         // by potential space(s) and an opening parenthesis, else that's a
         // function call ; or by a point, else that could be a transpiled
@@ -421,3 +454,6 @@ const LisaInterface = {
     xhr.send(null);
   }
 };
+
+// A temporary workaround until the next commit
+const that = LisaInterface;
