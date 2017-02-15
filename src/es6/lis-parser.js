@@ -52,27 +52,58 @@ const LisaInterface = {
     }
 
     /**
-     * Format a variable's call in JavaScript call
-     * @param {string} variable The called variable
+     * Transpile a LIS variable call
+     * NOTE: THis function does NOT check the expression's syntax ; functions can be opened without be closed
+     * @param {string} variable The variable to transpile into JavaScript call
      * @returns {string} Compiled JavaScript code
      */
-    function formatVar(variable) {
-      // If that's the 'stack' variable...
-      if (variable === 'stack')
-        // Return it as it is
-        return 'stack';
+    function transpileVar(variable) {
       // If that's a caught argument...
-      else if (variable.startsWith('_'))
+      if (variable.startsWith('_'))
         return '_a.caught[' + variable.substr(1) + ']';
       // Else, if that's a standardly-formatted argument...
       else if (variable.startsWith('^'))
         return '_a.formatted[' + variable.substr(1) + ']';
-      // Else, if that's a variable...
-      else if (variable.match(/^([a-zA-Z][a-zA-Z0-9_]*)$/))
-        return 'Lisa.thinksTo("' + variable + '")';
-      // Else, that's a plain content
+      // Else, that's a variable...
       else
-        return variable;
+        return 'Lisa.thinksTo("' + variable + '")';
+    }
+
+    /**
+     * Transpile a LIS expression
+     * @param {string} str The content to transpile
+     * @returns {string} Compiled JavaScript code
+     */
+    function transpile(str) {
+      // A quote is put at the beginning and the end of the string to transpile,
+      // so the regex put below can capture originally unquoted contents to
+      // transpile them!
+      // Else, that regex would capture quoted strings, which are the contents
+      // that doesn't have to be transpiled (strings are immutable contents).
+      return str
+        // Replace all variables (all [a-z\^_0-9]+ content which is not followed
+        // by potential space(s) and an opening parenthesis, else that's a
+        // function call ; or by a point, else that could be a transpiled
+        // function call like Math.random())
+        .replace(/([^a-z0-9\^_]|^)([a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))(?! *[\(\.a-z])/ig,
+          (m, before, variable) =>
+            // Transpile the variable call
+            before + transpileVar(variable)
+        )
+        // Now, replace some things in the really quoted strings
+        // The .slice() call above inversed all quoted strings with not-quoted
+        // strings and not-quotes strings with quoted strings.
+        .replace(/"(.*?)"/g, match =>
+          // Match all variable calls in the captured quoted string and
+          // transpile them
+          match.replace(/%([a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))%/g, (match, variable) =>
+              `"+${transpileVar(variable)}+"`
+          )
+        )
+        // There could be some parts like ""+Lisa.thinksTo("variable")+"", so
+        // it's useful to avoid them to make the JavaScript code more readable
+        // and smaller.
+        .replace(/""\+/g, '').replace(/\+""/g, '');
     }
 
     /**
@@ -195,7 +226,7 @@ const LisaInterface = {
       else if (match = line.match(/^if( +NOT *|) +([a-z][a-z0-9_]*|_\d+|\^\d+)$/i)) {
         // Write it
         //ast.push([ 'if', match[1] ? true : false, 'true', match[2] ]);
-        program += `if(${match[1]?'!':''}${formatVar(match[2])}){`;
+        program += `if(${match[1]?'!':''}${transpile(match[2])}){`;
         // Expect for a new indentation
         indented ++;
       }
@@ -228,10 +259,10 @@ const LisaInterface = {
       }
 
       // -> If it's a comparative condition...
-      else if (match = line.match(/^if +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-z][a-z0-9_]*|_\d+|\^\d+) *(=|==|\!|\!=|\!==|is not|isnt|is) *("(?:.*)"|\d+[.]?|\d*\.\d+|[a-zA-Z][a-zA-Z0-9_]*|_\d+|\^\d+)$/i)) {
+      else if (match = line.match(/^if +(.*?) *(=|==|\!|\!=|\!==|is not|isnt|is) *(.*?)$/i)) {
         // Write it
         //ast.push([ 'if', this.comparators[match[2]] || match[2], match[1], match[3] ]);
-        program += `if(${formatVar(match[1])}${this.comparators[match[2]]}${formatVar(match[3])}){`;
+        program += `if(${transpile(match[1])}${this.comparators[match[2]]}${transpile(match[3])}){`;
         // Expect for a new indentation
         indented ++;
       }
@@ -249,19 +280,19 @@ const LisaInterface = {
           + '");';
 
       // -> If it's a return instruction...
-      else if (match = line.match(/^(end|return|die|output) +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-z][a-z0-9_]*|_\d+|\^\d+)$/i))
+      else if (match = line.match(/^(end|return|die|output) +(.*?)$/i))
         // Write it
         //ast.push([ 'return', match[2] ]);
-        program += 'return ' + formatVar(match[2]) + ';';
+        program += 'return ' + transpile(match[2]) + ';';
 
       // -> If it's a store instruction...
       // NOTE: In the store's target the '_' symbol is not allowed at the
       // beginning of the target's name, because it's reserved to the function's
       // arguments, which cannot be the store's target
-      else if (match = line.match(/^(store|set|learn|rem|remember|mem|memorize|save)[s]? +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-z][a-z0-9_]*|_\d+|\^\d+) *=> *([a-z][a-z0-9_]*)$/i))
+      else if (match = line.match(/^(store|set|learn|rem|remember|mem|memorize|save)[s]? +(.*?) *=> *([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'store', match[1], match[2] ]),
-        program += `Lisa.learns("${match[3]}",${formatVar(match[2])});`;
+        program += `Lisa.learns("${match[3]}",${transpile(match[2])});`;
 
       // -> If it's a new hanlder...
       else if (match = line.match(/^"(.*)" *=>$/)) {
@@ -286,10 +317,10 @@ const LisaInterface = {
         program += `Lisa.learnsList("${match[3]}",[],"${match[2]}");`;
 
       // -> Push a value into a list
-      else if (match = line.match(/^(pushlist|push|append|add) +("(?:.*)"|\d+[.]?|\d*\.\d+|[a-z][a-z0-9_]*|_\d+|\^\d+) +in +([a-z][a-z0-9_]*)$/i))
+      else if (match = line.match(/^(pushlist|push|append|add) +(.*?) +in +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'push', match[3], match[2] ]);
-        program += `Lisa.learnsListValue("${match[3]}",${formatVar(match[2])});`;
+        program += `Lisa.learnsListValue("${match[3]}",${transpile(match[2])});`;
 
       // -> Sort a list with ascending order
       else if (match = line.match(/^(sorts?_?a?|sorts?_?asc|sorts?_?list|sorts?_?list_?asc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
