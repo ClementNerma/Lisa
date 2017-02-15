@@ -743,6 +743,12 @@ const Lisa = (new (function() {
       // Reverse the array
       sorted = sorted.reverse();
 
+    // If the new value was assigned to the list and if a handler is present
+    // for the related event...
+    if (assign && eventsHandler['learnt'])
+      // Trigger its callback
+      eventsHandler['learnt'](cell, list.slice(0));
+
     // If the 'asc' parameter is turned on...
     return assign
       // There's no need to assign the new array to memory[cell] because the
@@ -794,6 +800,12 @@ const Lisa = (new (function() {
       list[randomIndex] = temporaryValue;
     }
 
+    // If the new value was assigned to the list and if a handler is present
+    // for the related event...
+    if (assign && eventsHandler['learnt'])
+      // Trigger its callback
+      eventsHandler['learnt'](cell, list.slice(0));
+
     // If the 'assign' parameter is turned on...
     return assign
       // There's no need to assign the new array to memory[cell] because the
@@ -821,6 +833,12 @@ const Lisa = (new (function() {
     // value, because the sort will override the 'list' array
     // Then, reverse the got array
     let list = (assign ? memory[cell] : memory[cell].slice(0)).reverse();
+
+    // If the new value was assigned to the list and if a handler is present
+    // for the related event...
+    if (assign && eventsHandler['learnt'])
+      // Trigger its callback
+      eventsHandler['learnt'](cell, list.slice(0));
 
     // If the 'assign' parameter is turned on...
     return assign
