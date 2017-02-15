@@ -361,19 +361,19 @@ Lisa.Script = {
         program += `Lisa.sortsList("${match[2]}",true);`;
 
       // -> Sort a list with descending order
-      else if (match = line.match(/^(sorts?|sorts?_?d?|sorts?_?desc|sorts?_?list_?d|sorts?_?list_?desc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
+      else if (match = line.match(/^(sorts?|sorts?_?d?|sorts?_?desc|sorts?_?list_?d|sorts?_?list_?desc) +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'sortdesc', match[2] ])
         program += `Lisa.sortsList("${match[2]}",true,false);`;
 
       // -> Shuffle a list
-      else if (match = line.match(/^(shuffles?|shuffles?_?list|rand_?list|randomize_?list|randomize) +([a-zA-Z][a-zA-Z0-9_]*)$/))
+      else if (match = line.match(/^(shuffles?|shuffles?_?list|rand_?list|randomize_?list|randomize) +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'shuffle', match[2] ]);
         program += `Lisa.shufflesList("${match[2]}",true);`;
 
       // -> Reverse a list
-      else if (match = line.match(/^(reverses?|reverses?_?list) +([a-zA-Z][a-zA-Z0-9_]*)$/))
+      else if (match = line.match(/^(reverses?|reverses?_?list) +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'reverse', match[2] ]);
         program += `Lisa.reversesList("${match[2]},true);`
