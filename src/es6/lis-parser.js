@@ -289,21 +289,27 @@ const LisaInterface = {
 
       // -> Sort a list with ascending order
       else if (match = line.match(/^(sorts?_?a?|sorts?_?asc|sorts?_?list|sorts?_?list_?asc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
-        // Write
+        // Write it
         //ast.push([ 'sortasc', match[2] ])
         program += `Lisa.sortsList("${match[2]}",true);`;
 
       // -> Sort a list with descending order
       else if (match = line.match(/^(sorts?|sorts?_?d?|sorts?_?desc|sorts?_?list_?d|sorts?_?list_?desc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
-        // Write
+        // Write it
         //ast.push([ 'sortdesc', match[2] ])
         program += `Lisa.sortsList("${match[2]}",true,false);`;
 
       // -> Shuffle a list
       else if (match = line.match(/^(shuffles?|shuffles?_?list|rand_?list|randomize_?list|randomize) +([a-zA-Z][a-zA-Z0-9_]*)$/))
-        // Write
-        // ast.push([ 'shuffle', match[2] ]);
+        // Write it
+        //ast.push([ 'shuffle', match[2] ]);
         program += `Lisa.shufflesList("${match[2]}",true);`;
+
+      // -> Reverse a list
+      else if (match = line.match(/^(reverses?|reverses?_?list) +([a-zA-Z][a-zA-Z0-9_]*)$/))
+        // Write it
+        //ast.push([ 'reverse', match[2] ]);
+        program += `Lisa.reversesList("${match[2]},true);`
 
       // Else...
       else
