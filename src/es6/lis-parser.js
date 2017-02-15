@@ -407,7 +407,11 @@ Lisa.Script = {
     closeIndent();
 
     // Return the built code
-    return `var ${vars.join(',')};${program}`;
+    // NOTE: The built code is contained into a closure. That permits to avoid
+    // polution of the global environment with the program's variables, which
+    // stay accessible from the program's inside code. Also, closures are
+    // usually faster than code running into the global scope.
+    return `(function(){var ${vars.join(',')};${program}}();`;
   },
 
   /**
