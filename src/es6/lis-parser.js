@@ -288,10 +288,16 @@ const LisaInterface = {
         program += `Lisa.learnsListValue("${match[3]}",${formatVar(match[2])});`;
 
       // -> Sort a list with ascending order
-      else if (match = line.match(/^(sorts?a?|sorts?_?asc|sorts?_?list|sorts?_?list_?asc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
+      else if (match = line.match(/^(sorts?_?a?|sorts?_?asc|sorts?_?list|sorts?_?list_?asc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
         // Write
         //ast.push([ 'sortasc', match[2] ])
         program += `Lisa.sortsList("${match[2]}",true);`;
+
+      // -> Sort a list with descending order
+      else if (match = line.match(/^(sorts?_?d?|sorts?_?desc|sorts?_?list_?d|sorts?_?list_?desc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
+        // Write
+        //ast.push([ 'sortasc', match[2] ])
+        program += `Lisa.sortsList("${match[2]}",true,false);`;
 
       // Else...
       else
