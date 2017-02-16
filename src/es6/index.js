@@ -235,10 +235,11 @@ const Lisa = (new (function() {
   /**
    * Make a regex from an handler
    * @param {string} handler The handler to make a regex with
-   * @param {boolean} [getCatchers] Get the list of all catchers use in the regex (from left to right, in the right order, default: false)
+   * @param {boolean} [getCatchers] Get the list of all catchers use in the regex (from left to right, in the right order). It will also return the handler's tolerant regex (default: false).
+   * @param {boolean} [tolerant] Get the tolerant regex associated to this handler (see the doc. for further informations about it, default: false)
    * @returns {RegExp|Array} The regex made from the handler and, if asked, the list of catchers use
    */
-  this.makeHandlerRegex = (handler, getCatchers = false) => {
+  this.makeHandlerRegex = (handler, getCatchers = false, tolerant = false) => {
     // Declare a variable which will contain the list of catchers used in the
     // handler
     let catchers = [];
@@ -251,6 +252,8 @@ const Lisa = (new (function() {
       .replace(/ /g, ' +')
       // === Catchers ===
       .replace(/\\\{(.*?)\\\}/g, (match, catcher) => {
+        // NOTE: The catchers below are even let in the tolerant regex.
+
         // If the catcher starts with the '?' symbol...
         // (Because it's a regex symbol it has been escaped so a backslash is
         //  added before the symbol itself)
@@ -301,15 +304,25 @@ const Lisa = (new (function() {
         }
 
         // If the catcher is '\\*'...
-        if (catcher === '\\*')
-          // Remove the '\' symbol ; this catcher was escaped because the '*'
-          // symbol is a RegExp-exclusive characters
-          catcher = '*';
+        if (catcher === '\\*') {
+          // This catcher was escaped because the '*' symbol is a
+          // RegExp-exclusive characters
+          // Mark this catcher as used
+          catchers.push('*');
+
+          // Return its RegExp equivalent
+          return RegexCatchers['*']();
+        }
 
         // If this catcher is not known...
         if (!RegexCatchers.hasOwnProperty(catcher))
           // Throw an error
           throw new Error(`[Lisa] Unknown catcher "${catcher}"`);
+
+        // If the regex in construction is the tolerant one...
+        if (tolerant)
+          // Return the tolerant catcher
+          return '([^ ]*)';
 
         // Mark this catcher as used
         // Because JavaScript regex searches from left to right, the 'catchers'
@@ -331,7 +344,7 @@ const Lisa = (new (function() {
     + '$', 'i');
 
     // Return the result
-    return (getCatchers ? [ regex, catchers ] : regex);
+    return (getCatchers ? [ regex, catchers, this.makeHandlerRegex(handler, false, true) ] : regex);
   };
 
   /**
