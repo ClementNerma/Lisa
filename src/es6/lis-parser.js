@@ -39,7 +39,36 @@ Lisa.Script = {
    * Equivalent in JavaScript code for LIS functions
    * @type {Object.<string, string>}
    */
-  functions: {},
+  functions: {
+    // Get the length of a list
+    listLength: 'Lisa.thinksToListLength',
+    // Generate a random integer between 0 and 1 (floating number)
+    random: 'Math.random',
+    // Round a number
+    round: 'Math.round',
+    // Truncate a number
+    trunc: 'Math.trunc',
+    // Get the absolute value of a number
+    abs: 'Math.abs',
+    // Sinus
+    sin: 'Math.sin',
+    // Cosinus
+    cos: 'Math.cos',
+    // Exponential
+    exp: 'Math.exp',
+    // Logarithm
+    log: 'Math.log',
+    // Power
+    pow: 'Math.pow',
+    // Square root
+    sqrt: 'Math.sqrt',
+    // Get a random integer
+    randInt: 'Lisa.Script.libRandomInteger',
+    // Make a string an integer
+    int: 'parseInt',
+    // Make a string a floating number
+    float: 'parseFloat'
+  },
 
   /**
    * Make a JavaScript code from a LIS program
@@ -497,5 +526,24 @@ Lisa.Script = {
     });
     // Launch the request
     xhr.send(null);
+  },
+
+  /**
+   * Generate a random integer between two borns (can be negative borns)
+   * @param {number} min The minimum integer. If 'max' is not given, this becomes the maximum integer and the minimum is 0.
+   * @param {number} [max] The maximum integer
+   * @returns {number} The generated number
+   */
+  libRandomInteger(min, max) {
+    // If no random maximum number was provided...
+    if (typeof max === 'undefined') {
+      // Set the 'min' the maximum number
+      max = min;
+      // Set 0 the minimum number
+      min = 0;
+    }
+
+    // Generate the random number and return it
+    return min + Math.floor(Math.random() * (max - min + 1));
   }
 };
