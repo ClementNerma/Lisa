@@ -60,6 +60,18 @@ const Lisa = (new (function() {
   const discuss = document.createElement('div');
 
   /**
+   * Available locales
+   * @type {Object.<string, Array>}
+   */
+  let locales = {};
+
+  /**
+   * The current locale
+   * @type {string}
+   */
+  let currentLocale = 'en';
+
+  /**
    * The list of all messages received by Lisa
    * NOTE: This array will only get data if the 'rememberMessages' variable is
    *       turned on.
@@ -1268,6 +1280,64 @@ const Lisa = (new (function() {
 
     // Return the error message as the request's answer
     return error;
+  };
+
+  /**
+   * Learn a locale's specificity
+   * @param {string} locale The locale to use
+   * @param {string} subject The text to search for
+   * @param {Array.<string>} replace The texts that can be used instead
+   * @returns {void}
+   */
+  this.learnsLocaleText = (locale, subject, replace) => {
+    // If the locale is not valid...
+    if (typeof locale !== 'string' || locale.length !== 2)
+      // Throw an error
+      throw new Error('[Lisa] Bad locale given, must be a two-characters long string');
+
+    // If the subject is not valid...
+    if (typeof subject !== 'string' || !subject)
+      // Throw an error
+      throw new Error('[Lisa] Bad locale\'s subject given, must be a not-empty string');
+
+    // If the subject has not a valid syntax...
+    if (!/^[^\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|\!]+$/.test(subject))
+      // Throw an error
+      throw new Error(`[Lisa] Locales' texts cannot contain RegExp-reserved symbols`);
+
+    // If the replacement is not valid...
+    if (!Array.isArray(replace))
+      // Throw an error
+      throw new Error('[Lisa] Bad locale\'s replacement texts given, must be an array');
+
+    // If no replacement text was given...
+    if (!replace.length)
+      // Throw an error
+      throw new Error(`[Lisa] No replacement text was provided for locale's specificity "${subject}" (locale "${locale}")`);
+
+    // For each text that can be used as replacement...
+    for (let text of replace) {
+      // If the text is not valid...
+      if (typeof text !== 'string' || !text)
+        // Throw an error
+        throw new Error(`[Lisa] Bad replacement text given for locale's specificity "${subject}" (locale "${locale}"), must be a not-empty string`);
+
+      // If the text has not a valid syntax...
+      if (!/^[^\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|\!]+$/.test(subject))
+        // Throw an error
+        throw new Error(`[Lisa] Locales' replacement texts cannot contain RegExp-reserved symbols (while registering "${subject}" for locale "${locale}")`);
+    }
+
+    // If this locale is unknown...
+    if (!locales.hasOwnProperty(locale))
+      // Initialize it
+      locales[locale] = [];
+
+    // Register this specificity, after cloning the replacement texts to prevent
+    // modifications from the outside.
+    // Also, the subject is a possible value, so it has to be registed as a
+    // replacement text.
+    locales[locale].push([ new RegExp(subject, 'g'), replace.slice(0).concat(subject) ]);
   };
 
   /**
