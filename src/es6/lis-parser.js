@@ -74,9 +74,10 @@ Lisa.Script = {
    * Make a JavaScript code from a LIS program
    * @param {string} source The LIS program
    * @param {boolean} [beautify] Display a beautified JavaScript code (default: false)
+   * @param {boolean} [keepComments] Keep all comments from the source code (default: false)
    * @returns {string} The built JavaScript code
    */
-  compile(source, beautify) {
+  compile(source, beautify, keepComments) {
     /**
      * Throw an error
      * @param {string} text The error's text
@@ -333,8 +334,12 @@ Lisa.Script = {
       // NOTE: This condition is placed as one of the first of the chain because
       // it matches a very commonly used syntax and because it's faster to test
       else if (line.startsWith('#')) {
-        // Ignore the line
-        continue ;
+        // If the comments have to be kept..
+        if (keepComments)
+          // Keep this one
+          program += nl + `/*${line.substr(1)}*/`;
+
+        // Else, ignore the comment, it will not appear in the source code.
       }
 
       // -> Variable assignment
