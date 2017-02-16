@@ -50,10 +50,10 @@ if "%1" == "--beautify" copy lisa-es5.js lisa.min.js
 cd ..
 
 :: If asked for, remove sources
-if "%1" == "--no-source" echo [ build ] Removing sources...
-if "%1" == "--no-source" del build\lisa-es6.js
-if "%1" == "--no-source" del build\lisa-es5.js
-if "%1" == "--no-source" del build\lisa.scss
+if NOT "%1" == "--sources" echo [ build ] Removing sources...
+if NOT "%1" == "--sources" del build\lisa-es6.js
+if NOT "%1" == "--sources" del build\lisa-es5.js
+if NOT "%1" == "--sources" del build\lisa.scss
 
 :end
 :: Done
