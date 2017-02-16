@@ -129,7 +129,7 @@ body {
   width: 50%;
   left: calc(50% - 50px);
   padding-left: 15px;
-  animation: sponeFromRight 1.5s 1;
+  animation: sponeFromRight 0.75s 1;
 }
 
 // + Corner
@@ -142,7 +142,7 @@ body {
 .message-user {
   background: $bgUser;
   color: $fgUser;
-  animation: sponeFromLeft 1.5s 1;
+  animation: sponeFromLeft 0.75s 1;
 }
 
 // + Corner
