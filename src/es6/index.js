@@ -1053,16 +1053,16 @@ const Lisa = (new (function() {
         // If the result is a number...
         if (typeof output === 'number')
           // Make it a string
-          output = html.toString();
+          output = output.toString();
         // If the result is a DOM element...
         else if (output && output instanceof HTMLElement) {
           // Get its HTML content
-          output = html.innerHTML;
+          output = output.innerHTML;
           // Consider the message as a HTML content instead of a string
           html = true;
         // Else, if that's not a string or the FALSE value that's not a valid
         // content
-      } else if (typeof output !== 'string' && output !== false)
+        } else if (typeof output !== 'string' && output !== false)
           // Set the default result
           output = 'Sorry, I encountered a problem. Please try again.';
 
