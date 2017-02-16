@@ -20,6 +20,8 @@ const RegexCatchers = {
   integer: () =>  `(\\d+)`,
   // Single letter
   letter: () => `([a-zA-Z])`,
+  // Single alphanumeric character
+  alphanum: () => `([a-zA-Z0-9])`,
   // Time (hours and minutes)
   short_time: () => `((?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?:| +${Lisa.thinksTo('MINUTES_NAME')}))`,
   // Time (hours, minutes and seconds)
