@@ -1187,15 +1187,15 @@ const Lisa = (new (function() {
     // NOTE: There is often a '*' handler that handles any unhandled request,
     //       so that line is here to prevent potential problem if this handler
     //       is removed from the source code.
-    // Get the error
+    // Get the error message to use as the answer
     let error = 'I didn\'t understand your request.';
 
     // If the answer have to be displayed...
     if (display)
-      // Display it as a text answer (not as an HTML code)
-      this.says(error, true);
+      // Display it, as a text message (not an HTML code)
+      this.says(error);
 
-    // Return the error as the request's answer
+    // Return the error message as the request's answer
     return error;
   };
 
