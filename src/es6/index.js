@@ -1188,7 +1188,12 @@ const Lisa = (new (function() {
     //       so that line is here to prevent potential problem if this handler
     //       is removed from the source code.
     // Get the error message to use as the answer
-    let error = 'I didn\'t understand your request.';
+    let error = this.thinksTo('MISUNDERSTOOD_ERROR');
+
+    // If no message was got...
+    if (typeof error !== 'string')
+      // Set a default error message
+      error = 'I didn\'t understand your request.';
 
     // If the answer have to be displayed...
     if (display)
