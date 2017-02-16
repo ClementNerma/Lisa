@@ -1341,6 +1341,35 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Format a text using a locale
+   * @param {string} text The text to turn into a RegExp
+   * @param {string} locale The locale to use (default: the current one)
+   * @returns {string} A RegExp, as a string
+   */
+  this.translatesLocaleText = (text, locale = currentLocale) => {
+    // If the text is not valid...
+    if (typeof text !== 'string' || !text)
+      // Throw an error
+      throw new Error('[Lisa] Bad text provided, must be a not-empty string');
+
+    // If this locale is not known...
+    if (!locales.hasOwnProperty(locale))
+      // Throw an error
+      throw new Error('[Lisa] Unknown locale provided');
+
+    // Escape all RegExp characters from the text
+    text = text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|\!]/g, "\\$&");
+
+    // For each specificities defined for this locale...
+    for (let rep of locales[locale])
+      // Use it in the text
+      text = text.replace(rep[0], '(?:' + rep[1].join('|') + ')');
+
+    // Return the translated text
+    return text;
+  };
+
+  /**
    * Make Lisa remembering all messages and requests
    * @returns {void}
    */
