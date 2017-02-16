@@ -589,6 +589,13 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Check if a catcher has been registered (works for native catchers)
+   * @param {string} name The catcher's name
+   * @returns {boolean} TRUE if the catcher has been registered, FALSE else
+   */
+  this.hasRegistered = name => RegexCatchers.hasOwnProperty(name);
+
+  /**
    * Assign a value to a cell in the memory
    * @param {string} cell The memory's cell
    * @param {string|number|boolean} value The cell's value
