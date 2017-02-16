@@ -77,22 +77,22 @@ body {
 
 @keyframes sponeFromRight {
   0% {
-      margin-left: 50px;
+      margin-right: -50px;
       opacity: 0;
   }
   100% {
-      margin-left: 0;
+      margin-right: 0;
       opacity: 1;
   }
 }
 
 @-webkit-keyframes sponeFromRight {
   0% {
-      margin-left: 50px;
+      margin-right: -50px;
       opacity: 0;
   }
   100% {
-      margin-left: 0;
+      margin-right: 0;
       opacity: 1;
   }
 }
