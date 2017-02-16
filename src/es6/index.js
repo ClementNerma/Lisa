@@ -23,7 +23,7 @@ const RegexCatchers = {
   // Date (dd.mm dd-mm dd/mm)
   short_date: () => `((?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}))`,
   // Date (dd.mm.yyyy dd-mm-yyyy dd/mm/yyyy)
-  date: () => `((?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}) +)\\d{4})`
+  date: () => `((?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}) +)\\d{4})`,
 };
 
 /**
@@ -139,12 +139,6 @@ const Lisa = (new (function() {
       // Throw an error
       throw new Error(`[Lisa] Unknown catcher "${catcher}"`);
 
-    // For some catchers, there is nothing to change between the formatted
-    // string and the original one
-    if (['*', '?', '#', 'number', 'integer'].includes(catcher))
-      // Nothing to change for these catchers
-      return input;
-
     // Declare a variable which will contain the list of the months in year
     // This variable won't be used by all catchers but must be defined here
     // because it's not possible to declare local (let) variables in a 'switch'
@@ -195,10 +189,10 @@ const Lisa = (new (function() {
         // Else...
         return input.replace(/(\d+).*?(\d+).*?(\d+)/, ($0, $1, $2, $3) => zero($1) + '/' + zero($2) + '/' + zero($3, 4 /* 4 digits */));
 
-      // Unknown catcher ! This is a bug, all catchers should be referenced with
-      // their standard format.
+      // Here go all catchers that does not need a treatment after catching
       default:
-        throw new Error(`[Lisa] [BUG] Unreferenced catcher "${catcher}"`);
+        // Return the caught string without changing anything
+        return input;
     }
   };
 
