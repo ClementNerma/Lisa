@@ -127,7 +127,7 @@ Lisa.Script = {
           // content will be considered as a originally quoted string for the
           // next regex tests and will be confused with the really originally
           // quoted strings (complex, right?)
-          match.replace(/([a-z]+) *\(/i, (m, call) => {
+          match.replace(/([a-z]+) *\(/ig, (m, call) => {
             // If this function is known...
             // NOTE: Here, the 'this' keyword wasn't working. This may be due
             // to the 'babel' usage, but it can also be due to JavaScript's
