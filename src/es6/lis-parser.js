@@ -263,15 +263,24 @@ Lisa.Script = {
       // -> Variable assignment
       // NOTE: This condition is placed as one of the first of the chain because
       // it matches a very commonly used syntax and because it's faster to test
-      else if (match = line.match(/^([a-z][a-z0-9_]*) *= *(.*)$/i)) {
+      else if (match = line.match(/^(\$|)([a-z][a-z0-9_]*) *= *(.*)$/i)) {
         // Write it
-        //ast.push([ 'assign', match[1], match[2] ]);
-        program += `${match[1]}=${transpile(match[2])};`;
+        // If the '$' symbol was provided, the assignment is about a local
+        // variable
+        if (match[1]) {
+          //ast.push([ 'assign', match[2], match[3] ]);
+          program += `${match[2]}=${transpile(match[3])};`;
 
-        // If this variable is not defined in the function...
-        if (!vars.includes(match[1]))
-          // List it as a variable to declare
-          vars.push(match[1]);
+          // If this variable is not defined in the function...
+          if (!vars.includes(match[2]))
+            // List it as a variable to declare
+            vars.push(match[2]);
+        }
+        // Else...
+        else
+          // It's a Lisa's memory assignment
+          //ast.push[ 'store', match[2], match[3] ]);
+          program += `Lisa.learns("${match[2]}",${transpile(match[3])})`;
       }
 
       // -> If it's a boolean condition...
