@@ -495,8 +495,9 @@ const Lisa = (new (function() {
    * @param {string} author The message's author
    * @param {string} message The message's content
    * @param {string} className A CSS class to add to the message's <div> (will be prefixed by 'message-')
+   * @param {boolean} [allowHtml] Display the message as HTML content (default: false)
    */
-  this.displayMessage = (author, message, className) => {
+  this.displayMessage = (author, message, className, allowHtml = false) => {
     // Make the message a string (grant support for booleans, numbers...)
     message = message.toString();
 
@@ -505,7 +506,7 @@ const Lisa = (new (function() {
     // Set its attributes
     dom.setAttribute('class', `message message-${className}`);
     // Set the message, with the author's name
-    dom.innerHTML = `<strong>${author} : </strong>` + this.format(message);
+    dom.innerHTML = `<strong>${author} : </strong>` + (allowHtml ? message : this.format(message));
     // Append the element to the area
     discuss.appendChild(dom);
 
@@ -521,12 +522,12 @@ const Lisa = (new (function() {
     // If allowed to...
     if (rememberMessages)
       // Remember this message
-      messages.push([ Date.now(), author, message, className ]);
+      messages.push([ Date.now(), author, message, className, !!allowHtml ]);
 
     // If the related event has a handler...
     if (eventsHandler['message'])
       // Trigger its callbackhor, message, className);
-      eventsHandler['message'](Date.now(), author, message, className);
+      eventsHandler['message'](Date.now(), author, message, className, !!allowHtml);
   };
 
   /**
@@ -1019,16 +1020,18 @@ const Lisa = (new (function() {
   /**
    * Display a message from Lisa
    * @param {string} message The message's content
+   * @param {boolean} [allowHtml] Display the message as HTML content (default: false)
    * @returns {void}
    */
-  this.says = message => this.displayMessage('Lisa', message, 'lisa');
+  this.says = (message, allowHtml) => this.displayMessage('Lisa', message, 'lisa', allowHtml);
 
   /**
    * Display a message from the user
    * @param {string} message The message's content
+   * @param {boolean} [allowHtml] Display the message as HTML content (default: false)
    * @returns {void}
    */
-  this.hears = message => this.displayMessage('You', message, 'user');
+  this.hears = (message, allowHtml) => this.displayMessage('You', message, 'user', allowHtml);
 
   /**
    * Perform a request

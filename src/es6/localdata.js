@@ -78,7 +78,9 @@ function loadState(state) {
   // For each message in the history...
   for (let message of state.messages)
     // Display it
-    Lisa.displayMessage(message[1] /* Author */, message[2] /* Message */, message[3] /* Class name */);
+    // NOTE: Because messages can be displayed as HTML contents, it can
+    // introducts viruses. Be aware of what you store in the local storage!
+    Lisa.displayMessage(message[1] /* Author */, message[2] /* Message */, message[3] /* Class name */, message[4] /* As HTML */);
 
   // Turn on or off the messages history, depending on the save's parameters
   Lisa.remembersMessages = state.histories;
