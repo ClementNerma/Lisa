@@ -1508,6 +1508,7 @@ const Lisa = (new (function() {
       rememberMessages,
       messages,
       requests,
+      currentLocale,
       // Modified data
       handlers: _handlers,
       catchers: _catchers,
