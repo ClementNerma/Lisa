@@ -675,6 +675,13 @@ const Lisa = (new (function() {
     memory[cell][index] : undefined;
 
   /**
+   * Get the last value of a list
+   * @param {string} cell The memory's cell
+   * @returns {*} The list's value (undefined if the cell is not found or if it doesn't contain any value)
+   */
+  this.thinksToListLastValue = cell => memory['$'].hasOwnProperty(cell) ? memory[cell].slice(-1)[0] : undefined;
+
+  /**
    * Get the type of a list
    * @param {string} cell The memory's cell
    * @returns {string} The list's type (undefined if the cell is not found)
