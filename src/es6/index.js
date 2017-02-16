@@ -46,6 +46,13 @@ const Lisa = (new (function() {
   };
 
   /**
+   * The list of native catchers
+   * @type {Array.<string>}
+   * @constant
+   */
+  const nativeCatchers = Reflect.ownKeys(RegexCatchers);
+
+  /**
    * The DOM discussion area (DDA)
    * @type {HTMLDivElement}
    * @constant
@@ -1311,7 +1318,7 @@ const Lisa = (new (function() {
 
     // For each known handler...
     for (let handler of handlers)
-      // Copy it into the '_handlers' array, and a an array of strings
+      // Copy it into the '_handlers' array, as an array of strings
       _handlers.push([
         // Strict regex, as a string
         handler[0].toString(),
@@ -1325,9 +1332,21 @@ const Lisa = (new (function() {
         handler[4]
       ]);
 
+    // Declare a variable which will contain the catchers (as strings)
+    let _catchers = {};
+
+    // For each registered catcher...
+    for (let catcher of Reflect.ownKeys(RegexCatchers))
+      // If this catcher is not a native one...
+      // (This condition is here to avoid exporting uselessly native catchers)
+      if (!nativeCatchers.includes(catcher))
+        // Copy it into the '_catchers' array (without opening and closing
+        // parenthesis)
+        _catchers[catcher] = RegexCatchers[catcher]();
+
     // Then, stringify this data (that makes a string and prevent modifications from
     // outside)
-    return JSON.stringify({ memory, handled, handlers: _handlers, rememberMessages, messages, requests });
+    return JSON.stringify({ memory, handled, handlers: _handlers, rememberMessages, messages, requests, catchers: _catchers });
   };
 
   // Initialize some memory's variables
