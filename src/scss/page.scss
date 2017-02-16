@@ -52,17 +52,6 @@ body {
   padding-top: 0;
 }
 
-// Style all messages
-.message {
-  padding: 15px 20px;
-  border-radius: 15px 15px 15px 15px;
-  width: 50%;
-  position: relative;
-  // Put a veritcal spacing between each message
-  // (In the first message that'll do an equivalent of padding-top)
-  margin-top: 10px;
-}
-
 // Messages sponing animation
 @keyframes sponeFromLeft {
   0% {
@@ -108,6 +97,17 @@ body {
   }
 }
 
+// Style all messages
+.message {
+  padding: 15px 20px;
+  border-radius: 15px 15px 15px 15px;
+  position: relative;
+  // Put a veritcal spacing between each message
+  // (In the first message that'll do an equivalent of padding-top)
+  margin-top: 10px;
+  clear: both;
+}
+
 // Messages' corner
 .message:before {
   border-radius: 50% 50% 50% 50%;
@@ -126,7 +126,8 @@ body {
 .message-lisa {
   background: $bgLisa;
   color: $fgLisa;
-  left: calc(50% - 50px);
+  float: right;
+  align-self: flex-end;
   padding-left: 15px;
   animation: sponeFromRight 0.75s 1;
   transition-timing-function: cubic-bezier(0.4, -0.04, 1, 1);
@@ -142,6 +143,8 @@ body {
 .message-user {
   background: $bgUser;
   color: $fgUser;
+  float: left;
+  align-self: flex-start;
   animation: sponeFromLeft 0.75s 1;
   transition-timing-function: cubic-bezier(0.4, -0.04, 1, 1);
 }
