@@ -322,7 +322,7 @@ const Lisa = (new (function() {
         // If the regex in construction is the tolerant one...
         if (tolerant)
           // Return the tolerant catcher
-          return '([^ ]*)';
+          return '(.*?)';
 
         // Mark this catcher as used
         // Because JavaScript regex searches from left to right, the 'catchers'
