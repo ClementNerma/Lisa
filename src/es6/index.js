@@ -1291,7 +1291,7 @@ const Lisa = (new (function() {
    * @param {Array.<string>} texts The texts that can replace themselves mutually
    * @returns {void}
    */
-  this.learnsLocaleText = (locale, texts) => {
+  this.learnsLocaleTexts = (locale, texts) => {
     // If the locale is not valid...
     if (typeof locale !== 'string' || locale.length !== 2)
       // Throw an error
