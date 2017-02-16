@@ -26,6 +26,15 @@ function loadState(state) {
     // Throw an error
     throw new Error('[Lisa:load] Fields are missing or corrupted in the state object');
 
+  // NOTE: Because handlers may use custom catchers, catchers need to be
+  // registered first.
+  // For each catcher in the state...
+  for (let catcher of Reflect.ownKeys(state.catchers))
+    // Because native catchers are not exported by Lisa, this one cannot be
+    // a native one, so it can be safely registed as a new catcher.
+    // Register it
+    Lisa.registersCatcher(catcher, state.catchers[catcher]);
+
   // For each handler in the state...
   for (let handler of state.handlers) {
     // Get the handler's callback and extract some variables
@@ -95,7 +104,7 @@ function saveState() {
   // Get the whole Lisa's state
   let data = JSON.parse(Lisa.export());
   // Declare a variable which will contain the final data
-  let toExport = { handlers: [], memory: data.memory, messages: data.messages };
+  let toExport = { handlers: [], memory: data.memory, messages: data.messages, catchers: data.catchers };
   // For each handler understood by Lisa...
   for (let i = 0; i < data.handlers.length; i++)
     // Backup it as a data to export
