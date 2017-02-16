@@ -240,7 +240,7 @@ const Lisa = (new (function() {
     // Create a RegExp object
     let regex = new RegExp('^' + handler
       // Espace all regex characters from it
-      .replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
+      .replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|\!]/g, "\\$&")
       // Allow any space to be written multiple times
       .replace(/ /g, ' +')
       // === Catchers ===
