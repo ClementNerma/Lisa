@@ -71,6 +71,9 @@ const Lisa = (new (function() {
    */
   let currentLocale = 'en';
 
+  // Initialize the current locale
+  locales[currentLocale] = [];
+
   /**
    * The list of all messages received by Lisa
    * NOTE: This array will only get data if the 'rememberMessages' variable is
