@@ -63,8 +63,11 @@ Lisa.Script = {
      * @returns {string} Compiled JavaScript code
      */
     function transpileVar(variable) {
+      // If that's a local variable...
+      if (variable.startsWith('$'))
+        return variable.substr(1);
       // If that's a caught argument...
-      if (variable.startsWith('_'))
+      else if (variable.startsWith('_'))
         return '_a.caught[' + variable.substr(1) + ']';
       // Else, if that's a standardly-formatted argument...
       else if (variable.startsWith('^'))
@@ -117,7 +120,7 @@ Lisa.Script = {
         // by potential space(s) and an opening parenthesis, else that's a
         // function call ; or by a point, else that could be a transpiled
         // function call like Math.random())
-        .replace(/([^a-z0-9\^_]|^)([a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))(?! *[\(\.a-z])/ig,
+        .replace(/([^a-z0-9\^_\$]|^)(\$?[a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))(?! *[\(\.a-z])/ig,
           (m, before, variable) =>
             // Transpile the variable call
             before + transpileVar(variable)
@@ -323,7 +326,7 @@ Lisa.Script = {
         program += `Lisa.says(${transpile(match[1])});`;
 
       // -> If it's a return instruction...
-      else if (match = line.match(/^(end|return|die|output) +(.*?)$/i))
+      else if (match = line.match(/^(end|return|die|output) +(.*)$/i))
         // Write it
         //ast.push([ 'return', match[2] ]);
         program += 'return ' + transpile(match[2]) + ';';
