@@ -564,6 +564,31 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Register a new catcher
+   * @param {string} name The catcher's name
+   * @param {string} regex The catcher's regex
+   */
+  this.registersCatcher = (name, regex) => {
+    // If the catcher's name is not valid...
+    if (typeof name !== 'string' || !name || ({})[name] || !/^[a-z_][a-z0-9_#\*\?\!\+\-\/\\]*$/.test(name))
+      // Throw an error
+      throw new Error('[Lisa] Illegal catcher\'s name provided');
+
+    // If the catcher's regex is not valid...
+    if (typeof regex !== 'string' || !regex)
+      // Throw an error
+      throw new Error('[Lisa] Invalid catcher\'s regex provided, must be a not-empty string');
+
+    // If this catcher is already registered...
+    if (RegexCatchers.hasOwnProperty(name))
+      // Throw an error
+      throw new Error(`[Lisa] Catcher "${name}" is already registered`);
+
+    // Register the catcher
+    RegexCatchers[name] = () => regex;
+  };
+
+  /**
    * Assign a value to a cell in the memory
    * @param {string} cell The memory's cell
    * @param {string|number|boolean} value The cell's value
