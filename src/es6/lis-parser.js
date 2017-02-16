@@ -113,18 +113,18 @@ Lisa.Script = {
               // Throw an error
               error(`Unknown function "${call}"`);
           })
+          // Replace all variables (all [a-z\^_0-9]+ content which is not followed
+          // by potential space(s) and an opening parenthesis, else that's a
+          // function call ; or by a point, else that could be a transpiled
+          // function call like Math.random())
+          .replace(/([^a-z0-9\^_\$]|^)(\$?[a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))(?! *[\(\.a-z])/ig,
+            (m, before, variable) =>
+              // Transpile the variable call
+              before + transpileVar(variable)
+          )
         )
         // Remove the first and last quotes in the string
         .slice(1, -1)
-        // Replace all variables (all [a-z\^_0-9]+ content which is not followed
-        // by potential space(s) and an opening parenthesis, else that's a
-        // function call ; or by a point, else that could be a transpiled
-        // function call like Math.random())
-        .replace(/([^a-z0-9\^_\$]|^)(\$?[a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))(?! *[\(\.a-z])/ig,
-          (m, before, variable) =>
-            // Transpile the variable call
-            before + transpileVar(variable)
-        )
         // Now, replace some things in the really quoted strings
         // The .slice() call above inversed all quoted strings with not-quoted
         // strings and not-quotes strings with quoted strings.
