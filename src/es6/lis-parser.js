@@ -73,9 +73,10 @@ Lisa.Script = {
   /**
    * Make a JavaScript code from a LIS program
    * @param {string} source The LIS program
+   * @param {boolean} [beautify] Display a beautified JavaScript code (default: false)
    * @returns {string} The built JavaScript code
    */
-  compile(source) {
+  compile(source, beautify) {
     /**
      * Throw an error
      * @param {string} text The error's text
@@ -201,12 +202,16 @@ Lisa.Script = {
           // Close the handler's callback
           // If no value was returned, it will at least return the FALSE value
           // to prevent automatic message displaying.
-          program += 'return false;});'
+          // NOTE: The indentation is increased by 2 instead of 1 because the
+          // 'return' instruction is part of the function and not its closing
+          // symbol.
+          program += (beautify ? '\n' + '  '.repeat(indent + i + 2) : '') + 'return false;'
+                  +  (beautify ? '\n' + '  '.repeat(indent + i + 1) : '') + '});'
           // Remove this mark from the 'closing' array
           closing.splice(closing.indexOf(indented - i - 1), 1);
         } else
           // Close the 'if' block
-          program += '}';
+          program += (beautify ? '\n' + '  '.repeat(indent + i + 1) : '') + '}';
       }
 
       // Set the new indentation
@@ -217,6 +222,14 @@ Lisa.Script = {
     if (typeof source !== 'string')
       // Throw an error
       throw new Error('[LIS:compile] Invalid source code provided, must be a string');
+
+    // The program's new line symbols. If the code is not beautified (minified),
+    // it'll be an empty string. Else, it will contain the '\n' symbol plus the
+    // line's expected indentation.
+    // NOTE: This variable is re-generated many times
+    // The default value written below is for minified codes, because the 'nl'
+    // variable won't change in this case.
+    let nl = '';
 
     // Get all lines of the source code
     let lines = source.split(/\r\n|\r|\n/g);
@@ -283,10 +296,18 @@ Lisa.Script = {
         // Throw an error
         error('Wrong indentation, expecting no tab');
 
+      // If the code is beautified...
+      if (beautify)
+        // Re-generate the new line symbols
+        // NOTE: The indentation is increased by one because the program is
+        // wrapped in a closure, which needs a level of indentation, but the
+        // 'indented' variable starts from 0
+        nl = '\n' + '  '.repeat(indented + 1);
+
       // If the line starts by a 'ELSE' block (with something after)...
       if (match = line.match(/^else +/)) {
         // Write it
-        program += 'else '
+        program += nl + 'else ';
 
         // NOTE: This syntax doesn't expect for a new indentation because it's
         // an 'inline' else block, so there won't be any '{' or '}' symbol.
@@ -303,7 +324,7 @@ Lisa.Script = {
       if (line === 'else') {
         // Write it
         //ast.push([ 'else' ]);
-        program += 'else{';
+        program += nl + 'else{';
         // Expect for a new indentation
         indented ++;
       }
@@ -311,9 +332,10 @@ Lisa.Script = {
       // -> Comments
       // NOTE: This condition is placed as one of the first of the chain because
       // it matches a very commonly used syntax and because it's faster to test
-      else if (line.startsWith('#'))
+      else if (line.startsWith('#')) {
         // Ignore the line
         continue ;
+      }
 
       // -> Variable assignment
       // NOTE: This condition is placed as one of the first of the chain because
@@ -324,7 +346,7 @@ Lisa.Script = {
         // variable
         if (match[1]) {
           //ast.push([ 'assign', match[2], match[3] ]);
-          program += `${match[2]}=${transpile(match[3])};`;
+          program += nl + `${match[2]}=${transpile(match[3])};`;
 
           // If this variable is not defined in the function...
           if (!vars.includes(match[2]))
@@ -335,14 +357,14 @@ Lisa.Script = {
         else
           // It's a Lisa's memory assignment
           //ast.push[ 'store', match[2], match[3] ]);
-          program += `Lisa.learns("${match[2]}",${transpile(match[3])})`;
+          program += nl + `Lisa.learns("${match[2]}",${transpile(match[3])})`;
       }
 
       // -> If it's a boolean condition...
       else if (match = line.match(/^if( +NOT *|) +([a-z][a-z0-9_]*|_\d+|\^\d+)$/i)) {
         // Write it
         //ast.push([ 'if', match[1] ? true : false, 'true', match[2] ]);
-        program += `if(${match[1]?'!':''}${transpile(match[2])}){`;
+        program += nl + `if(${match[1]?'!':''}${transpile(match[2])}){`;
         // Expect for a new indentation
         indented ++;
       }
@@ -351,7 +373,7 @@ Lisa.Script = {
       else if (match = line.match(/^if( +NOT *|) +knows +([a-z][a-z0-9_]*|_\d+|\^\d+)$/i)) {
         // Write it
         //ast.push([ 'if', match[1] ? true : false, 'know', match[2] ]);
-        program += `if(${match[1]?'!':''}Lisa.knows("${match[2]}")){`;
+        program += nl + `if(${match[1]?'!':''}Lisa.knows("${match[2]}")){`;
         // Expect for a new indentation
         indented ++;
       }
@@ -360,7 +382,7 @@ Lisa.Script = {
       else if (match = line.match(/^if( +NOT *|) +(islist|is_list|list) +([a-z][a-z0-9_]*)$/i)) {
         // Write it
         //ast.push([ 'if', match[1] ? true : false, 'islist', match[3] ])
-        program += `if(${match[1]?'!':''}Lisa.isList("${match[3]}")){`;
+        program += nl + `if(${match[1]?'!':''}Lisa.isList("${match[3]}")){`;
         // Expect for a new indentatino
         indented ++;
       }
@@ -369,7 +391,7 @@ Lisa.Script = {
       else if (match = line.match(/^if +([a-z][a-z0-9_]*|_\d+|\^\d+) *(<=|>=|<|>) *(\d+[.]?|\d*\.\d+)$/i)) {
         // Write it
         //ast.push([ 'if', match[2], match[1], match[3] ]);
-        program += `if(Lisa.thinksTo("${match[1]}")${match[2]}${match[3]}){`;
+        program += nl + `if(Lisa.thinksTo("${match[1]}")${match[2]}${match[3]}){`;
         // Expect for a new indentation
         indented ++;
       }
@@ -378,7 +400,7 @@ Lisa.Script = {
       else if (match = line.match(/^if +(.*?) *(=|==|\!|\!=|\!==|is not|isnt|is) *(.*?)$/i)) {
         // Write it
         //ast.push([ 'if', this.comparators[match[2]] || match[2], match[1], match[3] ]);
-        program += `if(${transpile(match[1])}${this.comparators[match[2]]}${transpile(match[3])}){`;
+        program += nl + `if(${transpile(match[1])}${this.comparators[match[2]]}${transpile(match[3])}){`;
         // Expect for a new indentation
         indented ++;
       }
@@ -387,13 +409,13 @@ Lisa.Script = {
       else if (match = line.match(/^say +(.*)$/))
         // Write it
         //ast.push([ 'say', match[1] ]);
-        program += `Lisa.says(${transpile(match[1])});`;
+        program += nl + `Lisa.says(${transpile(match[1])});`;
 
       // -> If it's a return instruction...
       else if (match = line.match(/^(end|return|die|output) +(.*)$/i))
         // Write it
         //ast.push([ 'return', match[2] ]);
-        program += 'return ' + transpile(match[2]) + ';';
+        program += nl + 'return ' + transpile(match[2]) + ';';
 
       // -> If it's a store instruction...
       // NOTE: In the store's target the '_' symbol is not allowed at the
@@ -402,12 +424,15 @@ Lisa.Script = {
       else if (match = line.match(/^(store|set|learn|rem|remember|mem|memorize|save)[s]? +(.*?) *=> *([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'store', match[1], match[2] ]),
-        program += `Lisa.learns("${match[3]}",${transpile(match[2])});`;
+        program += nl + `Lisa.learns("${match[3]}",${transpile(match[2])});`;
 
       // -> If it's a new hanlder...
       else if (match = line.match(/^"(.*)" *=>$/)) {
         // Write it
-        program += `Lisa.understands("${match[1]}",function(){var _a=arguments[0];`;
+        // NOTE: If the output has to be beautified, a new indentation is set
+        // for the first line of the closure (var _a...) because this line is
+        // part of the function and is not at the same indentation level.
+        program += nl + `Lisa.understands("${match[1]}",function(){${nl?nl+'  ':''}var _a=arguments[0];`;
         // Mark this indentation as closing a handler
         closing.push(indented);
         // Expect for a new indentation
@@ -418,43 +443,43 @@ Lisa.Script = {
       else if (match = line.match(/^(unstore|unset|unlearn|unremember|unmemorize|unsave|forget)[s]? +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'forget', match[2] ])
-        program += `Lisa.forgets("${match[2]}");`;
+        program += nl + `Lisa.forgets("${match[2]}");`;
 
       // -> List creation
       else if (match = line.match(/^(makelist|createlist|setlist) +(bool|boolean|int|integer|float|floating|str|string) +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'makelist', match[2], match[3] ]);
-        program += `Lisa.learnsList("${match[3]}",[],"${match[2]}");`;
+        program += nl + `Lisa.learnsList("${match[3]}",[],"${match[2]}");`;
 
       // -> Push a value into a list
       else if (match = line.match(/^(pushlist|push|append|add) +(.*?) +in +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'push', match[3], match[2] ]);
-        program += `Lisa.learnsListValue("${match[3]}",${transpile(match[2])});`;
+        program += nl + `Lisa.learnsListValue("${match[3]}",${transpile(match[2])});`;
 
       // -> Sort a list with ascending order
       else if (match = line.match(/^(sorts?_?a?|sorts?_?asc|sorts?_?list|sorts?_?list_?asc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
         // Write it
         //ast.push([ 'sortasc', match[2] ])
-        program += `Lisa.sortsList("${match[2]}",true);`;
+        program += nl + `Lisa.sortsList("${match[2]}",true);`;
 
       // -> Sort a list with descending order
       else if (match = line.match(/^(sorts?|sorts?_?d?|sorts?_?desc|sorts?_?list_?d|sorts?_?list_?desc) +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'sortdesc', match[2] ])
-        program += `Lisa.sortsList("${match[2]}",true,false);`;
+        program += nl + `Lisa.sortsList("${match[2]}",true,false);`;
 
       // -> Shuffle a list
       else if (match = line.match(/^(shuffles?|shuffles?_?list|rand_?list|randomize_?list|randomize) +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'shuffle', match[2] ]);
-        program += `Lisa.shufflesList("${match[2]}",true);`;
+        program += nl + `Lisa.shufflesList("${match[2]}",true);`;
 
       // -> Reverse a list
       else if (match = line.match(/^(reverses?|reverses?_?list) +([a-z][a-z0-9_]*)$/i))
         // Write it
         //ast.push([ 'reverse', match[2] ]);
-        program += `Lisa.reversesList("${match[2]},true);`
+        program += nl + `Lisa.reversesList("${match[2]},true);`
 
       // Else...
       else
@@ -472,7 +497,7 @@ Lisa.Script = {
     // polution of the global environment with the program's variables, which
     // stay accessible from the program's inside code. Also, closures are
     // usually faster than code running into the global scope.
-    return `(function(){${vars.length ? `var ${vars.join(',')};` : ''}${program}})();`;
+    return `(function(){${vars.length ? `var ${vars.join(',')};` : ''}${program}${beautify?'\n':''}})();`;
   },
 
   /**
