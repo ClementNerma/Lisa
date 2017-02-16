@@ -130,6 +130,7 @@ body {
   left: calc(50% - 50px);
   padding-left: 15px;
   animation: sponeFromRight 0.75s 1;
+  transition-timing-function: cubic-bezier(0.4, -0.04, 1, 1);
 }
 
 // + Corner
@@ -143,6 +144,7 @@ body {
   background: $bgUser;
   color: $fgUser;
   animation: sponeFromLeft 0.75s 1;
+  transition-timing-function: cubic-bezier(0.4, -0.04, 1, 1);
 }
 
 // + Corner
