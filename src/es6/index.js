@@ -1208,13 +1208,13 @@ const Lisa = (new (function() {
    * Make Lisa remembering all messages and requests
    * @returns {void}
    */
-  this.nowRemembersMessages = () => { rememberMessages = true; return ; };
+  this.nowRemembersMessages = () => void (rememberMessages = true);
 
   /**
    * Don't make Lisa remembering all messages and requests
    * @returns {void}
    */
-  this.doesntRememberMessages = () => { rememberMessages = false; return ; };
+  this.doesntRememberMessages = () => void (rememberMessages = false);
 
   /**
    * Get a message displayed in the web page
