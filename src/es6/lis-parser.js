@@ -117,10 +117,25 @@ Lisa.Script = {
           // by potential space(s) and an opening parenthesis, else that's a
           // function call ; or by a point, else that could be a transpiled
           // function call like Math.random())
-          .replace(/([^a-z0-9\^_\$]|^)(\$?[a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))(?! *[\(\.a-z])/ig,
-            (m, before, variable) =>
-              // Transpile the variable call
-              before + transpileVar(variable)
+          // NOTE: Imbricated lists calls are not supported
+          // e.g. list[another[index]] won't work, it will throw a syntax error
+          .replace(/([^a-z0-9\^_\$]|^)(\$?[a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))( *\[ *(.*?) *\]|)(?! *[\(\.a-z])/ig,
+            (m, before, variable, isList, index) =>
+              // Conserve the symbol placed before the call
+              before + (
+              // If that's a list call...
+              isList
+                // Transpile the variable call
+                // If it's a local list...
+                ? variable.startsWith('$')
+                  // Transpile it as a local call
+                  ? variable.substr(1) + '[' + transpile(index) + ']'
+                  // Else, transpile it as a Lisa's memory's cell
+                  : `Lisa.thinksToListValue("${variable}",${transpile(index)})`
+                // Else, that's a plain variable call
+                // Transpile the variable call
+                : transpileVar(variable)
+              )
           )
         )
         // Remove the first and last quotes in the string
