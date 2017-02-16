@@ -1,51 +1,51 @@
 /**
- * The catcher usable in regex
- * @type {Object.<string, string>}
- * @constant
- */
-const RegexCatchers = {
-  // NOTE 1: Some of the regex used for catchers can certainly be optimised.
-  // So feel free to contact me if you have ideas !
-  // NOTE 2: All regex are isolated in functions because they use Lisa's memory,
-  // which can change at any moment. This way, the memory is called again each
-  // time a regex is called, without losing much performances.
-
-  // Anything
-  '*': () => `(.*?)`,
-  // Single digit
-  digit: () => `(\\d)`,
-  // Number (integer or floating)
-  number: () => `(\\d+[.]?|\\d*\\.\\d+)`,
-  // Unsigned number (integer or floating)
-  unsigned_number: () => `[\-]?${RegexCatchers.number()}`,
-  // Integer
-  integer: () =>  `(\\d+)`,
-  // Unsigned integer
-  unsigned_integer: () => `[\-]?${RegexCatchers.integer()}`,
-  // Single letter
-  letter: () => `([a-zA-Z])`,
-  // Single alphanumeric character
-  alphanum: () => `([a-zA-Z0-9])`,
-  // Time (hours and minutes)
-  short_time: () => `((?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?:| +${Lisa.thinksTo('MINUTES_NAME')}))`,
-  // Time (hours, minutes and seconds)
-  time: () => `((?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?: *: *| +${Lisa.thinksTo('MINUTES_NAME')} +)[0-5]\\d))(?:|${Lisa.thinksTo('SECONDS_NAME')})`,
-  // Date (dd.mm dd-mm dd/mm)
-  short_date: () => `((?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}))`,
-  // Date (dd.mm.yyyy dd-mm-yyyy dd/mm/yyyy)
-  date: () => `((?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}) +)\\d{4})`,
-  // Email adress
-  email: () => `((?:(?:[^<>\\(\\)\\[\\]\\.,;:\\s@\\"]+(?:\\.[^<>()\\[\\]\\.,;:\\s@\\"]+)*)|(?:\\".+\\"))@(?:(?:[^<>()[\\]\\.,;:\\s@\\"]+\\.)+[^<>\\(\\)[\\]\\.,;:\\s@\\"]{2,}))`,
-  // URL
-  url: () => `((?:https?:\\/\\/|)(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b[-a-zA-Z0-9@:%_\\+.~#?&//=]*(?:#.*|))`
-};
-
-/**
  * The Lisa's interface
  * @type {Object}
  * @constant
  */
 const Lisa = (new (function() {
+  /**
+   * The catcher usable in regex
+   * @type {Object.<string, string>}
+   * @constant
+   */
+  const RegexCatchers = {
+    // NOTE 1: Some of the regex used for catchers can certainly be optimised.
+    // So feel free to contact me if you have ideas !
+    // NOTE 2: All regex are isolated in functions because they use Lisa's memory,
+    // which can change at any moment. This way, the memory is called again each
+    // time a regex is called, without losing much performances.
+
+    // Anything
+    '*': () => `(.*?)`,
+    // Single digit
+    digit: () => `(\\d)`,
+    // Number (integer or floating)
+    number: () => `(\\d+[.]?|\\d*\\.\\d+)`,
+    // Unsigned number (integer or floating)
+    unsigned_number: () => `[\-]?${RegexCatchers.number()}`,
+    // Integer
+    integer: () =>  `(\\d+)`,
+    // Unsigned integer
+    unsigned_integer: () => `[\-]?${RegexCatchers.integer()}`,
+    // Single letter
+    letter: () => `([a-zA-Z])`,
+    // Single alphanumeric character
+    alphanum: () => `([a-zA-Z0-9])`,
+    // Time (hours and minutes)
+    short_time: () => `((?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?:| +${Lisa.thinksTo('MINUTES_NAME')}))`,
+    // Time (hours, minutes and seconds)
+    time: () => `((?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?: *: *| +${Lisa.thinksTo('MINUTES_NAME')} +)[0-5]\\d))(?:|${Lisa.thinksTo('SECONDS_NAME')})`,
+    // Date (dd.mm dd-mm dd/mm)
+    short_date: () => `((?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}))`,
+    // Date (dd.mm.yyyy dd-mm-yyyy dd/mm/yyyy)
+    date: () => `((?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}) +)\\d{4})`,
+    // Email adress
+    email: () => `((?:(?:[^<>\\(\\)\\[\\]\\.,;:\\s@\\"]+(?:\\.[^<>()\\[\\]\\.,;:\\s@\\"]+)*)|(?:\\".+\\"))@(?:(?:[^<>()[\\]\\.,;:\\s@\\"]+\\.)+[^<>\\(\\)[\\]\\.,;:\\s@\\"]{2,}))`,
+    // URL
+    url: () => `((?:https?:\\/\\/|)(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b[-a-zA-Z0-9@:%_\\+.~#?&//=]*(?:#.*|))`
+  };
+
   /**
    * The DOM discussion area (DDA)
    * @type {HTMLDivElement}
