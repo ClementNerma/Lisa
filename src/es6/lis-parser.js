@@ -308,6 +308,13 @@ Lisa.Script = {
         indented ++;
       }
 
+      // -> Comments
+      // NOTE: This condition is placed as one of the first of the chain because
+      // it matches a very commonly used syntax and because it's faster to test
+      else if (line.startsWith('#'))
+        // Ignore the line
+        continue ;
+
       // -> Variable assignment
       // NOTE: This condition is placed as one of the first of the chain because
       // it matches a very commonly used syntax and because it's faster to test
