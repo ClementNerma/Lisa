@@ -2,15 +2,16 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto|Tinos');
 
 // Define background and foreground colors
-$background: #5856D6;
-$foreground: #F8F8F2;
+$background: #fcfcfc;
 // Define the font to use in the whole page
 $font: "Roboto";
 $fontSize: 16px;
 
-// Colors the messages' corners
-$lisaCorner: #1AD6FD;
-$userCorner: #DBDDDE;
+// Colors for the messages
+$bgLisa: #eceff1;
+$fgLisa: #1a1a1a;
+$bgUser: #00b0ff;
+$fgUser: #ffffff;
 
 // The <body>'s style
 body {
@@ -36,7 +37,6 @@ body {
   right: 10%;
   bottom: calc(3% + 60px);
   // Style the discussion area
-  color: $foreground;
   font-family: $font;
   // Increase the font's size
   font-size: $fontSize;
@@ -44,6 +44,8 @@ body {
   border: 1px solid lightgray;
   // If needed, display a scroll bar
   overflow-y: scroll;
+  // But not for the X axis
+  overflow-x: hidden;
   // Put a padding...
   padding: 50px;
   // Excepted in the top line
@@ -59,26 +61,55 @@ body {
   // Put a veritcal spacing between each message
   // (In the first message that'll do an equivalent of padding-top)
   margin-top: 10px;
-  // Fade in the message
-  animation: spone 1.5s 1;
 }
 
-// Keyframe for fading
-@keyframes spone {
-  from {
-    opacity: 0;
-    margin-left: -20px;
+// Messages sponing animation
+@keyframes sponeFromLeft {
+  0% {
+      margin-left: -50px;
+      opacity: 0;
   }
+  100% {
+      margin-left: 0;
+      opacity: 1;
+  }
+}
 
-  to {
-    opacity: 1;
-    margin-left: 0;
+@-webkit-keyframes sponeFromLeft {
+  0% {
+      margin-left: -50px;
+      opacity: 0;
+  }
+  100% {
+      margin-left: 0;
+      opacity: 1;
+  }
+}
+
+@keyframes sponeFromRight {
+  0% {
+      margin-left: 50px;
+      opacity: 0;
+  }
+  100% {
+      margin-left: 0;
+      opacity: 1;
+  }
+}
+
+@-webkit-keyframes sponeFromRight {
+  0% {
+      margin-left: 50px;
+      opacity: 0;
+  }
+  100% {
+      margin-left: 0;
+      opacity: 1;
   }
 }
 
 // Messages' corner
 .message:before {
-  border-color: $userCorner;
   border-radius: 50% 50% 50% 50%;
   border-style: solid;
   border-width: 0 20px;
@@ -87,31 +118,38 @@ body {
   content: " ";
   height: 40px;
   position: absolute;
-  right: -50px;
   width: 30px;
   z-index: 2;
 }
 
 // Lisa's messages
 .message-lisa {
-  background: linear-gradient(to right, $lisaCorner, #1D62F0);
-  color: white;
+  background: $bgLisa;
+  color: $fgLisa;
+  width: 50%;
+  left: calc(50% - 50px);
+  padding-left: 15px;
+  animation: sponeFromRight 1.5s 1;
 }
 
 // + Corner
 .message-lisa:before {
-  border-color: $lisaCorner;
-  left: -50px;
-  transform: rotateY(180deg);
+  border-color: $bgLisa;
+  right: -50px;
 }
 
 // User's messages
 .message-user {
-  background: linear-gradient(to right, #898C90, $userCorner);
-  color: white;
-  width: 50%;
-  left: calc(50% - 50px);
-  padding-left: 15px;
+  background: $bgUser;
+  color: $fgUser;
+  animation: sponeFromLeft 1.5s 1;
+}
+
+// + Corner
+.message-user:before {
+  border-color: $bgUser;
+  left: -50px;
+  transform: rotateY(180deg);
 }
 
 // User's input field
