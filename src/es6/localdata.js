@@ -101,9 +101,9 @@ function saveState() {
       // The original string handler
       data.handled[i],
       // The handler's callback
-      data.handlers[i][2],
+      data.handlers[i][3],
       // The optionnal help texts
-      data.handlers[i][3]
+      data.handlers[i][4]
     ]);
   // Remember if the messages and requests histories were enabled
   toExport.histories = Lisa.remembersMessages;

@@ -468,11 +468,13 @@ const Lisa = (new (function() {
     }
 
     // Register it in the handlers array
-    // 0: Handler, as a regex
+    // Register it in the handlers array
+    // 0: Handler, as a strict regex
     // 1: Catchers used by the handler
-    // 2: Callback
-    // 3: Help texts (can be the NULL value)
-    handlers.push([regexArr[0], regexArr[1], callback, helpTexts || null]);
+    // 2: Handler, as a tolerant regex
+    // 3: Callback
+    // 4: Help texts (can be the NULL value)
+    handlers.push([regexArr[0], regexArr[1], regexArr[2], callback, helpTexts || null]);
 
     // Mark this handler as already used
     handled.push(handler);
@@ -480,7 +482,7 @@ const Lisa = (new (function() {
     // If the related event has a handler...
     if (eventsHandler['understood'])
       // Trigger its callback
-      eventsHandler['understood'](new RegExp(regexArr[0].toString().slice(1, -2)), regexArr[1].slice(0), callback, helpTexts ? helpTexts.slice(0) : null);
+      eventsHandler['understood'](new RegExp(regexArr[0].toString().slice(1, -2)), regexArr[1].slice(0), regexArr[2].toString().slice(1, -2), callback, helpTexts ? helpTexts.slice(0) : null);
 
     // Return the regex made from the handler
     return regexArr[0];
@@ -1042,8 +1044,35 @@ const Lisa = (new (function() {
 
     // For each registered handler...
     for (let handler of handlers) {
-      // If the handler matches with the request
-      if (match = request.match(handler[0])) {
+      // If the handler matches with the request...
+      // NOTE: The handler's tolerant regex is used for the match, the strict
+      // regex will be applied after, to test if all works.
+      // NOTE: Because of that, if two handlers are gave with the same tolerant
+      // regex, the second one will never be runned.
+      // NOTE: Also, because the matches have to be got from the strict regex,
+      // the 'match' variable is not assigned in the line below anymore but when
+      // the strict regex' test happens.
+      if (handler[2].test(request)) {
+        // If the request's syntax matches with the tolerant regex but not with
+        // the strict one...
+        if (!(match = request.match(handler[0]))) {
+          // Get the error message to use as the answer
+          let error = this.thinksTo('REQUEST_SYNTAX_ERROR');
+
+          // If no message was got...
+          if (typeof error !== 'string')
+            // Set a default error message
+            error = 'A part of your answer is not valid. Please check it.';
+
+          // If the answer have to be displayed...
+          if (display)
+            // Display it, as a text message (not an HTML code)
+            this.says(error);
+
+          // Return the error message as the request's answer
+          return error;
+        }
+
         // Prepare the arguments to send to the callback
         let prepare = {
           // The whole request
@@ -1054,14 +1083,16 @@ const Lisa = (new (function() {
           caught: match.slice(1),
           // The catcher's values, in standard format (see below)
           formatted: [],
-          // The handler (as a regex) used for this request
-          handlerRegex: handler[0],
+          // The handler (as a tolerant regex) used for this request
+          handlerRegex: handler[2],
+          // The handler (as a strict regex) used for this request
+          handlerStrictRegex: handler[0],
           // All catchers used by the hanlder
           catchers: handler[1],
           // The callback used by the handler (the one which will be runned)
-          callback: handler[2],
+          callback: handler[3],
           // All help texts about this handler
-          help: handler[3],
+          help: handler[4],
           // The original handler (a string)
           // NOTE: Because the 'Hello' and 'Hello !' handlers will give the same
           // regex handler, the 'originalHandler' can contain a bad handler.
@@ -1086,7 +1117,7 @@ const Lisa = (new (function() {
 
         // Select this handler !
         // Call its callback and get the result
-        let output = handler[2].call(this, prepare);
+        let output = handler[3].call(this, prepare);
 
         // Is the result an HTML content ?
         let html = false;
@@ -1209,14 +1240,16 @@ const Lisa = (new (function() {
     for (let handler of handlers)
       // Copy it into the '_handlers' array, and a an array of strings
       _handlers.push([
-        // Regex, as a string
+        // Strict regex, as a string
         handler[0].toString(),
         // Catchers (which are already strings)
         handler[1],
-        // Callback, as a string
+        // Tolerant regex, as a string
         handler[2].toString(),
+        // Callback, as a string
+        handler[3].toString(),
         // Optionnal help texts (which are already strings)
-        handler[3]
+        handler[4]
       ]);
 
     // Then, stringify this data (that makes a string and prevent modifications from
