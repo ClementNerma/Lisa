@@ -1492,4 +1492,6 @@ const Lisa = (new (function() {
   this.__defineSetter__('remembersMessages', (b) => b ? this.nowRemembersMessages() : this.doesntRememberMessages());
   // Set the current locale
   this.__defineSetter__('locale', (l) => this.usesLocale(l));
+  // Get the current locale
+  this.__defineGetter__('locale', () => currentLocale);
 })());
