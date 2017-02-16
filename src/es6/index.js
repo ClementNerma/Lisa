@@ -20,6 +20,8 @@ const RegexCatchers = {
   unsigned_number: () => `[\-]?${RegexCatchers.number()}`,
   // Integer
   integer: () =>  `(\\d+)`,
+  // Unsigned integer
+  unsigned_integer: () => `[\-]?${RegexCatchers.integer()}`,
   // Single letter
   letter: () => `([a-zA-Z])`,
   // Single alphanumeric character
