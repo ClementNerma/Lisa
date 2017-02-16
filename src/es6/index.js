@@ -1032,7 +1032,7 @@ const Lisa = (new (function() {
    * Perform a request
    * @param {string} request The request
    * @param {boolean} [display] Display the message as a Lisa's answer (default: true)
-   * @returns {string} An HTML code
+   * @returns {string} An HTML code or a text answer
    */
   this.does = (request, display = true) => {
     // Save the original request, before trimming
