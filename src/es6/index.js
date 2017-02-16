@@ -1183,11 +1183,14 @@ const Lisa = (new (function() {
       }
     }
 
-    // If no handler was selected, lisa says she didn't understand
-    // NOTE: There is a '*' handler that handles any unhandled request,
+    // If no handler was selected, Lisa says she didn't understand
+    // NOTE: There is often a '*' handler that handles any unhandled request,
     //       so that line is here to prevent potential problem if this handler
     //       is removed from the source code.
-    this.says('I didn\'t understand your request.', true);
+    // If the answer have to be displayed...
+    if (display)
+      // Display it as a text answer (not as an HTML code)
+      this.says('I didn\'t understand your request.', true);
   };
 
   /**
