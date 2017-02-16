@@ -81,7 +81,7 @@ function loadState(state) {
     Lisa.displayMessage(message[1] /* Author */, message[2] /* Message */, message[3] /* Class name */);
 
   // Turn on or off the messages history, depending on the save's parameters
-  Lisa.rememberMessages = state.histories;
+  Lisa.remembersMessages = state.histories;
 }
 
 /**
