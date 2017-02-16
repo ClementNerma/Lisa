@@ -132,7 +132,7 @@ Lisa.Script = {
                   // last value of a given list.
 
                   // Transpile the call as a local call
-                  ? index === '~' ? variable.substr(1) + '.slice(-1)' : variable.substr(1) + '[' + transpile(index) + ']'
+                  ? index === '~' ? variable.substr(1) + '.slice(-1)[0]' : variable.substr(1) + '[' + transpile(index) + ']'
                   // Else, transpile it as a Lisa's memory's cell
                   : index === '~' ? `Lisa.thinksToListLastValue("${variable}")` : `Lisa.thinksToListValue("${variable}",${transpile(index)})`
 
