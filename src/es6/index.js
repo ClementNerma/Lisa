@@ -1370,6 +1370,21 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Set the current locale
+   * @param {string} locale The locale to set
+   * @returns {void}
+   */
+  this.usesLocale = locale => {
+    // If this locale is not known...
+    if (!locales.hasOwnProperty(locale))
+      // Throw an error
+      throw new Error('[Lisa] Unknown locale given');
+
+    // Set the locale
+    currentLocale = locale;
+  };
+
+  /**
    * Make Lisa remembering all messages and requests
    * @returns {void}
    */
