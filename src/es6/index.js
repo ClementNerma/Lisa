@@ -1484,9 +1484,35 @@ const Lisa = (new (function() {
         // parenthesis)
         _catchers[catcher] = RegexCatchers[catcher]();
 
+    // Declare a variable which will contain the locales (as strings)
+    let _locales = {};
+
+    // For each registered locale...
+    for (let locale of Reflect.ownKeys(locales)) {
+      // Create a sub-object in the '_locales' one
+      _locales[locale] = [];
+
+      // For each specificity registered for this locale...
+      for (let texts of locales[locale])
+        // Copy it into the '_locales' array
+        // Only the possible texts are kept, not the built RegExp.
+        _locales[locale].push(texts[1]);
+    }
+
     // Then, stringify this data (that makes a string and prevent modifications from
     // outside)
-    return JSON.stringify({ memory, handled, handlers: _handlers, rememberMessages, messages, requests, catchers: _catchers });
+    return JSON.stringify({
+      // Native data
+      memory,
+      handled,
+      rememberMessages,
+      messages,
+      requests,
+      // Modified data
+      handlers: _handlers,
+      catchers: _catchers,
+      locales: _locales
+    });
   };
 
   // Initialize some memory's variables
