@@ -12,6 +12,8 @@ const RegexCatchers = {
 
   // Anything
   '*': () => `(.*?)`,
+  // Single digit
+  digit: () => `(\\d)`,
   // Number (integer or floating)
   number: () => `(\\d+[.]?|\\d*\\.\\d+)`,
   // Integer
