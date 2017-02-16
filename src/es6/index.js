@@ -16,6 +16,8 @@ const RegexCatchers = {
   digit: () => `(\\d)`,
   // Number (integer or floating)
   number: () => `(\\d+[.]?|\\d*\\.\\d+)`,
+  // Unsigned number (integer or floating)
+  unsigned_number: () => `[\-]?${RegexCatchers.number()}`,
   // Integer
   integer: () =>  `(\\d+)`,
   // Single letter
