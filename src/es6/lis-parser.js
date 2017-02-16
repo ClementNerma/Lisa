@@ -233,7 +233,7 @@ Lisa.Script = {
     let nl = '';
 
     // Get all lines of the source code
-    let lines = source.split(/\r\n|\r|\n/g);
+    const lines = source.split(/\r\n|\r|\n/g);
 
     // The JavaScript code
     let program = '';
