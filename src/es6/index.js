@@ -1385,6 +1385,12 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Get the current locale
+   * @returns {string} The locale currently used
+   */
+  this.thinksToLocale = () => locale;
+
+  /**
    * Make Lisa remembering all messages and requests
    * @returns {void}
    */
