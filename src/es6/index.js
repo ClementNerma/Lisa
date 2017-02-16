@@ -16,33 +16,33 @@ const Lisa = (new (function() {
     // time a regex is called, without losing much performances.
 
     // Anything
-    '*': () => `(.*?)`,
+    '*': () => `.*?`,
     // Single digit
-    digit: () => `(\\d)`,
+    digit: () => `\\d`,
     // Number (integer or floating)
-    number: () => `(\\d+[.]?|\\d*\\.\\d+)`,
+    number: () => `\\d+[.]?|\\d*\\.\\d+`,
     // Unsigned number (integer or floating)
     unsigned_number: () => `[\-]?${RegexCatchers.number()}`,
     // Integer
-    integer: () =>  `(\\d+)`,
+    integer: () =>  `\\d+`,
     // Unsigned integer
     unsigned_integer: () => `[\-]?${RegexCatchers.integer()}`,
     // Single letter
-    letter: () => `([a-zA-Z])`,
+    letter: () => `[a-zA-Z]`,
     // Single alphanumeric character
-    alphanum: () => `([a-zA-Z0-9])`,
+    alphanum: () => `[a-zA-Z0-9]`,
     // Time (hours and minutes)
-    short_time: () => `((?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?:| +${Lisa.thinksTo('MINUTES_NAME')}))`,
+    short_time: () => `(?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?:| +${Lisa.thinksTo('MINUTES_NAME')})`,
     // Time (hours, minutes and seconds)
-    time: () => `((?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?: *: *| +${Lisa.thinksTo('MINUTES_NAME')} +)[0-5]\\d))(?:|${Lisa.thinksTo('SECONDS_NAME')})`,
+    time: () => `(?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?: *: *| +${Lisa.thinksTo('MINUTES_NAME')} +)[0-5]\\d))(?:|${Lisa.thinksTo('SECONDS_NAME')}`,
     // Date (dd.mm dd-mm dd/mm)
-    short_date: () => `((?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}))`,
+    short_date: () => `(?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')})`,
     // Date (dd.mm.yyyy dd-mm-yyyy dd/mm/yyyy)
-    date: () => `((?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}) +)\\d{4})`,
+    date: () => `(?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}) +)\\d{4}`,
     // Email adress
-    email: () => `((?:(?:[^<>\\(\\)\\[\\]\\.,;:\\s@\\"]+(?:\\.[^<>()\\[\\]\\.,;:\\s@\\"]+)*)|(?:\\".+\\"))@(?:(?:[^<>()[\\]\\.,;:\\s@\\"]+\\.)+[^<>\\(\\)[\\]\\.,;:\\s@\\"]{2,}))`,
+    email: () => `(?:(?:[^<>\\(\\)\\[\\]\\.,;:\\s@\\"]+(?:\\.[^<>()\\[\\]\\.,;:\\s@\\"]+)*)|(?:\\".+\\"))@(?:(?:[^<>()[\\]\\.,;:\\s@\\"]+\\.)+[^<>\\(\\)[\\]\\.,;:\\s@\\"]{2,})`,
     // URL
-    url: () => `((?:https?:\\/\\/|)(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b[-a-zA-Z0-9@:%_\\+.~#?&//=]*(?:#.*|))`
+    url: () => `(?:https?:\\/\\/|)(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b[-a-zA-Z0-9@:%_\\+.~#?&//=]*(?:#.*|)`
   };
 
   /**
@@ -113,6 +113,16 @@ const Lisa = (new (function() {
     // @.understands()
     understood: null
   };
+
+  /**
+   * Get a catcher, with opening and closing parenthesis
+   * @param {string} catcher The catcher's name
+   * @returns {string} The full catcher
+   */
+  function getCatcher(catcher) {
+    // Return the catcher, with opening and closing parenthesis
+    return '(' + RegexCatchers[catcher]() + ')';
+  }
 
   /**
    * Make a string number having a length of a fixed amount characters (digits). Used in @.getStandard().
@@ -312,7 +322,7 @@ const Lisa = (new (function() {
           catchers.push('*');
 
           // Return its RegExp equivalent
-          return RegexCatchers['*']();
+          return getCatcher('*');
         }
 
         // If this catcher is not known...
@@ -331,7 +341,7 @@ const Lisa = (new (function() {
         catchers.push(catcher);
 
         // Return the catcher's RegExp equivalent
-        return RegexCatchers[catcher]();
+        return getCatcher(catcher);
       })
       // ================
       // Allow any '.' or '?' symbol at the end of the handler to be ignored
@@ -606,7 +616,7 @@ const Lisa = (new (function() {
    * @param {string} name The catcher's name
    * @returns {string|void} The catcher (undefined if the catcher is not found)
    */
-  this.thinksToCatcher = name => RegexCatchers.hasOwnProperty(name) ? RegexCatchers[name]() : undefined;
+  this.thinksToCatcher = name => RegexCatchers.hasOwnProperty(name) ? getCatcher(name) : undefined;
 
   /**
    * Assign a value to a cell in the memory
