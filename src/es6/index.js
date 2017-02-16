@@ -7,9 +7,8 @@ const Lisa = (new (function() {
   /**
    * The catcher usable in regex
    * @type {Object.<string, string>}
-   * @constant
    */
-  const RegexCatchers = {
+  let RegexCatchers = {
     // NOTE 1: Some of the regex used for catchers can certainly be optimised.
     // So feel free to contact me if you have ideas !
     // NOTE 2: All regex are isolated in functions because they use Lisa's memory,
