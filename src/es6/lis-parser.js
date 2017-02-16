@@ -225,7 +225,7 @@ Lisa.Script = {
     let program = '';
 
     // The program's variables
-    let vars = [ 'stack' ];
+    let vars = [];
 
     // The expected line's indentation
     let indented = 0;
@@ -400,7 +400,7 @@ Lisa.Script = {
       // -> If it's a new hanlder...
       else if (match = line.match(/^"(.*)" *=>$/)) {
         // Write it
-        program += `Lisa.understands("${match[1]}",function(){var _a=arguments[0],stack;`;
+        program += `Lisa.understands("${match[1]}",function(){var _a=arguments[0];`;
         // Mark this indentation as closing a handler
         closing.push(indented);
         // Expect for a new indentation
@@ -465,7 +465,7 @@ Lisa.Script = {
     // polution of the global environment with the program's variables, which
     // stay accessible from the program's inside code. Also, closures are
     // usually faster than code running into the global scope.
-    return `(function(){var ${vars.join(',')};${program}})();`;
+    return `(function(){${vars.length ? `var ${vars.join(',')};` : ''}${program}})();`;
   },
 
   /**
