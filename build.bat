@@ -3,16 +3,11 @@
 
 @echo off
 
-:: Check arguments
-if "%1" == "sass" goto scss
-if "%1" == "es6" goto es6
-if "%1" == "watch" goto watch
+:: If asked for, watch the 'src' folder
+:: Run the Node.js demon
+if "%1" == "watch" call nodemon --watch src --exec "build.bat %2"
+if "%1" == "watch" goto end
 
-:: Invalid build argument given
-if NOT "%1" == "" echo [ build ] ERROR: Unknown build part (must be 'sass', 'es6' or 'watch')
-if NOT "%1" == "" goto end
-
-:scss
 :: Console
 echo [ build ] Fusionning all SCSS stylesheets...
 
@@ -28,10 +23,6 @@ for %%f in (src\scss\*.scss) do (
 echo [ build ] Transpiling to CSS...
 call node-sass build\lisa.scss --output-style=compressed > build\lisa.min.css
 
-:: End the build if the command-line arguments asked for it
-if NOT "%1" == "" goto end
-
-:es6
 :: Console
 echo [ build ] Fusionning all ES6 scripts...
 
@@ -51,20 +42,18 @@ echo [ build ] Transpiling to ES5...
 call babel lisa-es6.js --out-file lisa-es5.js --presets=es2015
 echo [ build ] Minifying...
 :: If minifying is not forbidden, do it
-if NOT "%2" == "--beautify" uglifyjs --compress --mangle --output lisa.min.js -- lisa-es5.js
+if NOT "%1" == "--beautify" call uglifyjs --compress --mangle --output lisa.min.js -- lisa-es5.js
 :: Else, don't minify the ES5 code
-if "%2" == "--beautify" copy lisa-es5.js lisa.min.js
+if "%1" == "--beautify" copy lisa-es5.js lisa.min.js
 
 :: Return to the root directory
 cd ..
 
-:: End it all
-goto end
-
-:: Watch the 'src' folder
-:watch
-:: Run the Node.js demon
-call nodemon --watch src --exec build.bat
+:: If asked for, remove sources
+if "%1" == "--no-source" echo [ build ] Removing sources...
+if "%1" == "--no-source" del build\lisa-es6.js
+if "%1" == "--no-source" del build\lisa-es5.js
+if "%1" == "--no-source" del build\lisa.scss
 
 :end
 :: Done
