@@ -452,6 +452,9 @@ const Lisa = (new (function() {
    * @param {string} className A CSS class to add to the message's <div> (will be prefixed by 'message-')
    */
   this.displayMessage = (author, message, className) => {
+    // Make the message a string (grant support for booleans, numbers...)
+    message = message.toString();
+
     // Inject a DOM element
     let dom = document.createElement('div');
     // Set its attributes
