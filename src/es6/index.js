@@ -135,13 +135,13 @@ const Lisa = (new (function() {
    */
   this.getStandard = (input, catcher) => {
     // If the provided catcher is not known...
-    if (!RegexCatchers.hasOwnProperty(catcher) && catcher !== '?')
+    if (!RegexCatchers.hasOwnProperty(catcher) && catcher !== '?' && catcher !== '#')
       // Throw an error
       throw new Error(`[Lisa] Unknown catcher "${catcher}"`);
 
     // For some catchers, there is nothing to change between the formatted
     // string and the original one
-    if (['*', '?',  'number', 'integer'].includes(catcher))
+    if (['*', '?', '#', 'number', 'integer'].includes(catcher))
       // Nothing to change for these catchers
       return input;
 
@@ -270,6 +270,28 @@ const Lisa = (new (function() {
               '(' + catcher.substr(3).split('\\|').join('|') + '|)' :
               // Else, return the list as it's
               '(' + catcher.substr(2).split('\\|').join('|') + ')';
+        }
+
+        // If the catcher starts with the '#' symbol...
+        // (Because it's a regex symbol it has been escaped so a backslash is
+        //  added before the symbol itself)
+        if (catcher.startsWith('#')) {
+          // This catcher allows to put a plain regex in the handler's
+          // expression.
+          // NOTE: The plain regex must contain one and only one capturing
+          // group, else the catchers order will be destructured and may
+          // throw fatal JavaScript errors.
+          // Register this part as a catcher
+          catchers.push('#');
+
+          // Unescape the regex and return it inside a capturing group
+          return '(' +
+            // Remove the catcher's symbol ('#') from the string
+            catcher.substr(1)
+            // Unescape the regex' special symbols
+            .replace(/\\([\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|])/g, "$1")
+            // Close the regex capturing group
+            + ')';
         }
 
         // If the catcher is '\\*'...
