@@ -1377,6 +1377,34 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Check if a text matches with another using a locale
+   * @param {string} left The first text
+   * @param {string} right The second text
+   * @param {string} locale The locale to use (default: the current one)
+   * @returns {boolean} TRUE if the both texts are identical according to the locale
+   */
+  this.knowsTextsIdenticals = (left, right, locale = currentLocale) => {
+    // If one of the text is not valid...
+    if (typeof left !== 'string' || !left || typeof right !== 'string' || !right)
+      // Throw an error
+      throw new Error('[Lisa] Invalid texts given, must be not-empty strings');
+
+    // If this locale is not known...
+    if (!locales.hasOwnProperty(locale))
+      // Throw an error
+      throw new Error('[Lisa] Unknown locale given');
+
+    // Get the smaller text, because regex making takes a longer time
+    let smallerText = left.length > right.length ? right : left;
+
+    // Compare the two texts using a RegExp
+    // For that, build a RegExp...
+    return new RegExp('^' + this.translatesLocaleText(smallerText, locale) + '$')
+      // ...and test it on the larger text
+      .test(smallerText === left ? right : left);
+  };
+
+  /**
    * Get the current locale
    * @returns {string} The locale currently used
    */
