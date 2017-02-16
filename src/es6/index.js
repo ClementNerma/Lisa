@@ -602,6 +602,13 @@ const Lisa = (new (function() {
   this.thinksToRegisteredCatchers = () => Reflect.ownKeys(RegexCatchers);
 
   /**
+   * Get a specific catcher
+   * @param {string} name The catcher's name
+   * @returns {string|void} The catcher (undefined if the catcher is not found)
+   */
+  this.thinksToCatcher = name => RegexCatchers.hasOwnProperty(name) ? RegexCatchers[name]() : undefined;
+
+  /**
    * Assign a value to a cell in the memory
    * @param {string} cell The memory's cell
    * @param {string|number|boolean} value The cell's value
