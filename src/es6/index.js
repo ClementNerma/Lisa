@@ -54,10 +54,10 @@ const Lisa = (new (function() {
 
   /**
    * The DOM discussion area (DDA)
-   * @type {HTMLDivElement}
+   * @type {HTMLDivElement|void}
    * @constant
    */
-  const discuss = document.createElement('div');
+  const discuss = (typeof document === 'object' ? document.createElement('div') : null);
 
   /**
    * Available locales
@@ -542,23 +542,26 @@ const Lisa = (new (function() {
     // Make the message a string (grant support for booleans, numbers...)
     message = message.toString();
 
-    // Inject a DOM element
-    let dom = document.createElement('div');
-    // Set its attributes
-    dom.setAttribute('class', `message message-${className}`);
-    // Set the message, with the author's name
-    dom.innerHTML = `<strong>${author} : </strong>` + (allowHtml ? message : this.format(message));
-    // Append the element to the area
-    discuss.appendChild(dom);
+    // If there is a discussion area...
+    if (discuss) {
+      // Inject a DOM element
+      let dom = document.createElement('div');
+      // Set its attributes
+      dom.setAttribute('class', `message message-${className}`);
+      // Set the message, with the author's name
+      dom.innerHTML = `<strong>${author} : </strong>` + (allowHtml ? message : this.format(message));
+      // Append the element to the area
+      discuss.appendChild(dom);
 
-    // Scroll to the end of the container
-    // Get the amount of pixels until the scroll's maximum value
-    let remaining = discuss.scrollHeight - discuss.scrollTop;
-    // For a duration of 2000 ms (2 seconds), regurarily scroll near to the
-    // bottom of the discussion area
-    let interval = setInterval(() => discuss.scrollTop ++, Math.floor(2000 / remaining));
-    // After this delay, don't scroll anymore
-    setTimeout(() => clearInterval(interval), 2000);
+      // Scroll to the end of the container
+      // Get the amount of pixels until the scroll's maximum value
+      let remaining = discuss.scrollHeight - discuss.scrollTop;
+      // For a duration of 2000 ms (2 seconds), regurarily scroll near to the
+      // bottom of the discussion area
+      let interval = setInterval(() => discuss.scrollTop ++, Math.floor(2000 / remaining));
+      // After this delay, don't scroll anymore
+      setTimeout(() => clearInterval(interval), 2000);
+    }
 
     // If allowed to...
     if (rememberMessages)
@@ -1218,7 +1221,7 @@ const Lisa = (new (function() {
           // Make it a string
           output = output.toString();
         // If the result is a DOM element...
-        else if (output && output instanceof HTMLElement) {
+        else if (discuss && output && output instanceof HTMLElement) {
           // Get its HTML content
           output = output.innerHTML;
           // Consider the message as a HTML content instead of a string
@@ -1615,3 +1618,8 @@ const Lisa = (new (function() {
   // Get the current locale
   this.__defineGetter__('locale', () => currentLocale);
 })());
+
+// If the 'module' object is available...
+if (typeof module === 'object' && module && !Array.isArray(module))
+  // Export Lisa as a Node.js module
+  module.exports = Lisa;
