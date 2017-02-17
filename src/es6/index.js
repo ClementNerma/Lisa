@@ -1490,6 +1490,13 @@ const Lisa = (new (function() {
   this.thinksToLocale = () => locale;
 
   /**
+   * Check if Lisa knows a specific locale
+   * @param {string} locale The locale to check
+   * @returns {boolean} TRUE if the given locale is known, FALSE else
+   */
+  this.knowsLocale = locale => locales.hasOwnProperty(locale);
+
+  /**
    * Make Lisa remembering all messages and requests
    * @returns {void}
    */
