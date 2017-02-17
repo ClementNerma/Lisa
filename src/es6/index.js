@@ -1292,18 +1292,23 @@ const Lisa = (new (function() {
    */
    function treatLocaleText(text) {
      // Return the made regex
+     // NOTE: Here, only spaces are used instead of regex because it allows a
+     // very faster test speed. For tests where a replacement text is placed at
+     // the beginning of the string (like [ "'d}", "{would}" ] on "would like")
+     // there's just to put a space at the left and right of the tested string :
+     // e.g. " would like " and that works fine.
      return (
        // If the text must be a single word...
        (text.startsWith('_') && text.endsWith('_'))
-         ? '(?:^| )' + text.slice(1, -1) + '(?: |$)'
+         ? ' ' + text.slice(1, -1) + ' '
 
          // If the text must have a word on its left...
          : text.startsWith('_')
-           ? '(?:^| )' + text.slice(1)
+           ? ' ' + text.slice(1)
 
            // If the text must have a word on its right...
            : text.endsWith('_')
-             ? text.slice(0, -1) + '(?: |$)'
+             ? text.slice(0, -1) + ' '
 
              // If it can be placed anywhere (like an accentuated symbol)
              : text
@@ -1451,10 +1456,18 @@ const Lisa = (new (function() {
     let smallerText = left.length > right.length ? right : left;
 
     // Compare the two texts using a RegExp
-    // For that, build a RegExp...
-    return new RegExp('^' + this.translatesLocaleText(smallerText, locale) + '$')
+    // For that, build a RegExp
+    // NOTE: A space is allowed at the beginning and at the end of the string
+    // because texts will often contain those spaces in case if there would be
+    // a replacement texts set that operates at the beginning/end of the string
+    // e.g. [ "'d}", "{would}" ] => Operates at the beginning of "would like to"
+    //      So a space is put at the beginning and the end of the string :
+    //      " would like to " but maybe the "would" keyword has not been
+    //      registered or the locale will be changed, so these two spaces must
+    //      be allowed, in any case.
+    return new RegExp('^ ' + this.translatesLocaleText(smallerText, locale) + ' $')
       // ...and test it on the larger text
-      .test(smallerText === left ? right : left);
+      .test(' ' + (smallerText === left ? right : left) + ' ');
   };
 
   /**
