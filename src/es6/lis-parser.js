@@ -342,7 +342,6 @@ Lisa.Script = {
       //       to test
       if (line === 'else') {
         // Write it
-        //ast.push([ 'else' ]);
         program += nl + 'else{';
         // Expect for a new indentation
         indented ++;
@@ -368,7 +367,6 @@ Lisa.Script = {
         // If the '$' symbol was provided, the assignment is about a local
         // variable
         if (match[1]) {
-          //ast.push([ 'assign', match[2], match[3] ]);
           program += nl + `${match[2]}=${transpile(match[3])};`;
 
           // If this variable is not defined in the function...
@@ -379,14 +377,12 @@ Lisa.Script = {
         // Else...
         else
           // It's a Lisa's memory assignment
-          //ast.push[ 'store', match[2], match[3] ]);
           program += nl + `Lisa.learns("${match[2]}",${transpile(match[3])})`;
       }
 
       // -> If it's a boolean condition...
       else if (match = line.match(/^if( +NOT *|) +([a-z][a-z0-9_]*|_\d+|\^\d+)$/i)) {
         // Write it
-        //ast.push([ 'if', match[1] ? true : false, 'true', match[2] ]);
         program += nl + `if(${match[1]?'!':''}${transpile(match[2])}){`;
         // Expect for a new indentation
         indented ++;
@@ -395,7 +391,6 @@ Lisa.Script = {
       // -> If it's an existance condition...
       else if (match = line.match(/^if( +NOT *|) +knows +([a-z][a-z0-9_]*|_\d+|\^\d+)$/i)) {
         // Write it
-        //ast.push([ 'if', match[1] ? true : false, 'know', match[2] ]);
         program += nl + `if(${match[1]?'!':''}Lisa.knows("${match[2]}")){`;
         // Expect for a new indentation
         indented ++;
@@ -404,7 +399,6 @@ Lisa.Script = {
       // -> Test if a cell is a list
       else if (match = line.match(/^if( +NOT *|) +(islist|is_list|list) +([a-z][a-z0-9_]*)$/i)) {
         // Write it
-        //ast.push([ 'if', match[1] ? true : false, 'islist', match[3] ])
         program += nl + `if(${match[1]?'!':''}Lisa.isList("${match[3]}")){`;
         // Expect for a new indentatino
         indented ++;
@@ -413,7 +407,6 @@ Lisa.Script = {
       // -> If it's a mathematical condition...
       else if (match = line.match(/^if +([a-z][a-z0-9_]*|_\d+|\^\d+) *(<=|>=|<|>) *(\d+[.]?|\d*\.\d+)$/i)) {
         // Write it
-        //ast.push([ 'if', match[2], match[1], match[3] ]);
         program += nl + `if(Lisa.thinksTo("${match[1]}")${match[2]}${match[3]}){`;
         // Expect for a new indentation
         indented ++;
@@ -422,7 +415,6 @@ Lisa.Script = {
       // -> If it's a comparative condition...
       else if (match = line.match(/^if +(.*?) *(=|==|\!|\!=|\!==|is not|isnt|is) *(.*?)$/i)) {
         // Write it
-        //ast.push([ 'if', this.comparators[match[2]] || match[2], match[1], match[3] ]);
         program += nl + `if(${transpile(match[1])}${this.comparators[match[2]]}${transpile(match[3])}){`;
         // Expect for a new indentation
         indented ++;
@@ -431,13 +423,11 @@ Lisa.Script = {
       // -> If it's a Lisa's message to display...
       else if (match = line.match(/^say +(.*)$/))
         // Write it
-        //ast.push([ 'say', match[1] ]);
         program += nl + `Lisa.says(${transpile(match[1])});`;
 
       // -> If it's a return instruction...
       else if (match = line.match(/^(end|return|die|output) +(.*)$/i))
         // Write it
-        //ast.push([ 'return', match[2] ]);
         program += nl + 'return ' + transpile(match[2]) + ';';
 
       // -> If it's a store instruction...
@@ -446,7 +436,6 @@ Lisa.Script = {
       // arguments, which cannot be the store's target
       else if (match = line.match(/^(store|set|learn|rem|remember|mem|memorize|save)[s]? +(.*?) *=> *([a-z][a-z0-9_]*)$/i))
         // Write it
-        //ast.push([ 'store', match[1], match[2] ]),
         program += nl + `Lisa.learns("${match[3]}",${transpile(match[2])});`;
 
       // -> If it's a new hanlder...
@@ -465,55 +454,46 @@ Lisa.Script = {
       // -> If it's an unstore instruction...
       else if (match = line.match(/^(unstore|unset|unlearn|unremember|unmemorize|unsave|forget)[s]? +([a-z][a-z0-9_]*)$/i))
         // Write it
-        //ast.push([ 'forget', match[2] ])
         program += nl + `Lisa.forgets("${match[2]}");`;
 
       // -> List creation
       else if (match = line.match(/^(makelist|createlist|setlist) +(bool|boolean|int|integer|float|floating|str|string) +([a-z][a-z0-9_]*)$/i))
         // Write it
-        //ast.push([ 'makelist', match[2], match[3] ]);
         program += nl + `Lisa.learnsList("${match[3]}",[],"${match[2]}");`;
 
       // -> Push a value into a list
       else if (match = line.match(/^(pushlist|push|append|add) +(.*?) +in +([a-z][a-z0-9_]*)$/i))
         // Write it
-        //ast.push([ 'push', match[3], match[2] ]);
         program += nl + `Lisa.learnsListValue("${match[3]}",${transpile(match[2])});`;
 
       // -> Sort a list with ascending order
       else if (match = line.match(/^(sorts?_?a?|sorts?_?asc|sorts?_?list|sorts?_?list_?asc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
         // Write it
-        //ast.push([ 'sortasc', match[2] ])
         program += nl + `Lisa.sortsList("${match[2]}",true);`;
 
       // -> Sort a list with descending order
       else if (match = line.match(/^(sorts?|sorts?_?d?|sorts?_?desc|sorts?_?list_?d|sorts?_?list_?desc) +([a-z][a-z0-9_]*)$/i))
         // Write it
-        //ast.push([ 'sortdesc', match[2] ])
         program += nl + `Lisa.sortsList("${match[2]}",true,false);`;
 
       // -> Shuffle a list
       else if (match = line.match(/^(shuffles?|shuffles?_?list|rand_?list|randomize_?list|randomize) +([a-z][a-z0-9_]*)$/i))
         // Write it
-        //ast.push([ 'shuffle', match[2] ]);
         program += nl + `Lisa.shufflesList("${match[2]}",true);`;
 
       // -> Reverse a list
       else if (match = line.match(/^(reverses?|reverses?_?list) +([a-z][a-z0-9_]*)$/i))
         // Write it
-        //ast.push([ 'reverse', match[2] ]);
         program += nl + `Lisa.reversesList("${match[2]},true);`
 
       // -> Locale setting
       else if (match = line.match(/^(set_?locale|use_?locale|locale) +"([a-z]{2})"$/i))
         // Write it
-        //ast.push([ 'setlocale', match[2] ]);
         program += nl + `Lisa.usesLocale("${match[2].toLocaleLowerCase()}");`;
 
       // -> Locale's pattern registration
       else if (match = line.match(/^(in +|for +|with +|)locale +"([a-z]{2})" +(use|register|pattern) +\{ *(.*?) *\}$/i))
         // Write it
-        //ast.push([ 'locpattern', match[2], match[3]... ])
         // NOTE: Double single quotes are replaced by one single quotes for
         // syntax highlighting.
         program += nl + `Lisa.learnsLocaleTexts("${match[2].toLocaleLowerCase()}",${JSON.stringify(match[4].replace(/''/g, "'").split(/ *\| */))});`;
