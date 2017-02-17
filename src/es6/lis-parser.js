@@ -42,6 +42,22 @@ Lisa.Script = {
   functions: {
     // Get the length of a list
     listLength: 'Lisa.thinksToListLength',
+    // Get the last value of a list
+    lastValue: 'Lisa.thinksToListLastValue',
+    // Does Lisa knows a value?
+    knowsValue: 'Lisa.knowsValue',
+    // Get help about a handler
+    helpsAbout: 'Lisa.helpsAbout',
+    // Check if a variable is a list
+    isList: 'Lisa.isList',
+    // Sort a list
+    sort: 'Lisa.sortsList',
+    // Shuffle a list
+    shuffle: 'Lisa.shufflesList',
+    // Reverse a list
+    reverse: 'Lisa.reversesList',
+    // Get the variable associated to a value
+    search: 'Lisa.searchesValue',
     // Generate a random integer between 0 and 1 (floating number)
     random: 'Math.random',
     // Round a number
@@ -67,7 +83,9 @@ Lisa.Script = {
     // Make a string an integer
     int: 'parseInt',
     // Make a string a floating number
-    float: 'parseFloat'
+    float: 'parseFloat',
+    // Make anything a string
+    string: 'Lisa.Script.libString'
   },
 
   /**
@@ -582,5 +600,36 @@ Lisa.Script = {
 
     // Generate the random number and return it
     return min + Math.floor(Math.random() * (max - min + 1));
+  },
+
+  /**
+   * Make any content a string
+   * @param {*} content The content
+   * @returns {string} The content, as a string
+   */
+  libString(content) {
+    // If it's a string...
+    if (typeof content === 'string')
+      // Return it without any treatment
+      return content;
+
+    // If it's a number of a boolean...
+    if (typeof content === 'number' || typeof content === 'boolean')
+      // Stringify it
+      return content.toString();
+
+    // If it's an array or an object...
+    if (Array.isArray(content) || (typeof content === 'object' && content))
+      // Stringify it
+      return JSON.stringify(content);
+
+    // For a few special values, return their string equivalent
+    if (content === null) return 'null';
+    if (content === undefined) return 'undefined';
+    if (content === Infinity) return 'Infinity';
+    if (Number.isNaN(content)) return 'NaN';
+
+    // Else, the content can't be returned as a string -> Throw an error
+    throw new Error('[LIS:exec] Content can\'t be stringified');
   }
 };
