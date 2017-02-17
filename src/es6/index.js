@@ -1382,7 +1382,7 @@ const Lisa = (new (function() {
       // If the text has not a valid syntax...
       // (The '{' and '}' symbols are removed respectively from the beginning
       //  and the end of the text because they are allowed)
-      if (!/^[^\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|\!]+$/.test(text.replace(/^\{/, '').replace(/\}$/, '')))
+      if (!/^[^\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|\!]+$/.test(text))
         // Throw an error
         throw new Error(`[Lisa] Locales' replacement texts cannot contain RegExp-reserved symbols (while registering pattern for locale "${locale}")`);
     }
