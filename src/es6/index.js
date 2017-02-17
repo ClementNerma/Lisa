@@ -1286,6 +1286,56 @@ const Lisa = (new (function() {
   };
 
   /**
+   * Make a regex string from a locale's replacement text
+   * @param {string} text The locale's replacement text to make a regex from
+   * @returns {string} The regex, as a string
+   */
+   function treatLocaleText(text) {
+     // Return the made regex
+     return (
+       // If the text must be a single word...
+       (text.startsWith('_') && text.endsWith('_'))
+         ? '(?:^| )' + text.slice(1, -1) + '(?: |$)'
+
+         // If the text must have a word on its left...
+         : text.startsWith('_')
+           ? '(?:^| )' + text.slice(1)
+
+           // If the text must have a word on its right...
+           : text.endsWith('_')
+             ? text.slice(0, -1) + '(?: |$)'
+
+             // If it can be placed anywhere (like an accentuated symbol)
+             : text
+    );
+   }
+
+  /**
+   * Create a regex from a set of replacement texts (for locales)
+   * NOTE: The 'texts' argument is not verified to save much time
+   * @param {Array.<string>} texts The replacement texts to use
+   * @param {boolean} [regex] Make a RegExp instead of a string (default: false)
+   * @returns {string|RegExp} The build regex
+   */
+  this.createsLocaleRegex = (texts, regex = false) => {
+    // Declare a variable to contain the future regex' content
+    let str = '';
+
+    // For each text that can be used as replacement...
+    for (let text of texts)
+      // Add the text to the regex
+      str += '|' + treatLocaleText(text);
+
+    // Make the final regex (as a string)
+    // NOTE: The .substr(1) is here to remove the first '|' symbol from the
+    // 'regex' variable.
+    str = `(?:${str.substr(1)})`;
+
+    // Return it in the asked form
+    return regex ? new RegExp(str, 'g') : str;
+  };
+
+  /**
    * Learn a locale's specificity
    * @param {string} locale The locale to use
    * @param {Array.<string>} texts The texts that can replace themselves mutually
@@ -1315,7 +1365,9 @@ const Lisa = (new (function() {
         throw new Error(`[Lisa] Bad replacement text given for locale "${locale}"'s specificity, must be a not-empty string`);
 
       // If the text has not a valid syntax...
-      if (!/^[^\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|\!]+$/.test(text))
+      // (The '{' and '}' symbols are removed respectively from the beginning
+      //  and the end of the text because they are allowed)
+      if (!/^[^\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|\!]+$/.test(text.replace(/^\{/, '').replace(/\}$/, '')))
         // Throw an error
         throw new Error(`[Lisa] Locales' replacement texts cannot contain RegExp-reserved symbols (while registering specificity for locale "${locale}")`);
     }
@@ -1329,7 +1381,7 @@ const Lisa = (new (function() {
     // modifications from the outside.
     // Also, the subject is a possible value, so it has to be registed as a
     // replacement text.
-    locales[locale].push([ new RegExp('(?:' + texts.join('|') + ')', 'g'), texts.slice(0) ]);
+    locales[locale].push([ this.createsLocaleRegex(texts, true), texts.slice(0) ]);
   };
 
   /**
@@ -1355,7 +1407,8 @@ const Lisa = (new (function() {
     // For each specificities defined for this locale...
     for (let rep of locales[locale])
       // Use it in the text
-      text = text.replace(rep[0], '(?:' + rep[1].join('|') + ')');
+      // A string regex is made to replace the specificity by the possible texts
+      text = text.replace(rep[0], this.createsLocaleRegex(rep[1]));
 
     // Return the translated text
     return text;
