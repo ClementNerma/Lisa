@@ -35,6 +35,15 @@ function loadState(state) {
     // Register it
     Lisa.registersCatcher(catcher, state.catchers[catcher]);
 
+  // NOTE: Because handlers may use the locales, they need to be registered
+  // first.
+  // For each locale in the state...
+  for (let locale of Reflect.ownKeys(state.locales))
+    // For each specificity registered for this locale...
+    for (let texts of state.locales[locale])
+      // Register them
+      Lisa.learnsLocaleTexts(locale, texts);
+
   // For each handler in the state...
   for (let handler of state.handlers) {
     // Get the handler's callback and extract some variables
@@ -104,7 +113,13 @@ function saveState() {
   // Get the whole Lisa's state
   let data = JSON.parse(Lisa.export());
   // Declare a variable which will contain the final data
-  let toExport = { handlers: [], memory: data.memory, messages: data.messages, catchers: data.catchers };
+  let toExport = {
+    handlers: [],
+    memory: data.memory,
+    messages: data.messages,
+    catchers: data.catchers,
+    locales: data.locales
+  };
   // For each handler understood by Lisa...
   for (let i = 0; i < data.handlers.length; i++)
     // Backup it as a data to export
