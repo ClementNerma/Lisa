@@ -1351,7 +1351,7 @@ const Lisa = (new (function() {
   };
 
   /**
-   * Learn a locale's specificity
+   * Learn a locale's pattern
    * @param {string} locale The locale to use
    * @param {Array.<string>} texts The texts that can replace themselves mutually
    * @returns {void}
@@ -1370,21 +1370,21 @@ const Lisa = (new (function() {
     // If no replacement text was given...
     if (!texts.length)
       // Throw an error
-      throw new Error(`[Lisa] No text was provided for locale "${locale}"'s specificity`);
+      throw new Error(`[Lisa] No text was provided for locale "${locale}"'s pattern`);
 
     // For each text that can be used as replacement...
     for (let text of texts) {
       // If the text is not valid...
       if (typeof text !== 'string' || !text)
         // Throw an error
-        throw new Error(`[Lisa] Bad replacement text given for locale "${locale}"'s specificity, must be a not-empty string`);
+        throw new Error(`[Lisa] Bad replacement text given for locale "${locale}"'s pattern, must be a not-empty string`);
 
       // If the text has not a valid syntax...
       // (The '{' and '}' symbols are removed respectively from the beginning
       //  and the end of the text because they are allowed)
       if (!/^[^\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|\!]+$/.test(text.replace(/^\{/, '').replace(/\}$/, '')))
         // Throw an error
-        throw new Error(`[Lisa] Locales' replacement texts cannot contain RegExp-reserved symbols (while registering specificity for locale "${locale}")`);
+        throw new Error(`[Lisa] Locales' replacement texts cannot contain RegExp-reserved symbols (while registering pattern for locale "${locale}")`);
     }
 
     // If this locale is unknown...
@@ -1392,7 +1392,7 @@ const Lisa = (new (function() {
       // Initialize it
       locales[locale] = [];
 
-    // Register this specificity, after cloning the replacement texts to prevent
+    // Register this pattern, after cloning the replacement texts to prevent
     // modifications from the outside.
     // Also, the subject is a possible value, so it has to be registed as a
     // replacement text.
@@ -1419,10 +1419,10 @@ const Lisa = (new (function() {
     // Escape all RegExp characters from the text
     text = text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|\!]/g, "\\$&");
 
-    // For each specificities defined for this locale...
+    // For each patterns defined for this locale...
     for (let rep of locales[locale])
       // Use it in the text
-      // A string regex is made to replace the specificity by the possible texts
+      // A string regex is made to replace the pattern by the possible texts
       text = text.replace(rep[0], this.createsLocaleRegex(rep[1]));
 
     // Return the translated text
@@ -1568,7 +1568,7 @@ const Lisa = (new (function() {
       // Create a sub-object in the '_locales' one
       _locales[locale] = [];
 
-      // For each specificity registered for this locale...
+      // For each pattern registered for this locale...
       for (let texts of locales[locale])
         // Copy it into the '_locales' array
         // Only the possible texts are kept, not the built RegExp.
