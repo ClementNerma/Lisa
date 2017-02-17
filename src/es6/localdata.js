@@ -102,6 +102,9 @@ function loadState(state) {
 
   // Turn on or off the messages history, depending on the save's parameters
   Lisa.remembersMessages = state.histories;
+
+  // Set the current locale
+  Lisa.locale = state.currentLocale;
 }
 
 /**
@@ -118,7 +121,8 @@ function saveState() {
     memory: data.memory,
     messages: data.messages,
     catchers: data.catchers,
-    locales: data.locales
+    locales: data.locales,
+    currentLocale: data.currentLocale
   };
   // For each handler understood by Lisa...
   for (let i = 0; i < data.handlers.length; i++)
