@@ -450,12 +450,12 @@ Lisa.Script = {
         program += nl + `Lisa.learns("${match[3]}",${transpile(match[2])});`;
 
       // -> If it's a new hanlder...
-      else if (match = line.match(/^"(.*)" *=>$/)) {
+      else if (match = line.match(/^(for +|understands? +|with +)"(.*)" *=>$/)) {
         // Write it
         // NOTE: If the output has to be beautified, a new indentation is set
         // for the first line of the closure (var _a...) because this line is
         // part of the function and is not at the same indentation level.
-        program += nl + `Lisa.understands("${match[1]}",function(){${nl?nl+'  ':''}var _a=arguments[0];`;
+        program += nl + `Lisa.understands("${match[2]}",function(){${nl?nl+'  ':''}var _a=arguments[0];`;
         // Mark this indentation as closing a handler
         closing.push(indented);
         // Expect for a new indentation
