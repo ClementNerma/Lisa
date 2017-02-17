@@ -504,6 +504,12 @@ Lisa.Script = {
         //ast.push([ 'reverse', match[2] ]);
         program += nl + `Lisa.reversesList("${match[2]},true);`
 
+      // -> Locale setting
+      else if (match = line.match(/^(set_?locale|use_?locale|locale) +"([a-z]{2})"$/i))
+        // Write it
+        //ast.push([ 'setlocale', match[2] ]);
+        program += nl + `Lisa.usesLocale("${match[2].toLocaleLowerCase()}");`;
+
       // Else...
       else
         // That's a syntax error -> throw an error
