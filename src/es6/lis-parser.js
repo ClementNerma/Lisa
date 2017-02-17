@@ -510,6 +510,14 @@ Lisa.Script = {
         //ast.push([ 'setlocale', match[2] ]);
         program += nl + `Lisa.usesLocale("${match[2].toLocaleLowerCase()}");`;
 
+      // -> Locale's pattern registration
+      else if (match = line.match(/^(in +|for +|with +|)locale +"([a-z]{2})" +(use|register|pattern) +\{ *(.*?) *\}$/i))
+        // Write it
+        //ast.push([ 'locpattern', match[2], match[3]... ])
+        // NOTE: Double single quotes are replaced by one single quotes for
+        // syntax highlighting.
+        program += nl + `Lisa.learnsLocaleTexts("${match[2].toLocaleLowerCase()}",${JSON.stringify(match[4].replace(/''/g, "'").split(/ *\| */))});`;
+
       // Else...
       else
         // That's a syntax error -> throw an error
