@@ -270,17 +270,27 @@ const Lisa = (new (function() {
    * @param {string} handler The handler to make a regex with
    * @param {boolean} [getCatchers] Get the list of all catchers use in the regex (from left to right, in the right order). It will also return the handler's tolerant regex (default: false).
    * @param {boolean} [tolerant] Get the tolerant regex associated to this handler (see the doc. for further informations about it, default: false)
+   * @param {string} [locale] Use a particular locale (default: the current one)
    * @returns {RegExp|Array} The regex made from the handler and, if asked, the list of catchers use
    */
-  this.makeHandlerRegex = (handler, getCatchers = false, tolerant = false) => {
+  this.makeHandlerRegex = (handler, getCatchers = false, tolerant = false, locale = currentLocale) => {
     // Declare a variable which will contain the list of catchers used in the
     // handler
     let catchers = [];
 
+    // If the provided locale is not known...
+    if (!locales.hasOwnProperty(locale))
+      // Throw an error
+      throw new Error('[Lisa] Unknown locale provided');
+
     // Create a RegExp object
-    let regex = new RegExp('^' + handler
-      // Espace all regex characters from it
-      .replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|\!]/g, "\\$&")
+    let regex = new RegExp('^' +
+      // Format the handler using the locales
+      // NOTE: The @.translatesLocaleText() function also escapes the
+      // RegExp-reserved symbols, so there is no need to do it here.
+      // NOTE: Because replacement texts can't contain RegExp-reserved symbols,
+      // they won't interfere with the catchers below.
+      this.translatesLocaleText( handler, locale )
       // Allow any space to be written multiple times
       .replace(/ /g, ' +')
       // === Catchers ===
