@@ -47,7 +47,7 @@ while (true) {
 
   // If the input starts by a point...
   if (input.startsWith('.')) {
-    // Get the action to do
+    // Get the action to do (case-insensitive)
     input = input.substr(1).toLocaleLowerCase();
 
     // -> "clear"
@@ -63,8 +63,27 @@ while (true) {
     // Unknown command
     else
       console.log(`Unknown command "${input}"`);
-  } else
-    // --- Do something with the input
+  } else {
+    // The JavaScript code to run
+    let code;
+
+    try {
+      // Try to compile the command as LIS program
+      code = Lisa.Script.compile(input);
+
+      try {
+        // Try to run the script (should be without errors)
+        new Function(['Lisa'], code)(Lisa);
+      } catch(e) {
+        // Display the error message and its stack
+        console.error(chalk.red(e.stack));
+        continue ;
+      }
+    } catch(e) {
+      // Display the error message
+      console.error(chalk.red(e.message));
+    }
+  }
 
   // Display a white line
   console.log();
