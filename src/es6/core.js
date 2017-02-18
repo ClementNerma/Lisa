@@ -1215,6 +1215,8 @@ let LisaAI = function() {
           handler: handled[handlers.indexOf(handler)],
           // Will the message be displayed as a Lisa's one ?
           display: !!display,
+          // The Lisa's instance which called the callback
+          caller: this
         };
 
         // NOTE: This step could be ignored, that would be to the callback to
