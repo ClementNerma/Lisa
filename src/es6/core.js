@@ -2,12 +2,13 @@
  * The Lisa's interface (constructor)
  * @class
  * @constructor
- * @constant
+ * @global
  */
 let LisaAI = function() {
   /**
    * The catcher usable in regex
    * @type {Object.<string, string>}
+   * @private
    */
   let RegexCatchers = {
     // NOTE 1: Some of the regex used for catchers can certainly be optimised.
@@ -50,6 +51,7 @@ let LisaAI = function() {
    * The list of native catchers
    * @type {Array.<string>}
    * @constant
+   * @private
    */
   const nativeCatchers = Reflect.ownKeys(RegexCatchers);
 
@@ -57,18 +59,21 @@ let LisaAI = function() {
    * The DOM discussion area (DDA)
    * @type {HTMLDivElement|void}
    * @constant
+   * @private
    */
   const discuss = (typeof document === 'object' ? document.createElement('div') : null);
 
   /**
    * Available locales
    * @type {Object.<string, Array>}
+   * @private
    */
   let locales = {};
 
   /**
    * The current locale
    * @type {string}
+   * @private
    */
   let currentLocale = 'en';
 
@@ -80,6 +85,7 @@ let LisaAI = function() {
    * NOTE: This array will only get data if the 'rememberMessages' variable is
    *       turned on.
    * @type {Array.<Array>}
+   * @private
    */
   let messages = [];
 
@@ -88,36 +94,42 @@ let LisaAI = function() {
    * NOTE: This array will only get data if the 'rememberMessages' variable is
    *       turned on.
    * @type {Array.<Array>}
+   * @private
    */
   let requests = [];
 
   /**
    * Should the messages be remembered?
    * @type {boolean}
+   * @private
    */
   let rememberMessages = true;
 
   /**
    * The Lisa's memory
    * @type {Object}
+   * @private
    */
   let memory = { $: {} };
 
   /**
    * The list of all handler in use
    * @type {Array.<string>}
+   * @private
    */
   let handled = [];
 
   /**
    * The association of handlers with their respective callback and help message
    * @type {Array.<Array>}
+   * @private
    */
   let handlers = [];
 
   /**
    * Callbacks that handle some events
    * @param {Object.<string, Function>}
+   * @private
    */
   let eventsHandler = {
     // When a message is displayed
@@ -141,6 +153,7 @@ let LisaAI = function() {
    * Get a catcher, with opening and closing parenthesis
    * @param {string} catcher The catcher's name
    * @returns {string} The full catcher
+   * @private
    */
   function getCatcher(catcher) {
     // Return the catcher, with opening and closing parenthesis
@@ -1631,6 +1644,7 @@ let LisaAI = function() {
  * The Lisa's interface
  * @type {LisaAI}
  * @constant
+ * @global
  */
 const Lisa = new LisaAI();
 
