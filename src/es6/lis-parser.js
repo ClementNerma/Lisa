@@ -451,7 +451,9 @@ Lisa.Script = {
         // NOTE: If the output has to be beautified, a new indentation is set
         // for the first line of the closure (var _a...) because this line is
         // part of the function and is not at the same indentation level.
-        program += nl + `Lisa.understands("${match[2]}",function(){${nl?nl+'  ':''}var _a=arguments[0];`;
+        // NOTE: A 'Lisa' variable is created because the main Lisa's reference
+        // can be lost on some cases (like in the CLI).
+        program += nl + `Lisa.understands("${match[2]}",function(){${nl?nl+'  ':''}var _a=arguments[0],Lisa=_a.caller;`;
         // Mark this indentation as closing a handler
         closing.push(indented);
         // Expect for a new indentation
