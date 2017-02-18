@@ -5,8 +5,12 @@
   "main": "src/es6/core.js",
   "files": [
     "src/es6/core.js",
-    "src/es6/lis-parser.js"
+    "src/es6/lis-parser.js",
+    "src/es6/node-cli.js"
   ],
+  "bin": {
+    "lisa": "src/es6/node-cli.js"
+  },
   "engines": {
     "node": ">=6.4.0"
   },
@@ -21,6 +25,13 @@
   "license": "CC-BY-NC-ND-4.0",
   "bugs": {
     "url": "https://github.com/ClementNerma/Lisa/issues"
+  },
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "readline-sync": "^1.4.6",
+    "clui": "^0.3.1",
+    "sync-request": "^4.0.1",
+    "clear": "^0.0.1"
   },
   "homepage": "https://github.com/ClementNerma/Lisa#readme"
 }
