@@ -93,9 +93,10 @@ Lisa.Script = {
    * @param {string} source The LIS program
    * @param {boolean} [beautify] Display a beautified JavaScript code (default: false)
    * @param {boolean} [keepComments] Keep all comments from the source code (default: false)
+   * @param {Function} [onStep] A callback to run each time a line is compiled (default: null)
    * @returns {string} The built JavaScript code
    */
-  compile(source, beautify, keepComments) {
+  compile(source, beautify = false, keepComments = false, onStep = null) {
     /**
      * Throw an error
      * @param {string} text The error's text
@@ -290,38 +291,44 @@ Lisa.Script = {
       // Trim the line
       line = line.trim();
 
-      // If the line is empty...
-      if (!line)
+      // If the line is empty and if no callback was provided for each step...
+      // (Because the 'onStep' callback must be called after each line, and
+      //  in the next lines an empty line is ignored, without calling the
+      //  callback)
+      if (!line && !onStep)
         // Ignore it
         continue ;
 
-      // Indentation treatment -> If a condition is opened...
-      if (indented) {
-        // If the indentation is higher than expected...
-        if (indent > indented)
+      // Only if the line is not empty...
+      if (line) {
+        // Indentation treatment -> If a condition is opened...
+        if (indented) {
+          // If the indentation is higher than expected...
+          if (indent > indented)
+            // Throw an error
+            error(`Wrong indentation, expecting ${indented} tab${indented>1?'s':''} but ${indent} given.`);
+          // Else, if the indentation is lower than expected...
+          else if (indent < indented)
+            // Close the missing indentations
+            closeIndent();
+
+          // Else, the indentation is the expected one, so there is nothing to do
+          // about it.
+        }
+
+        // Indentation treatment -> If no indentation is expected but given
+        if (!indented && indent)
           // Throw an error
-          error(`Wrong indentation, expecting ${indented} tab${indented>1?'s':''} but ${indent} given.`);
-        // Else, if the indentation is lower than expected...
-        else if (indent < indented)
-          // Close the missing indentations
-          closeIndent();
+          error('Wrong indentation, expecting no tab');
 
-        // Else, the indentation is the expected one, so there is nothing to do
-        // about it.
+        // If the code is beautified...
+        if (beautify)
+          // Re-generate the new line symbols
+          // NOTE: The indentation is increased by one because the program is
+          // wrapped in a closure, which needs a level of indentation, but the
+          // 'indented' variable starts from 0
+          nl = '\n' + '  '.repeat(indented + 1);
       }
-
-      // Indentation treatment -> If no indentation is expected but given
-      if (!indented && indent)
-        // Throw an error
-        error('Wrong indentation, expecting no tab');
-
-      // If the code is beautified...
-      if (beautify)
-        // Re-generate the new line symbols
-        // NOTE: The indentation is increased by one because the program is
-        // wrapped in a closure, which needs a level of indentation, but the
-        // 'indented' variable starts from 0
-        nl = '\n' + '  '.repeat(indented + 1);
 
       // If the line starts by a 'ELSE' block (with something after)...
       if (match = line.match(/^else +/)) {
@@ -498,10 +505,28 @@ Lisa.Script = {
         // syntax highlighting.
         program += nl + `Lisa.learnsLocaleTexts("${match[2].toLocaleLowerCase()}",${JSON.stringify(match[4].replace(/''/g, "'").split(/ *\| */))});`;
 
-      // Else...
-      else
+      // Else, if the line is not empty...
+      else if (line)
         // That's a syntax error -> throw an error
         error('Syntax error');
+
+      // If a callback was given for each step...
+      if (onStep)
+        // Call it
+        onStep({
+          // The current line
+          line,
+          // The line's index
+          lineIndex,
+          // The line's indentation
+          indent,
+          // Expected indentation
+          indented,
+          // The total amount of lines
+          total: lines.length,
+          // The compilation's progress (in purcents)
+          progress: Math.floor(lineIndex / lines.length * 100)
+        });
     }
 
     // Set the indentation as null
