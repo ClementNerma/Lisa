@@ -3,6 +3,34 @@
 // Enable strict mode
 "use strict";
 
+/**
+ * Get a colored content from a plain content
+ * @param {*} content The content to get colored
+ * @returns {string} The content, as a string and colored
+ */
+function getColored(content) {
+  // Get the value as a JSON string
+  // Then get the value's color and assign it to the string
+  return chalk[colors[typeof value]](JSON.stringify(value));
+}
+
+// The colors assigned to the different types of contents
+const colors = {
+  object: 'yellow',
+  undefined: 'magenta',
+  boolean: 'cyan',
+  number: 'red',
+  string: 'blue'
+};
+
+// The colors assigned to the different types of lists
+const listColors = {
+  boolean: colors.boolean,
+  integer: colors.number,
+  floating: colors.floating,
+  string: colors.string
+};
+
 // Load some Node.js modules
 const fs    = require('fs'),
       path  = require('path'),
@@ -38,6 +66,9 @@ Lisa.when('message', (date, author, message) => {
 // FALSE: Inputs are LIS instructions
 let debugMode = false;
 
+// Declare a local variable to store .match()'s result
+let match;
+
 // Forever...
 while (true) {
   // Handle any command-line input
@@ -53,7 +84,37 @@ while (true) {
 
   // Debug mode
   if (debugMode) {
-    // --- Do something with the input
+    // show_cell <name>
+    if (match = input.match(/^show_cell +([a-z0-9_]+)$/i)) {
+      // : Unknown cell
+      if (!Lisa.knows(match[1]))
+        console.error(chalk.red(`Unknown cell <${match[1]}>`));
+      // : List
+      else if (Lisa.isList(match[1]))
+        console.log(
+          // List's type and length
+          chalk.green(`<List:${Lisa.thinksToListLength(match[1])}> `) +
+          // If the list contain at least one value...
+          (Lisa.thinksToListLength(match[1]) ?
+            // Color the list's content
+            chalk[ listColors[Lisa.thinksToListType(match[1])] ](
+              // List's values (use a space to separate each value)
+              Lisa.thinksToList(match[1]).map(value => JSON.stringify(value))
+              // Get the list as a string
+                .join(' ')
+            ) :
+          // Empty list
+          chalk[ colors['undefined'] ]( '<Empty>' ))
+        );
+      // : Single value
+      else
+        // Get the value's color and display it
+        console.log( chalk.green('<Plain>') + ' ' + getColored(Lisa.thinksTo(match[1])) );
+    }
+
+    // Syntax error
+    else
+      console.error(chalk.red('Syntax error'));
   }
   // LIS inputs
   else {
