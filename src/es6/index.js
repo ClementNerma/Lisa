@@ -1627,6 +1627,14 @@ const Lisa = (new (function() {
 })());
 
 // If the 'module' object is available...
-if (typeof module === 'object' && module && !Array.isArray(module))
+if (typeof module === 'object' && module && !Array.isArray(module)) {
   // Export Lisa as a Node.js module
   module.exports = Lisa;
+  // Allow to load LIS parser
+  module.exports.loadParser = () => {
+    // Read the parser's file and run it
+    eval(require('fs').readFileSync(require('path').join(__dirname, 'lis-parser.js'), 'utf-8'));
+    // Destroy this function
+    delete module.exports.loadParser;
+  };
+}
