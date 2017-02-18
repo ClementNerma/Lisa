@@ -45,7 +45,21 @@ while (true) {
     continue ;
   }
 
-  // --- Do something with the input
+  // If the input starts by a point...
+  if (input.startsWith('.')) {
+    // Get the action to do
+    input = input.substr(1).toLocaleLowerCase();
+
+    // -> "clear"
+    if (input === 'clear')
+      // Clear the console
+      clear();
+
+    // Unknown command
+    else
+      console.log(`Unknown command "${input}"`);
+  } else
+    // --- Do something with the input
 
   // Display a white line
   console.log();
