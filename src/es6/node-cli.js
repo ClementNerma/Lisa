@@ -84,8 +84,13 @@ while (true) {
 
   // Debug mode
   if (debugMode) {
+    // quit / .debug
+    if (input === 'quit' || input === '.debug')
+      // Disable the debug mode
+      debugMode = false;
+
     // show_cell <name>
-    if (match = input.match(/^show_cell +([a-z0-9_]+)$/i)) {
+    else if (match = input.match(/^show_cell +([a-z0-9_]+)$/i)) {
       // : Unknown cell
       if (!Lisa.knows(match[1]))
         console.error(chalk.red(`Unknown cell <${match[1]}>`));
