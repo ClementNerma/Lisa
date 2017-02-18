@@ -446,7 +446,7 @@ Lisa.Script = {
         program += nl + `Lisa.learns("${match[3]}",${transpile(match[2])});`;
 
       // -> If it's a new hanlder...
-      else if (match = line.match(/^(for +|understands? +|with +|)"(.*)" *=>$/)) {
+      else if (match = line.match(/^(for +|understands? +|with +|)"(.*)" *=>$/i)) {
         // Write it
         // NOTE: If the output has to be beautified, a new indentation is set
         // for the first line of the closure (var _a...) because this line is
@@ -457,6 +457,11 @@ Lisa.Script = {
         // Expect for a new indentation
         indented ++;
       }
+
+      // -> Ask something
+      else if (match = line.match(/^(requests?|asks?|does) +"(.*)"$/i))
+        // Write it
+        program += nl + `Lisa.hears("${match[2]}");Lisa.does("${match[2]}");`;
 
       // -> If it's an unstore instruction...
       else if (match = line.match(/^(unstore|unset|unlearn|unremember|unmemorize|unsave|forget)[s]? +([a-z][a-z0-9_]*)$/i))
