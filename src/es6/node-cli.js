@@ -35,8 +35,9 @@ Lisa.when('message', (date, author, message) => {
 
 // Forever...
 while (true) {
-  // Handle any command-line input (and trim it)
-  let input = rl.question(chalk.bold.blue('>') + ' ').trim();
+  // Handle any command-line input
+  // NOTE: This input is already trimmed by the 'readline-sync' module
+  let input = rl.question(chalk.bold.blue('>') + ' ');
 
   // If nothing was input...
   if (!input.length) {
