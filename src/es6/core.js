@@ -553,8 +553,15 @@ let LisaAI = function() {
    * @param {boolean} [allowHtml] Display the message as HTML content (default: false)
    */
   this.displayMessage = (author, message, className, allowHtml = false) => {
-    // Make the message a string (grant support for booleans, numbers...)
-    message = message.toString();
+    // In case of the message has no .toString() function (like undefined),
+    // give it a default content.
+    if (message === undefined || message === null || typeof message.toString !== 'function')
+      // Set the message as an empty string
+      message = '';
+    // If the message can be stringified (numbers, strings, objects)...
+    else
+      // Make the message a string (grant support for booleans, numbers...)
+      message = message.toString();
 
     // If there is a discussion area...
     if (discuss) {
