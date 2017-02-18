@@ -64,6 +64,28 @@ while (true) {
     else
       console.log(`Unknown command "${input}"`);
   } else {
+    // If the script ends with a backslash '\' symbol...
+    if (input.endsWith('\\')) {
+      // It is not terminated.
+      // Declare a variable to contain the next inputs
+      let tmp_input = '\\';
+      // Another will contain the final input
+      let inputs = [ input.slice(0, -1) /* Remove the backslash */ ];
+
+      // While the temporary input ends by a slash...
+      while (tmp_input.endsWith('\\')) {
+        // Ask for the next line of the input
+        tmp_input = rl.question('? ', { keepWhitespace: true });
+        // Add it to the final input
+        inputs.push(tmp_input.endsWith('\\') ? tmp_input.slice(0, -1) : tmp_input);
+      }
+
+      // Make the final input from it
+      input = inputs.join('\n');
+      // Free the memory
+      inputs = null;
+    }
+
     // The JavaScript code to run
     let code;
 
