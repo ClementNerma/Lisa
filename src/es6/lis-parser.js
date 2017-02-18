@@ -446,7 +446,7 @@ Lisa.Script = {
         program += nl + `Lisa.learns("${match[3]}",${transpile(match[2])});`;
 
       // -> If it's a new hanlder...
-      else if (match = line.match(/^(for +|understands? +|with +)"(.*)" *=>$/)) {
+      else if (match = line.match(/^(for +|understands? +|with +|)"(.*)" *=>$/)) {
         // Write it
         // NOTE: If the output has to be beautified, a new indentation is set
         // for the first line of the closure (var _a...) because this line is
