@@ -1,9 +1,10 @@
 /**
- * The Lisa's interface
- * @type {Object}
+ * The Lisa's interface (constructor)
+ * @class
+ * @constructor
  * @constant
  */
-const Lisa = (new (function() {
+let LisaAI = function() {
   /**
    * The catcher usable in regex
    * @type {Object.<string, string>}
@@ -1624,7 +1625,17 @@ const Lisa = (new (function() {
   this.__defineSetter__('locale', (l) => this.usesLocale(l));
   // Get the current locale
   this.__defineGetter__('locale', () => currentLocale);
-})());
+};
+
+/**
+ * The Lisa's interface
+ * @type {LisaAI}
+ * @constant
+ */
+const Lisa = new LisaAI();
+
+// Remove the constructor
+LisaAI = null;
 
 // If the 'module' object is available...
 if (typeof module === 'object' && module && !Array.isArray(module)) {
