@@ -89,6 +89,11 @@ while (true) {
       // Disable the debug mode
       debugMode = false;
 
+    // clear
+    else if (input === 'clear')
+      // Clear the console
+      clear();
+
     // show_cell <name>
     else if (match = input.match(/^show_cell +([a-z0-9_]+)$/i)) {
       // : Unknown cell
