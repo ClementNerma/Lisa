@@ -29,7 +29,7 @@ echo [ build ] Fusionning all ES6 scripts...
 :: Enable strict mode in the bundle
 echo "use strict"; > build\lisa-es6.js
 :: Bundle every single file in the 'src\es6' folder
-type src\es6\index.js >> build\lisa-es6.js
+type src\es6\core.js >> build\lisa-es6.js
 type src\es6\discuss.js >> build\lisa-es6.js
 type src\es6\localdata.js >> build\lisa-es6.js
 type src\es6\lis-parser.js >> build\lisa-es6.js
