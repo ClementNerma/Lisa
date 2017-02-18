@@ -4,8 +4,6 @@ Lisa is an autonomous assistant which talks with you.
 
 # Installation
 
-There is two ways to install Lisa :
-
 ## Ready-to-use web interface
 
 **NOTE :** You can also try Lisa [at this adress](https://clementnerma.github.io/Lisa).  
@@ -20,14 +18,22 @@ cd Lisa
 
 You're ready to use Lisa!
 
-## Node.js core
+## Node.js
 
-This part allows you to set up the Lisa's program in a Node.js application. For that, download the [build file](https://github.com/ClementNerma/Lisa/blob/master/build/lisa.min.js) and write the following code in your Node.js application:
+This part allows you to set up the Lisa's program in a Node.js application. First, install the [`lisa-node`](https://www.npmjs.com/package/lisa-node) package from [NPM](https://www.npmjs.com).  
+Then, you can use the module to interact with Lisa using the module's object:
+
+```bash
+# Install Lisa locally
+npm install lisa-node
+```
 
 ```javascript
 // Require the 'Lisa' module
-const Lisa = require('./lisa.min.js');
-// You can use the Lisa object
+const Lisa = require('lisa-node');
+// (Optionnal) Load the LIS parser
+Lisa.loadParser();
+// You can use the 'Lisa' object below
 ```
 
 # How to use ?
