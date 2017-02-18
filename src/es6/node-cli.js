@@ -122,6 +122,20 @@ while (true) {
         console.log( chalk.green('<Plain>') + ' ' + getColored(Lisa.thinksTo(match[1])) );
     }
 
+    // list_type <name>
+    // list_length <name>
+    else if (match = input.match(/^list_(?:type|length) +([a-z0-9_]+)$/i)) {
+      // If the list does not exists...
+      if (!Lisa.knows(match[1]))
+        // Display an error message
+        console.error(chalk.red(`Unknown cell <${match[1]}>`));
+      // Else...
+      else
+        // Display the list's type, colored, with its length
+        console.log(chalk[listColors[Lisa.thinksToListType(match[1])]](Lisa.thinksToListType(match[1]))
+                  + chalk.bold[colors.number](' x ' + Lisa.thinksToListLength(match[1])));
+    }
+
     // Syntax error
     else
       console.error(chalk.red('Syntax error'));
