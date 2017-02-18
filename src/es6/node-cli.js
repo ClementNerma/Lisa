@@ -55,6 +55,11 @@ while (true) {
       // Clear the console
       clear();
 
+    // -> "exit"
+    else if (input === 'exit')
+      // Exit the CLI
+      process.exit(0);
+
     // Unknown command
     else
       console.log(`Unknown command "${input}"`);
