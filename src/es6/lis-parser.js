@@ -515,6 +515,11 @@ Lisa.Script = {
         // syntax highlighting.
         program += nl + `Lisa.learnsLocaleTexts("${match[2].toLocaleLowerCase()}",${JSON.stringify(match[4].replace(/''/g, "'").split(/ *\| */))});`;
 
+      // -> JavaScript code
+      else if (match = line.match(/^(js|javascript|script) +"(.*?)"$/))
+        // Write it
+        program += nl + `eval("${match[2]}");`;
+
       // Else, if the line is not empty...
       else if (line)
         // That's a syntax error -> throw an error
