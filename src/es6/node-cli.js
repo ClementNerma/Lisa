@@ -6,9 +6,10 @@
 /**
  * Run a CLI command
  * @param {string} input The command to run
+ * @param {boolean} [avoidNewLine] Do not display a white line (default: false)
  * @returns {void}
  */
-function command(input) {
+function command(input, avoidNewLine = false) {
   // If nothing was input...
   if (!input.length) {
     // Ask again
@@ -302,8 +303,10 @@ function command(input) {
     }
   }
 
-  // Display a white line
-  console.log();
+  // If not forbidden...
+  if (!avoidNewLine)
+    // Display a white line
+    console.log();
 }
 
 /**
@@ -341,7 +344,8 @@ const fs    = require('fs'),
       chalk = require('chalk'),
       clui  = require('clui'),
       sync  = require('sync-request'),
-      clear = require('clear');
+      clear = require('clear'),
+      args  = require('optimist').argv;
 
 // Load the Lisa's core
 const Lisa = require('./core.js');
@@ -374,6 +378,17 @@ let debugMode = false;
 
 // Declare a local variable to store .match()'s result
 let match;
+
+// If a command should be runned now...
+if (typeof args.e === 'string' || typeof args.execute === 'string') {
+  // Run it
+  command(args.execute || args.e, true);
+
+  // If not forbidden...
+  if (!args.cli && !args['keep-cli'])
+    // Close the CLI
+    process.exit(0);
+}
 
 // Forever...
 while (true)
