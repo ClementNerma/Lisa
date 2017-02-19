@@ -394,4 +394,4 @@ if (typeof args.e === 'string' || typeof args.execute === 'string') {
 while (true)
   // Handle any command-line input
   // NOTE: This input is already trimmed by the 'readline-sync' module
-  command(rl.question(chalk.bold.blue('>') + ' '));
+  command(rl.question('> '));
