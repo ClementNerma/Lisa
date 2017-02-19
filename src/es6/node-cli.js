@@ -212,6 +212,30 @@ while (true) {
       }
     }
 
+    // dump <filepath> [beautify]
+    else if (match = input.match(/^dump +([a-z0-9\.\\\/\:]+)( +beautify|)$/i)) {
+      // Normalize the path and make it relative to the current path
+      let file = path.normalize(match[1]);
+      // Export the Lisa's state
+      let state = Lisa.export();
+
+      // If it must be beautified...
+      if (match[2])
+        // Beautify it
+        state = JSON.stringify(JSON.parse(state), null, 2);
+
+      try {
+        // Write the data in a file
+        fs.writeFileSync(file, state, 'utf-8');
+        // Display a warning message
+        console.warn(chalk.yellow('/!\\ The Lisa\'s state is readable by any program, including the messages history and the memory! /!\\'));
+      } catch(e) {
+        // An error occured
+        // Display the error message
+        console.error(chalk.red(e.message));
+      }
+    }
+
     // Syntax error
     else
       console.error(chalk.red('Unknown debug instruction'));
