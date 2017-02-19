@@ -21,6 +21,20 @@ function command(input, avoidNewLine = false) {
     return ;
   }
 
+  // Split the input using the '&&' operator to get the list of the commands
+  let inputs = input.split(/&&(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+  // If there is more than one command...
+  if (inputs.length > 1) {
+    // For each command...
+    for (let i = 0; i < inputs.length - 1; i++)
+      // Run it (avoid new line)
+      command(inputs[i], true);
+
+    // Set the current command as the last one (trim it)
+    input = inputs.slice(-1)[0].trim();
+  }
+
   // Debug mode  + input starts by a point = run a LIS command
   // Normal mode + input starts by a point = run a debug instruction
 
