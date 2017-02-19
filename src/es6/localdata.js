@@ -55,9 +55,6 @@
 
     // For each handler in the state...
     for (let handler of state.handlers) {
-      // Get the handler's callback and extract some variables
-      let extracted = handler[1].match(/^function.*?\((?:(?: |\n)*)([a-zA-Z][a-zA-Z0-9_]*|)(?:\n\/\*\*\/|)(?:(?: |\n)*)\)(?:(?: |\n)*)\{((?:.|\n)*)\}$/);
-
       // Register the handler
       Lisa.understands(
         // The original handler, as a string
@@ -68,10 +65,10 @@
             // If the callback didn't have any argument, extract[1] will contain
             // an empty string, which result in a lambad function without argument
             // (new Function([''], 'code();')) works in JavaScript
-            extracted[1]
+            'prepare'
           ],
             // The callback's code
-            extracted[2]
+            `(${handler[1]})(prepare);`
         ),
         // The store (there is no store in the current case)
         null,
