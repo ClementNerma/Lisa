@@ -135,7 +135,7 @@ Lisa.Script = {
      * @param {string} str The content to transpile
      * @returns {string} Compiled JavaScript code
      */
-    const transpile = str => {
+    this.transpile = str => {
       // A quote is put at the beginning and the end of the string to transpile,
       // so the regex put below can capture originally unquoted contents to
       // transpile them!
@@ -185,9 +185,9 @@ Lisa.Script = {
                   // last value of a given list.
 
                   // Transpile the call as a local call
-                  ? index === '~' ? variable.substr(1) + '.slice(-1)[0]' : variable.substr(1) + '[' + transpile(index) + ']'
+                  ? index === '~' ? variable.substr(1) + '.slice(-1)[0]' : variable.substr(1) + '[' + this.transpile(index) + ']'
                   // Else, transpile it as a Lisa's memory's cell
-                  : index === '~' ? `Lisa.thinksToListLastValue("${variable}")` : `Lisa.thinksToListValue("${variable}",${transpile(index)})`
+                  : index === '~' ? `Lisa.thinksToListLastValue("${variable}")` : `Lisa.thinksToListValue("${variable}",${this.transpile(index)})`
 
                 // Else, that's a plain variable call
                 // Transpile the variable call
@@ -377,7 +377,7 @@ Lisa.Script = {
         // If the '$' symbol was provided, the assignment is about a local
         // variable
         if (match[1]) {
-          program += nl + `${match[2]}=${transpile(match[3])};`;
+          program += nl + `${match[2]}=${this.transpile(match[3])};`;
 
           // If this variable is not defined in the function...
           if (!vars.includes(match[2]))
@@ -387,13 +387,13 @@ Lisa.Script = {
         // Else...
         else
           // It's a Lisa's memory assignment
-          program += nl + `Lisa.learns("${match[2]}",${transpile(match[3])})`;
+          program += nl + `Lisa.learns("${match[2]}",${this.transpile(match[3])})`;
       }
 
       // -> If it's a boolean condition...
       else if (match = line.match(/^if( +NOT *|) +([a-z][a-z0-9_]*|_\d+|\^\d+)$/i)) {
         // Write it
-        program += nl + `if(${match[1]?'!':''}${transpile(match[2])}){`;
+        program += nl + `if(${match[1]?'!':''}${this.transpile(match[2])}){`;
         // Expect for a new indentation
         indented ++;
       }
@@ -425,7 +425,7 @@ Lisa.Script = {
       // -> If it's a comparative condition...
       else if (match = line.match(/^if +(.*?) *(=|==|\!|\!=|\!==|is not|isnt|is) *(.*?)$/i)) {
         // Write it
-        program += nl + `if(${transpile(match[1])}${this.comparators[match[2]]}${transpile(match[3])}){`;
+        program += nl + `if(${this.transpile(match[1])}${this.comparators[match[2]]}${this.transpile(match[3])}){`;
         // Expect for a new indentation
         indented ++;
       }
@@ -433,12 +433,12 @@ Lisa.Script = {
       // -> If it's a Lisa's message to display...
       else if (match = line.match(/^say +(.*)$/))
         // Write it
-        program += nl + `Lisa.says(${transpile(match[1])});`;
+        program += nl + `Lisa.says(${this.transpile(match[1])});`;
 
       // -> If it's a return instruction...
       else if (match = line.match(/^(end|return|die|output) +(.*)$/i))
         // Write it
-        program += nl + 'return ' + transpile(match[2]) + ';';
+        program += nl + 'return ' + this.transpile(match[2]) + ';';
 
       // -> If it's a store instruction...
       // NOTE: In the store's target the '_' symbol is not allowed at the
@@ -446,7 +446,7 @@ Lisa.Script = {
       // arguments, which cannot be the store's target
       else if (match = line.match(/^(store|set|learn|rem|remember|mem|memorize|save)[s]? +(.*?) *=> *([a-z][a-z0-9_]*)$/i))
         // Write it
-        program += nl + `Lisa.learns("${match[3]}",${transpile(match[2])});`;
+        program += nl + `Lisa.learns("${match[3]}",${this.transpile(match[2])});`;
 
       // -> If it's a new hanlder...
       else if (match = line.match(/^(for +|understands? +|with +|)"(.*)" *=>$/i)) {
@@ -481,7 +481,7 @@ Lisa.Script = {
       // -> Push a value into a list
       else if (match = line.match(/^(pushlist|push|append|add) +(.*?) +in +([a-z][a-z0-9_]*)$/i))
         // Write it
-        program += nl + `Lisa.learnsListValue("${match[3]}",${transpile(match[2])});`;
+        program += nl + `Lisa.learnsListValue("${match[3]}",${this.transpile(match[2])});`;
 
       // -> Sort a list with ascending order
       else if (match = line.match(/^(sorts?_?a?|sorts?_?asc|sorts?_?list|sorts?_?list_?asc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
