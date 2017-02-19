@@ -157,6 +157,50 @@ while (true) {
                   + chalk.bold[colors.number](' x ' + Lisa.thinksToListLength(match[1])));
     }
 
+    // understand <handler> <answer> [<store>]
+    // e.g.: understand "I love {integer} bananas" "Mee too!" ^0 => bananas ; true => askedforbananas
+    else if (match = input.match(/^understand +"(.*?)" +"(.*?)" *(.*?)$/i)) {
+      // Prepare the LIS script
+      let script = [
+        `with "${match[1]}" =>`
+      ];
+
+      // If a store was provided...
+      if (match[3]) {
+        // Declare a local variable to contain the regex' matches
+        let store_match;
+        // Split it by ';' and trim all parts
+        let store_str = match[3].split(/ *; */g);
+
+        // For each part...
+        for (let part of store_str) {
+          // Get the part's syntax
+          // If the part has not a valid syntax...
+          if (!(store_match = part.match(/^(\$?[a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+)|"(?:.*?)"|\d+) *=> *([a-z][a-z0-9_]*)$/i))) {
+            // Display an error message
+            console.error(chlak.red(`Invalid syntax in store "${part}"`));
+            // Exit the loop
+            continue ;
+          }
+
+          // Add this part to the store
+          script.push(`  store ${store_match[1]} => ${store_match[2]}`);
+        }
+      }
+
+      // Complete the script with the handler's answer
+      script.push(`  end "${match[2]}"`);
+
+      try {
+        // Run the full script as a LIS program
+        Lisa.Script.exec(script.join('\n'));
+      } catch(e) {
+        // The handler's registration failed
+        // Display an error message
+        console.error(chalk.red(e.message));
+      }
+    }
+
     // Syntax error
     else
       console.error(chalk.red('Unknown debug instruction'));
