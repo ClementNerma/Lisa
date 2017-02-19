@@ -1293,7 +1293,7 @@ let LisaAI = function() {
         // If the related event has a handler...
         if (eventsHandler['did'])
           // Trigger its callback
-          eventsHandler['did'](requests.slice(-1)[0] /* Date.now() */, JSON.parse(JSON.stringify(prepare)), output);
+          eventsHandler['did'](requests.slice(-1)[0] /* Date.now() */, output);
 
         // Return the result
         return output;
