@@ -83,11 +83,24 @@ while (true) {
   }
 
   // Debug mode
-  if (debugMode) {
+  // Instructions that starts by a point are considered as debug instructions
+  // This is made to allow users to type debug commands without entering and
+  // leaving again the debug mode.
+  if (debugMode || input.startsWith('.')) {
+    // If the input starts by a point...
+    if (input.startsWith('.'))
+      // Remove the point
+      input = input.substr(1);
+
     // quit / .debug
     if (input === 'quit' || input === '.debug')
       // Disable the debug mode
       debugMode = false;
+
+    // exit the CLI
+    else if (input === 'exit')
+      // Exit the process
+      process.exit(0);
 
     // clear
     else if (input === 'clear')
@@ -138,75 +151,49 @@ while (true) {
 
     // Syntax error
     else
-      console.error(chalk.red('Syntax error'));
+      console.error(chalk.red('Unknown debug instruction'));
   }
-  // LIS inputs
   else {
-    // If the input starts by a point...
-    if (input.startsWith('.')) {
-      // Get the action to do (case-insensitive)
-      input = input.substr(1).toLocaleLowerCase();
+    // If the script ends with a backslash '\' symbol...
+    if (input.endsWith('\\')) {
+      // It is not terminated.
+      // Declare a variable to contain the next inputs
+      let tmp_input = '\\';
+      // Another will contain the final input
+      let inputs = [ input.slice(0, -1) /* Remove the backslash */ ];
 
-      // -> "clear"
-      if (input === 'clear')
-        // Clear the console
-        clear();
-
-      // -> "exit"
-      else if (input === 'exit')
-        // Exit the CLI
-        process.exit(0);
-
-      // -> "debug"
-      else if (input === 'debug')
-        // Enable debug mode
-        debugMode = true;
-
-      // Unknown command
-      else
-        console.log(`Unknown command "${input}"`);
-    } else {
-      // If the script ends with a backslash '\' symbol...
-      if (input.endsWith('\\')) {
-        // It is not terminated.
-        // Declare a variable to contain the next inputs
-        let tmp_input = '\\';
-        // Another will contain the final input
-        let inputs = [ input.slice(0, -1) /* Remove the backslash */ ];
-
-        // While the temporary input ends by a slash...
-        while (tmp_input.endsWith('\\')) {
-          // Ask for the next line of the input
-          tmp_input = rl.question('? ', { keepWhitespace: true });
-          // Add it to the final input
-          inputs.push(tmp_input.endsWith('\\') ? tmp_input.slice(0, -1) : tmp_input);
-        }
-
-        // Make the final input from it
-        input = inputs.join('\n');
-        // Free the memory
-        inputs = null;
+      // While the temporary input ends by a slash...
+      while (tmp_input.endsWith('\\')) {
+        // Ask for the next line of the input
+        tmp_input = rl.question('? ', { keepWhitespace: true });
+        // Add it to the final input
+        inputs.push(tmp_input.endsWith('\\') ? tmp_input.slice(0, -1) : tmp_input);
       }
 
-      // The JavaScript code to run
-      let code;
+      // Make the final input from it
+      input = inputs.join('\n');
+      // Free the memory
+      inputs = null;
+    }
+
+    // The JavaScript code to run
+    let code;
+
+    try {
+      // Try to compile the command as LIS program
+      code = Lisa.Script.compile(input);
 
       try {
-        // Try to compile the command as LIS program
-        code = Lisa.Script.compile(input);
-
-        try {
-          // Try to run the script (should be without errors)
-          new Function(['Lisa'], code)(Lisa);
-        } catch(e) {
-          // Display the error message and its stack
-          console.error(chalk.red(e.stack));
-          continue ;
-        }
+        // Try to run the script (should be without errors)
+        new Function(['Lisa'], code)(Lisa);
       } catch(e) {
-        // Display the error message
-        console.error(chalk.red(e.message));
+        // Display the error message and its stack
+        console.error(chalk.red(e.stack));
+        continue ;
       }
+    } catch(e) {
+      // Display the error message
+      console.error(chalk.red(e.message));
     }
   }
 
