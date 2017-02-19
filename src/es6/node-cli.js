@@ -82,18 +82,26 @@ while (true) {
     continue ;
   }
 
+  // Debug mode  + input starts by a point = run a LIS command
+  // Normal mode + input starts by a point = run a debug instruction
+
   // Debug mode
   // Instructions that starts by a point are considered as debug instructions
   // This is made to allow users to type debug commands without entering and
   // leaving again the debug mode.
-  if (debugMode || input.startsWith('.')) {
+  if ((debugMode && !input.startsWith('.')) || (!debugMode && input.startsWith('.'))) {
     // If the input starts by a point...
     if (input.startsWith('.'))
       // Remove the point
       input = input.substr(1);
 
-    // quit / .debug
-    if (input === 'quit' || input === '.debug')
+    // debug
+    if (!debugMode && input === 'debug')
+      // Enable the debug mode
+      debugMode = true;
+
+    // quit / debug
+    else if (input === 'quit' || (debugMode && input === 'debug'))
       // Disable the debug mode
       debugMode = false;
 
@@ -154,6 +162,12 @@ while (true) {
       console.error(chalk.red('Unknown debug instruction'));
   }
   else {
+    // If the input starts by a point...
+    if (input.startsWith('.'))
+      // Remove the point
+      // In debug mode, input can start by a point to run a LIS command
+      input = input.substr(1);
+
     // If the script ends with a backslash '\' symbol...
     if (input.endsWith('\\')) {
       // It is not terminated.
