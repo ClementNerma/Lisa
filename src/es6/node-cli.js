@@ -10,6 +10,10 @@
  * @returns {void}
  */
 function command(input, avoidNewLine = false) {
+  // Trim the input (useful if it comes from the command-line of from the '&&'
+  // operator)
+  input = input.trim();
+
   // If nothing was input...
   if (!input.length) {
     // Ask again
@@ -393,5 +397,4 @@ if (typeof args.e === 'string' || typeof args.execute === 'string') {
 // Forever...
 while (true)
   // Handle any command-line input
-  // NOTE: This input is already trimmed by the 'readline-sync' module
   command(rl.question('> '));
