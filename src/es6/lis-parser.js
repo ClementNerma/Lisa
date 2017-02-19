@@ -564,7 +564,8 @@ Lisa.Script = {
    */
   exec(source) {
     // Compile the source code and run it
-    new Function([], this.compile(source))();
+    // Give the 'Lisa' object to the program
+    new Function(['Lisa'], this.compile(source))(Lisa);
   },
 
   /**
