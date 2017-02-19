@@ -250,7 +250,10 @@ while (true) {
           // If data must be beautified...
           match[2] ?
               // Beautify it
-              'P' /* The data header */ + JSON.stringify(local.saveState(), null, 2) :
+              // NOTE: Because the string is not reversed and does not contain
+              // a header, this save file will not be loadable with the 'import'
+              // command.
+              JSON.stringify(local.saveState(), null, 2) :
               // ELse,minimize and reverse it
               local.convertObjectSave(local.saveState()), 'utf-8');
 
@@ -260,6 +263,56 @@ while (true) {
         // An error occured
         // Display the error message
         console.error(chalk.red(e.message));
+      }
+    }
+
+    // import <filepath>
+    else if (match = input.match(/^import +([a-z0-9\.\\\/\:]+)$/i)) {
+      let file = path.normalize(match[1]);
+      // Declare a variable which will contain it
+      let data;
+      // Get the real file's path
+
+      // Check if the file exists
+      let exists;
+      try { exists = fs.lstatSync(file).isFile(); }
+      catch(e) { }
+
+      // If the file does not exist...
+      if (!exists)
+        // Display an error message
+        console.error(chalk.red('File was not found'));
+      // Else...
+      else {
+        try {
+          // Read the file
+          data = fs.readFileSync(file, 'utf-8');
+        } catch(e) {
+          // An error occured
+          // Display the error message
+          console.error(chalk.red(e.message));
+          // Continue the loop
+        }
+
+        // If and only if data was read...
+        if (data)
+          // Convert it as a save object
+          // If it works, load it as the current Lisa's state
+          // If it fails, display an error message
+          // Convert it to a save object
+          local.convertPlainSave(data, out => local.loadState(out), err => {
+            // Compressed data
+            if (err === 'lzstring')
+              console.error(chalk.red('The save file is compressed (LZString).'));
+            // Unknown header
+            else if (err === 'unknown_header')
+              console.error(chalk.red('The save file uses an invalid header.'));
+            // That's an unknown kind of data
+            // If the 'console' object is defined...
+            else
+              // Log an error into it
+              console.error(chalk.red('The save file is corrupted'));
+          });
       }
     }
 
