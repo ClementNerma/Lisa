@@ -38,7 +38,7 @@ let LisaAI = function() {
     // Time (hours, minutes and seconds)
     time: () => `(?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?: *: *| +${Lisa.thinksTo('MINUTES_NAME')} +)[0-5]\\d))(?:|${Lisa.thinksTo('SECONDS_NAME')}`,
     // Date (dd.mm dd-mm dd/mm)
-    short_date: () => `(?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}))`,
+    short_date: () => `(?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}))`,
     // Date (dd.mm.yyyy dd-mm-yyyy dd/mm/yyyy)
     date: () => `(?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}) +)\\d{4}`,
     // Email adress
