@@ -143,6 +143,17 @@ while (true) {
         console.log( chalk.green('<Plain>') + ' ' + getColored(Lisa.thinksTo(match[1])) );
     }
 
+    // forget <name>
+    else if (match = input.match(/^forget +([a-z][a-z0-9_]*)$/i)) {
+      // : Unknown cell
+      if (!Lisa.knows(match[1]))
+        console.error(chalk.red(`Unknown cell <${match[1]}>`));
+      // : Known cell
+      else
+        // Forget the cell
+        Lisa.forgets(match[1]);
+    }
+
     // list_type <name>
     // list_length <name>
     else if (match = input.match(/^list_(?:type|length) +([a-z0-9_]+)$/i)) {
