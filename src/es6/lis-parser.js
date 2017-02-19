@@ -85,7 +85,9 @@ Lisa.Script = {
     // Make a string a floating number
     float: 'parseFloat',
     // Make anything a string
-    string: 'Lisa.Script.libString'
+    string: 'Lisa.Script.libString',
+    // Get the standard form of a content
+    standard: 'Lisa.getStandard'
   },
 
   /**
