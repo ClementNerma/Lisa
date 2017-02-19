@@ -116,7 +116,7 @@ while (true) {
       clear();
 
     // show <name>
-    else if (match = input.match(/^show +([a-z0-9_]+)$/i)) {
+    else if (match = input.match(/^show +([a-z][a-z0-9_]*)$/i)) {
       // : Unknown cell
       if (!Lisa.knows(match[1]))
         console.error(chalk.red(`Unknown cell <${match[1]}>`));
