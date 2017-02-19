@@ -46,6 +46,9 @@ const Lisa = require('./core.js');
 // Load the LIS parser
 Lisa.loadParser();
 
+// Load the 'localdata' module and register the Lisa's instance.
+const local = require('./localdata.js')(Lisa);
+
 // When a message is displayed...
 Lisa.when('message', (date, author, message) => {
   // Message from Lisa
@@ -227,6 +230,30 @@ while (true) {
       try {
         // Write the data in a file
         fs.writeFileSync(file, state, 'utf-8');
+        // Display a warning message
+        console.warn(chalk.yellow('/!\\ The Lisa\'s state is readable by any program, including the messages history and the memory! /!\\'));
+      } catch(e) {
+        // An error occured
+        // Display the error message
+        console.error(chalk.red(e.message));
+      }
+    }
+
+    // export <filepath> [beautify]
+    else if (match = input.match(/^export +([a-z0-9\.\\\/\:]+)( +beautify|)$/i)) {
+      try {
+        // Write the data in a file
+        // For that, get the Lisa's state
+        fs.writeFileSync(
+          // Normalize the path and make it relative to the current path
+          path.normalize(match[1]),
+          // If data must be beautified...
+          match[2] ?
+              // Beautify it
+              'P' /* The data header */ + JSON.stringify(local.saveState(), null, 2) :
+              // ELse,minimize and reverse it
+              local.convertObjectSave(local.saveState()), 'utf-8');
+
         // Display a warning message
         console.warn(chalk.yellow('/!\\ The Lisa\'s state is readable by any program, including the messages history and the memory! /!\\'));
       } catch(e) {
