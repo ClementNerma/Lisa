@@ -4,85 +4,16 @@
 "use strict";
 
 /**
- * Get a colored content from a plain content
- * @param {*} content The content to get colored
- * @returns {string} The content, as a string and colored
+ * Run a CLI command
+ * @param {string} input The command to run
+ * @returns {void}
  */
-function getColored(content) {
-  // Get the value as a JSON string
-  // Then get the value's color and assign it to the string
-  return chalk[colors[typeof content]](JSON.stringify(content));
-}
-
-// The colors assigned to the different types of contents
-const colors = {
-  object: 'yellow',
-  undefined: 'magenta',
-  boolean: 'cyan',
-  number: 'red',
-  string: 'blue'
-};
-
-// The colors assigned to the different types of lists
-const listColors = {
-  boolean: colors.boolean,
-  integer: colors.number,
-  floating: colors.floating,
-  string: colors.string
-};
-
-// Load some Node.js modules
-const fs    = require('fs'),
-      path  = require('path'),
-      rl    = require('readline-sync'),
-      chalk = require('chalk'),
-      clui  = require('clui'),
-      sync  = require('sync-request'),
-      clear = require('clear');
-
-// Load the Lisa's core
-const Lisa = require('./core.js');
-
-// Load the LIS parser
-Lisa.loadParser();
-
-// Load the 'localdata' module and register the Lisa's instance.
-const local = require('./localdata.js')(Lisa);
-
-// When a message is displayed...
-Lisa.when('message', (date, author, message) => {
-  // Message from Lisa
-  if (author === 'Lisa')
-    console.log(chalk.green(message));
-
-  // Message from the user
-  else if (author === 'You')
-    console.log(chalk.blue(message));
-
-  // Message from someone else
-  else
-    console.log(chalk.yellow(`[${author}] ${message}`));
-});
-
-// Is the debug mode enabled?
-// TRUE: Inputs are debug instructions
-// FALSE: Inputs are LIS instructions
-let debugMode = false;
-
-// Declare a local variable to store .match()'s result
-let match;
-
-// Forever...
-while (true) {
-  // Handle any command-line input
-  // NOTE: This input is already trimmed by the 'readline-sync' module
-  let input = rl.question(chalk.bold.blue('>') + ' ');
-
+function command(input) {
   // If nothing was input...
   if (!input.length) {
     // Ask again
     console.log('Please input something.\n');
-    continue ;
+    return ;
   }
 
   // Debug mode  + input starts by a point = run a LIS command
@@ -193,8 +124,8 @@ while (true) {
           if (!(store_match = part.match(/^(\$?[a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+)|"(?:.*?)"|\d+) *=> *([a-z][a-z0-9_]*)$/i))) {
             // Display an error message
             console.error(chlak.red(`Invalid syntax in store "${part}"`));
-            // Exit the loop
-            continue ;
+            // Exit the function
+            return ;
           }
 
           // Add this part to the store
@@ -291,7 +222,8 @@ while (true) {
           // An error occured
           // Display the error message
           console.error(chalk.red(e.message));
-          // Continue the loop
+          // Exit the function
+          return ;
         }
 
         // If and only if data was read...
@@ -362,7 +294,7 @@ while (true) {
       } catch(e) {
         // Display the error message and its stack
         console.error(chalk.red(e.stack));
-        continue ;
+        return ;
       }
     } catch(e) {
       // Display the error message
@@ -373,3 +305,78 @@ while (true) {
   // Display a white line
   console.log();
 }
+
+/**
+ * Get a colored content from a plain content
+ * @param {*} content The content to get colored
+ * @returns {string} The content, as a string and colored
+ */
+function getColored(content) {
+  // Get the value as a JSON string
+  // Then get the value's color and assign it to the string
+  return chalk[colors[typeof content]](JSON.stringify(content));
+}
+
+// The colors assigned to the different types of contents
+const colors = {
+  object: 'yellow',
+  undefined: 'magenta',
+  boolean: 'cyan',
+  number: 'red',
+  string: 'blue'
+};
+
+// The colors assigned to the different types of lists
+const listColors = {
+  boolean: colors.boolean,
+  integer: colors.number,
+  floating: colors.floating,
+  string: colors.string
+};
+
+// Load some Node.js modules
+const fs    = require('fs'),
+      path  = require('path'),
+      rl    = require('readline-sync'),
+      chalk = require('chalk'),
+      clui  = require('clui'),
+      sync  = require('sync-request'),
+      clear = require('clear');
+
+// Load the Lisa's core
+const Lisa = require('./core.js');
+
+// Load the LIS parser
+Lisa.loadParser();
+
+// Load the 'localdata' module and register the Lisa's instance.
+const local = require('./localdata.js')(Lisa);
+
+// When a message is displayed...
+Lisa.when('message', (date, author, message) => {
+  // Message from Lisa
+  if (author === 'Lisa')
+    console.log(chalk.green(message));
+
+  // Message from the user
+  else if (author === 'You')
+    console.log(chalk.blue(message));
+
+  // Message from someone else
+  else
+    console.log(chalk.yellow(`[${author}] ${message}`));
+});
+
+// Is the debug mode enabled?
+// TRUE: Inputs are debug instructions
+// FALSE: Inputs are LIS instructions
+let debugMode = false;
+
+// Declare a local variable to store .match()'s result
+let match;
+
+// Forever...
+while (true)
+  // Handle any command-line input
+  // NOTE: This input is already trimmed by the 'readline-sync' module
+  command(rl.question(chalk.bold.blue('>') + ' '));
