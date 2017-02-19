@@ -11,7 +11,7 @@
 function getColored(content) {
   // Get the value as a JSON string
   // Then get the value's color and assign it to the string
-  return chalk[colors[typeof value]](JSON.stringify(value));
+  return chalk[colors[typeof content]](JSON.stringify(content));
 }
 
 // The colors assigned to the different types of contents
