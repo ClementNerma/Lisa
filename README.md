@@ -65,11 +65,15 @@ Lisa.learnsLocaleTexts('en', [ "'d_", "_would_" ]);
 
 // Register a handler
 // Here, the '!' symbol is optionnal (put after the '?' symbol means that you may not input it).
-Lisa.understands(`My birthday is {date}{?!}`, (request) => {
+Lisa.understands(`My birthday is on {short_date}{?!}`, (request) => {
   // If user already said its birthday...
   if (Lisa.knows('birthday'))
-    // Display an answer
-    return `Are you sure? Last time, you said me it was ${Lisa.thinksTo('birthday')}...`;
+    // If the birthday is different this time...
+    // (The .getStandrd() function formats the date is any form to make a string with the 'dd/mm' form)
+    // request.formatted[0] contains the caught date (request.caught[0]) after the use of .getStandard()
+    if (Lisa.getStandard(Lisa.thinksTo('birthday'), 'short_date') !== request.formatted[0])
+      // Display an answer
+      return `Are you sure? Last time, you said me it was on ${Lisa.thinksTo('birthday')}...`;
 
   // Memorize the information
   Lisa.learns('birthday', request.caught[0]);
@@ -82,7 +86,7 @@ Lisa.understands(`I'd like to know when is my birthday?`, (request) => {
   // If she knows it...
   if (Lisa.knows('birthday'))
     // Display the answer
-    return `I know! It's ${Lisa.thinksTo('birthday')}`;
+    return `I know! It's on ${Lisa.thinksTo('birthday')}!`;
 
   // Else, display a "sorry" message
   return `I'm sorry, I don't know that. Do you want to tell me when it is?`;
@@ -98,25 +102,26 @@ LIS (for Lisa's Interface Script) is a programming language designed to fit with
 ```coffeescript
 in locale "en" use { ''d_ | _would_ }
 
-for "My birthday is {date}{?!}" =>
+for "My birthday is on {short_date}{?!}" =>
   if knows birthday
-    end "Are you sure? Last time, you said me it was %birthday%..."
+    if standard(birthday, "short_date") isnt ^0
+      end "Are you sure? Last time, you said me it was on %birthday%..."
 
   store _0 => birthday
-  end "Okay, I remembered it's %^0%"
+  end "Okay, I remembered it's %^0%!"
 
 for "I'd like to know when is my birthday?" =>
   if knows birthday
-    end "I know! It's %birthday%!"
+    end "I know! It's on %birthday%!"
 
   end "I'm sorry, I don't know that. Do you want to tell me when it is?"
 ```
 
 It's exactly the same script. Here is the result:  
 
-![Example of Lisa](http://img11.hostingpics.net/pics/907916dialog1.png)
+![Example of Lisa](https://s7.postimg.org/4jvo0em2j/Demo_of_Lisa.png)
 
-You see how simple it is? Just with one script, we made a robot that can answer smartly to your requests about its birthday. Sure, it's a very simple approach, but it works fine and the robot is able to ignore symbols like `!` or `?` (you can avoid to type these symbols when you input your request), it's case-insensitive, it supports multiple spaces, a locale pattern we set up ('d <=> would).  
+You see how simple this is? Just with one script, we made a robot that can answer smartly to your requests about its birthday. Sure, it's a very simple approach, but it works fine and the robot is able to ignore symbols like `!` or `?` (you can avoid to type these symbols when you input your request), it's case-insensitive, it supports multiple spaces, a locale pattern we set up ('d <=> would).  
 
 There's a lot of other features that won't be detailled here but in the documentation, which permit to make more complex programs for Lisa.  
 
