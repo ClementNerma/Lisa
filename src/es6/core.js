@@ -226,9 +226,9 @@ let LisaAI = function() {
         // For each existing month...
         for (let i = 0; i < months.length; i++)
           // If it is contained in the string...
-          if (input.includes(months))
+          if (input.includes(months[i]))
             // Return the corresponding string
-            return input.replace(/\d+/, ($0) => zero($0) + '/' + zero(i.toString()));
+            return zero(input.match(/\d+/)[0]) + '/' + zero((i /* Starts at 0 */ + 1).toString());
 
         // Else...
         return input.replace(/(\d+).*?(\d+)/, ($0, $1, $2) => zero($1) + '/' + zero($2));
