@@ -112,7 +112,7 @@ Lisa.Script = {
      * @param {string} variable The variable to transpile into JavaScript call
      * @returns {string} Compiled JavaScript code
      */
-    function transpileVar(variable) {
+    this.transpileVar = (variable) => {
       // If that's a local variable...
       if (variable.startsWith('$'))
         return variable.substr(1);
@@ -191,7 +191,7 @@ Lisa.Script = {
 
                 // Else, that's a plain variable call
                 // Transpile the variable call
-                : transpileVar(variable)
+                : this.transpileVar(variable)
               )
           )
         )
@@ -204,7 +204,7 @@ Lisa.Script = {
           // Match all variable calls in the captured quoted string and
           // transpile them
           match.replace(/%([a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))%/g, (match, variable) =>
-              `"+${transpileVar(variable)}+"`
+              `"+${this.transpileVar(variable)}+"`
           )
         )
         // There could be some parts like ""+Lisa.thinksTo("variable")+"", so
