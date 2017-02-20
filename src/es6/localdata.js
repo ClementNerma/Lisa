@@ -60,16 +60,7 @@
         // The original handler, as a string
         handler[0],
         // The handler's callback
-        new Function([
-            // The (optionnal) callback's main variable
-            // If the callback didn't have any argument, extract[1] will contain
-            // an empty string, which result in a lambad function without argument
-            // (new Function([''], 'code();')) works in JavaScript
-            'prepare'
-          ],
-            // The callback's code
-            `return (${handler[1]})(prepare);`
-        ),
+        new Function([ 'prepare' ], `return (${handler[1]})(prepare);`),
         // The store (there is no store in the current case)
         null,
         // The optionnal help texts
