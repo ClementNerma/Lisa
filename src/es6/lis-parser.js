@@ -408,6 +408,14 @@ Lisa.Script = {
         indented ++;
       }
 
+      // -> If a list if empty...
+      else if (match = line.match(/^if( +NOT *|) +empty +([a-z][a-z0-9_]*)$/i)) {
+        // Write it (inversed condition here)
+        program += nl + `if(${match[1]?'':'!'}Lisa.thinksToListLength("${match[2]}")){`;
+        // Expect for a new indentation
+        indented ++;
+      }
+
       // -> Test if a cell is a list
       else if (match = line.match(/^if( +NOT *|) +(islist|is_list|list) +([a-z][a-z0-9_]*)$/i)) {
         // Write it
