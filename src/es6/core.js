@@ -1,10 +1,18 @@
 /**
+ * The Lisa's interface
+ * @type {Lisa}
+ * @constant
+ * @global
+ */
+const Lisa = new ((function() {
+
+/**
  * The Lisa's interface (constructor)
  * @class
  * @constructor
  * @global
  */
-let LisaAI = function() {
+let Lisa = function() {
   /**
    * The catcher usable in regex
    * @type {Object.<string, string>}
@@ -34,13 +42,13 @@ let LisaAI = function() {
     // Single alphanumeric character
     alphanum: () => `[a-zA-Z0-9]`,
     // Time (hours and minutes)
-    short_time: () => `(?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?:| +${Lisa.thinksTo('MINUTES_NAME')})`,
+    short_time: () => `(?:[01]?\\d|2[0-3])(?: *: *| +${this.thinksTo('HOURS_NAME')} +)[0-5]\\d(?:| +${this.thinksTo('MINUTES_NAME')})`,
     // Time (hours, minutes and seconds)
-    time: () => `(?:[01]?\\d|2[0-3])(?: *: *| +${Lisa.thinksTo('HOURS_NAME')} +)[0-5]\\d(?: *: *| +${Lisa.thinksTo('MINUTES_NAME')} +)[0-5]\\d))(?:|${Lisa.thinksTo('SECONDS_NAME')}`,
+    time: () => `(?:[01]?\\d|2[0-3])(?: *: *| +${this.thinksTo('HOURS_NAME')} +)[0-5]\\d(?: *: *| +${this.thinksTo('MINUTES_NAME')} +)[0-5]\\d))(?:|${this.thinksTo('SECONDS_NAME')}`,
     // Date (dd.mm dd-mm dd/mm)
-    short_date: () => `(?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}))`,
+    short_date: () => `(?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *| +(?:${this.thinksTo('MONTHS').split(',').join('|')}))`,
     // Date (dd.mm.yyyy dd-mm-yyyy dd/mm/yyyy)
-    date: () => `(?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${Lisa.thinksTo('MONTHS').split(',').join('|')}) +)\\d{4}`,
+    date: () => `(?:[1-9]|0[1-9]|[12]\\d|3[01])(?: *[\\/\\-\\.] *(?:[1-9]|0[1-9]|1[0-2]) *[\\/\\-\\.] *| +(?:${this.thinksTo('MONTHS').split(',').join('|')}) +)\\d{4}`,
     // Email adress
     email: () => `(?:(?:[^<>\\(\\)\\[\\]\\.,;:\\s@\\"]+(?:\\.[^<>()\\[\\]\\.,;:\\s@\\"]+)*)|(?:\\".+\\"))@(?:(?:[^<>()[\\]\\.,;:\\s@\\"]+\\.)+[^<>\\(\\)[\\]\\.,;:\\s@\\"]{2,})`,
     // URL
@@ -1649,16 +1657,7 @@ let LisaAI = function() {
   this.__defineGetter__('locale', () => currentLocale);
 };
 
-/**
- * The Lisa's interface
- * @type {LisaAI}
- * @constant
- * @global
- */
-const Lisa = new LisaAI();
-
-// Remove the constructor
-LisaAI = null;
+return Lisa; })());
 
 // If the 'module' object is available...
 if (typeof module === 'object' && module && !Array.isArray(module)) {
