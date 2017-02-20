@@ -1,5 +1,6 @@
 :: NOTE: The Lisa's builder requires Node.js with the 'node-sass', 'babel' and
-::       'uglify-js' packages
+::       'uglify-js' modules
+:: NOTE: The 'jsdox' module is required to generate the API documentation
 
 @echo off
 
@@ -54,6 +55,10 @@ if NOT "%1" == "--sources" echo [ build ] Removing sources...
 if NOT "%1" == "--sources" del build\lisa-es6.js
 if NOT "%1" == "--sources" del build\lisa-es5.js
 if NOT "%1" == "--sources" del build\lisa.scss
+
+:: If asked for, generate documentation
+if "%1" == "--generate-doc" echo [ build ] Generating documentation...
+if "%1" == "--generate-doc" call jsdox src\es6\core.js --output doc\API
 
 :end
 :: Done
