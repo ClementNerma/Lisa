@@ -495,7 +495,7 @@ Lisa.Script = {
       // -> Push a value into a list
       else if (match = line.match(/^(pushlist|push|append|add) +(.*?) +(=>|in|to) +([a-z][a-z0-9_]*)$/i))
         // Write it
-        program += nl + `Lisa.learnsListValue("${match[3]}",${this.transpile(match[2])});`;
+        program += nl + `Lisa.learnsListValue("${match[4]}",${this.transpile(match[2])});`;
 
       // -> Sort a list with ascending order
       else if (match = line.match(/^(sorts?_?a?|sorts?_?asc|sorts?_?list|sorts?_?list_?asc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
