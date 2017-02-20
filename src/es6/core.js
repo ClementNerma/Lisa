@@ -1540,11 +1540,11 @@ let Lisa = function() {
   this.doesntRememberMessages = () => void (rememberMessages = false);
 
   /**
-   * Get a message displayed in the web page
+   * Get a message from the history
    * @param {number} [id] An integer, which is the message you want from the very end (default: 0 = last message)
    * @returns {Array}
    */
-  this.getMessage = (id = 0) => {
+  this.thinksToMessage = (id = 0) => {
     // If the ID is not valid...
     if (typeof id !== 'number' || Math.floor(id) !== id)
       // Throw an error

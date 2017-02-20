@@ -550,9 +550,9 @@ Don't make Lisa remembering all messages and requests
 
 **Returns**: `void`
 
-### Lisa.getMessage(id) 
+### Lisa.thinksToMessage(id) 
 
-Get a message displayed in the web page
+Get a message from the history
 
 **Parameters**
 
