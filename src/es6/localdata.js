@@ -68,7 +68,7 @@
             'prepare'
           ],
             // The callback's code
-            `(${handler[1]})(prepare);`
+            `return (${handler[1]})(prepare);`
         ),
         // The store (there is no store in the current case)
         null,
