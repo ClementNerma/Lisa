@@ -87,7 +87,9 @@ Lisa.Script = {
     // Make anything a string
     string: 'Lisa.Script.libString',
     // Get the standard form of a content
-    standard: 'Lisa.getStandard'
+    standard: 'Lisa.getStandard',
+    // Join a list
+    join: 'Lisa.Script.libJoinList'
   },
 
   /**
@@ -676,5 +678,16 @@ Lisa.Script = {
 
     // Else, the content can't be returned as a string -> Throw an error
     throw new Error('[LIS:exec] Content can\'t be stringified');
+  },
+
+  /**
+   * Join values of a list
+   * @param {string} list The list
+   * @param {string} sep The separator
+   * @returns {string} The joined values
+   */
+  libJoinList(list, sep) {
+    // Get the list, then join its values using the provided separator
+    return (Lisa.thinksToList(list) || []).join(sep);
   }
 };
