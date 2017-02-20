@@ -4,6 +4,20 @@
 "use strict";
 
 /**
+ * Exit the CLI
+ * @returns {void}
+ */
+function exit() {
+  // If the Lisa's state should be saved to a file...
+  if (typeof args.o === 'string' || typeof args.output === 'string')
+    // Save it
+    command('.export ' + (args.output || args.o), true);
+
+  // Close the process
+  process.exit(0);
+}
+
+/**
  * Run a CLI command
  * @param {string} input The command to run
  * @param {boolean} [avoidNewLine] Do not display a white line (default: false)
@@ -61,7 +75,7 @@ function command(input, avoidNewLine = false) {
     // exit the CLI
     else if (input === 'exit')
       // Exit the process
-      process.exit(0);
+      exit();
 
     // clear
     else if (input === 'clear')
@@ -410,7 +424,7 @@ if (typeof args.e === 'string' || typeof args.execute === 'string') {
   // If not forbidden...
   if (!args.cli && !args['keep-cli'])
     // Close the CLI
-    process.exit(0);
+    exit();
 }
 
 // Forever...
