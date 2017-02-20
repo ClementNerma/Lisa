@@ -126,7 +126,7 @@
       // If the LZString library is not present...
       if (typeof LZString !== 'object' || typeof LZString.decompressFromUTF16 !== 'function')
         // Run the error callback
-        corrupted('lzstring_not_found');
+        return void corrupted('lzstring_not_found');
       else
         // That's a compressed data (using the LZString library)
         data =
@@ -149,7 +149,7 @@
     // Else...
     else
       // Data is corrupted
-      corrupted('unknown_header');
+      return void corrupted('unknown_header');
 
     // If data was retrieved...
     if (data) {
@@ -159,10 +159,9 @@
       catch(e) { corrupted('json'); }
 
       // Finally, if there is the parse worked well...
-      if (data) {
+      if (data)
         // Load it as the Lisa's state
         success(data);
-      }
     }
   }
 
