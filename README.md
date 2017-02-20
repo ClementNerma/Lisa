@@ -93,7 +93,7 @@ Lisa.understands(`I'd like to know when is my birthday?`, (request) => {
 });
 ```
 
-This code will accept inputs such as `My birthday is 28.03.2000` or `My birthday is 28 / 03 / 2000`, and the JavaScript function can see what's the syntax used by the user by using `request.caught[0]` which will give respectively `28.03.2000` and `28 / 03 / 2000`. But, in the both cases, the `request.formatted[0]` will output `28/03/2000`, the date's standard format for Lisa. That makes manipulations on it easier.
+This code will accept inputs such as `My birthday is on 28.03` or `My birthday is on 28 / 03`, and the JavaScript function can see what's the syntax used by the user by using `request.caught[0]` which will give respectively `28.03` and `28 / 03`. But, in the both cases, the `request.formatted[0]` will output `28/03`, the date's standard format for Lisa. That makes manipulations on it easier.
 
 # LIS programs
 
