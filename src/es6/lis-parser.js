@@ -454,7 +454,7 @@ Lisa.Script = {
       // NOTE: In the store's target the '_' symbol is not allowed at the
       // beginning of the target's name, because it's reserved to the function's
       // arguments, which cannot be the store's target
-      else if (match = line.match(/^(store|set|learn|rem|remember|mem|memorize|save)[s]? +(.*?) *=> *([a-z][a-z0-9_]*)$/i))
+      else if (match = line.match(/^(store|set|learn|rem|remember|mem|memorize|save)[s]? +(.*?) *(=>|in|to) *([a-z][a-z0-9_]*)$/i))
         // Write it
         program += nl + `Lisa.learns("${match[3]}",${this.transpile(match[2])});`;
 
