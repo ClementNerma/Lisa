@@ -491,7 +491,7 @@ Lisa.Script = {
         program += nl + `Lisa.learnsList("${match[3]}",[],"${match[2]}");`;
 
       // -> Push a value into a list
-      else if (match = line.match(/^(pushlist|push|append|add) +(.*?) +in +([a-z][a-z0-9_]*)$/i))
+      else if (match = line.match(/^(pushlist|push|append|add) +(.*?) +(=>|in|to) +([a-z][a-z0-9_]*)$/i))
         // Write it
         program += nl + `Lisa.learnsListValue("${match[3]}",${this.transpile(match[2])});`;
 
