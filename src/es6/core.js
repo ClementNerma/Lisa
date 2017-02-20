@@ -1561,7 +1561,7 @@ let Lisa = function() {
       throw new Error(`[Lisa] There is no message with id "${id}"`);
 
     // Return the message (cloned to prevent modifications)
-    return messages.slice(0);
+    return messages[messages.length - 1 - id].slice(0);
   };
 
   /**
