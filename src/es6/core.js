@@ -489,7 +489,8 @@ let Lisa = function() {
         // Here a lambda function is used instead of an arrow function
         // because in this last case the 'arguments' variable cannot be
         // accessed (that may be due to the fact this file is babelified)
-        callback = new Function(['requested'], '(' + (function(store, Lisa) {
+        callback = new Function(['requested'], 'var ret=(' + original.toString() + ')(requested);(' +
+        (function(store, Lisa) {
           // For each variable in 'store'...
           for (let variable of Reflect.ownKeys(store))
             // Store its value in the memory
@@ -502,7 +503,7 @@ let Lisa = function() {
 
           // Run the original callback and return its result as the Lisa's
           // answer
-        }).toString() + ')(' + JSON.stringify(store) + ', requested.caller);return (' + original.toString() + ')(requested);');
+        }).toString() + ')(' + JSON.stringify(store) + ', requested.caller);return ret;');
       }
     }
     // Else, that's not a valid callback
