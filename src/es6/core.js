@@ -616,7 +616,7 @@ let Lisa = function() {
       throw new Error(`[Lisa] Unknown handler "${handler}"`);
 
     // Get the help array about this handler
-    let helpTexts = handlers[handled.indexOf(handler)][3]
+    let helpTexts = handlers[handled.indexOf(handler)][4];
 
     // If there is no help text...
     if (!helpTexts)
