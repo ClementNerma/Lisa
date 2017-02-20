@@ -119,7 +119,7 @@ for "I'd like to know when is my birthday?" =>
 
 It's exactly the same script. Here is the result:  
 
-![Example of Lisa](https://s8.postimg.org/t5x92pbmt/Demo_of_Lisa.png)
+![Example of Lisa](https://s21.postimg.org/b5g2jdtwn/Demo_of_Lisa.png)
 
 You see how simple this is? Just with one script, we made a robot that can answer smartly to your requests about its birthday. Sure, it's a very simple approach, but it works fine and the robot is able to ignore symbols like `!` or `?` (you can avoid to type these symbols when you input your request), it's case-insensitive, it supports multiple spaces, a locale pattern we set up ('d <=> would).  
 
