@@ -10,7 +10,6 @@
 function reset() {
   // Remove Lisa from the cache
   delete require.cache[require.resolve('./core.js')];
-  delete require.cache[require.resolve('./localdata.js')];
 
   // Load the Lisa's core
   Lisa = require('./core.js');
@@ -18,8 +17,8 @@ function reset() {
   // Load the LIS parser
   Lisa.loadParser();
 
-  // Load the 'localdata' module and register the Lisa's instance.
-  local = require('./localdata.js')(Lisa);
+  // Load the states manager
+  Lisa.loadManager();
 
   // When a message is displayed...
   Lisa.when('message', (date, author, message) => {
@@ -76,9 +75,9 @@ function exportState(file, beautify = false) {
           // NOTE: Because the string is not reversed and does not contain
           // a header, this state file will not be loadable with the 'import'
           // command.
-          JSON.stringify(local.saveState(), null, 2) :
+          JSON.stringify(Lisa.State.save(), null, 2) :
           // ELse,minimize and reverse it
-          local.convertObjectSave(local.saveState()), 'utf-8');
+          Lisa.State.convertObjectSave(Lisa.State.save()), 'utf-8');
 
     // Success!
     return true;
@@ -321,7 +320,7 @@ function command(input, avoidNewLine = false) {
           // If it works, load it as the current Lisa's state
           // If it fails, display an error message
           // Convert it to a save object
-          local.convertPlainSave(data, out => {
+          Lisa.State.convertPlainSave(data, out => {
             // Reset Lisa
             // If she already understands some requests, or have a memory, that
             // will cause duplicate values. Also, Lisa can throw an error if a
@@ -329,7 +328,7 @@ function command(input, avoidNewLine = false) {
             // state it fully reset.
             reset();
             // Load the (new) Lisa's state
-            local.loadState(out);
+            Lisa.State.load(out);
           }, err => {
             // Compressed data
             if (err === 'lzstring')
