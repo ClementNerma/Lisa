@@ -496,9 +496,9 @@ let Lisa = function() {
             // Store its value in the memory
             Lisa.learns(variable, store[variable]
                 // Standardly-formatted variables
-                .replace(/\$\^(\d|[1-9]\d+)/g, (match, n) => requested.formatted[n])
+                .replace(/%\^(\d|[1-9]\d+)%/g, (match, n) => requested.formatted[n])
                 // Original variables
-                .replace(/\$_(\d|[1-9]\d+)/g, (match, n) => requested.caught[n])
+                .replace(/%_(\d|[1-9]\d+)%/g, (match, n) => requested.caught[n])
             );
 
           // Run the original callback and return its result as the Lisa's
