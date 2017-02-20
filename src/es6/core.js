@@ -230,7 +230,7 @@ let Lisa = function() {
       // Date (dd/mm)
       case 'short_date':
         // Get all months of the year
-        months = Lisa.thinksTo('MONTHS').split(',');
+        months = this.thinksTo('MONTHS').split(',');
         // For each existing month...
         for (let i = 0; i < months.length; i++)
           // If it is contained in the string...
@@ -244,7 +244,7 @@ let Lisa = function() {
       // Date (dd/mm/yyyy)
       case 'date':
         // Get all months of the year
-        months = Lisa.thinksTo('MONTHS').split(',');
+        months = this.thinksTo('MONTHS').split(',');
 
         // For each existing month...
         for (let i = 0; i < months.length; i++)
@@ -281,8 +281,8 @@ let Lisa = function() {
     // NOTE: Here, variables can't start by the '_' symbol because that's a
     // reserved notation which is used by the LIS programs.
       .replace(/%([a-zA-Z][a-zA-Z0-9_]*)%/g, (match, variable) => {
-        if (Lisa.knows(variable))
-          return Lisa.thinksTo(variable)
+        if (this.knows(variable))
+          return this.thinksTo(variable)
         else
           throw new Error(`[Lisa] Variable "${variable}" is not defined in message "${message}"`);
       });
@@ -489,7 +489,7 @@ let Lisa = function() {
         // Here a lambda function is used instead of an arrow function
         // because in this last case the 'arguments' variable cannot be
         // accessed (that may be due to the fact this file is babelified)
-        callback = new Function(['requested'], '(' + (function(store) {
+        callback = new Function(['requested'], '(' + (function(store, Lisa) {
           // For each variable in 'store'...
           for (let variable of Reflect.ownKeys(store))
             // Store its value in the memory
@@ -502,7 +502,7 @@ let Lisa = function() {
 
           // Run the original callback and return its result as the Lisa's
           // answer
-        }).toString() + ')(' + JSON.stringify(store) + ');return (' + original.toString() + ')(requested);');
+        }).toString() + ')(' + JSON.stringify(store) + ', requested.caller);return (' + original.toString() + ')(requested);');
       }
     }
     // Else, that's not a valid callback
