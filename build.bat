@@ -58,7 +58,7 @@ if NOT "%1" == "--sources" del build\lisa.scss
 
 :: If asked for, generate documentation
 if "%1" == "--generate-doc" echo [ build ] Generating documentation...
-if "%1" == "--generate-doc" call jsdox src\es6\core.js --output doc\API
+if "%1" == "--generate-doc" call jsdox src\es6\core.js --output docs\API
 
 :end
 :: Done
