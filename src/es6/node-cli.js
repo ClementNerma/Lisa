@@ -9,9 +9,15 @@
  */
 function exit() {
   // If the Lisa's state should be saved to a file...
-  if (typeof args.o === 'string' || typeof args.output === 'string')
+  if (typeof args.o === 'string' || typeof args.output === 'string') {
+    // Enable the debug mode to run the 'export' command
+    // If this assignment is not done, depending on if the debug mode is enabled
+    // or not, the command will throw an error or work fine.
+    debugMode = true;
+
     // Save it
-    command('.export ' + (args.output || args.o), true);
+    command('export ' + (args.output || args.o), true);
+  }
 
   // Close the process
   process.exit(0);
@@ -232,10 +238,10 @@ function command(input, avoidNewLine = false) {
 
     // import <filepath>
     else if (match = input.match(/^import +([a-z0-9\.\\\/\:]+)$/i)) {
+      // Get the real file's path
       let file = path.normalize(match[1]);
       // Declare a variable which will contain it
       let data;
-      // Get the real file's path
 
       // Check if the file exists
       let exists;
@@ -278,6 +284,53 @@ function command(input, avoidNewLine = false) {
               // Log an error into it
               console.error(chalk.red('The state file is corrupted'));
           });
+      }
+    }
+
+    // run <filepath>
+    else if (match = input.match(/^run +([a-z0-9\.\\\/\:]+)$/i)) {
+      // Get the real file's path
+      let file = path.normalize(match[1]);
+      // Declare a variable which will contain it
+      let data;
+
+      // Check if the file exists
+      let exists;
+      try { exists = fs.lstatSync(file).isFile(); }
+      catch(e) { }
+
+      // If the file does not exist...
+      if (!exists)
+        // Display an error message
+        console.error(chalk.red('File was not found'));
+      // Else...
+      else {
+        try {
+          // Read the file
+          data = fs.readFileSync(file, 'utf-8');
+        } catch(e) {
+          // An error occured
+          // Display the error message
+          console.error(chalk.red(e.message));
+          // Exit the function
+          return ;
+        }
+
+        // If and only if data was read...
+        if (data) {
+          // Save the debug mode's state (to restore it after)
+          let current = debugMode;
+          // Disable the debug mode to run the file
+          debugMode = false;
+          // Run the file as a group of LIS commands
+          // Because the commands are joined with line breaks, the script won't
+          // be able to run debug commands (excepted on the very first line).
+          // Also, avoid a new line after the instructions because the 'run'
+          // function will display a new line (at the end of command()).
+          command(data.replace(/\r\n|\r|\n/g, '\n'), true);
+          // Restore the debug mode's state
+          debugMode = current;
+        }
       }
     }
 
