@@ -201,7 +201,7 @@ function command(input, avoidNewLine = false) {
           match[2] ?
               // Beautify it
               // NOTE: Because the string is not reversed and does not contain
-              // a header, this save file will not be loadable with the 'import'
+              // a header, this state file will not be loadable with the 'import'
               // command.
               JSON.stringify(local.saveState(), null, 2) :
               // ELse,minimize and reverse it
@@ -254,15 +254,15 @@ function command(input, avoidNewLine = false) {
           local.convertPlainSave(data, out => local.loadState(out), err => {
             // Compressed data
             if (err === 'lzstring')
-              console.error(chalk.red('The save file is compressed (LZString).'));
+              console.error(chalk.red('The state file is compressed (LZString).'));
             // Unknown header
             else if (err === 'unknown_header')
-              console.error(chalk.red('The save file uses an invalid header.'));
+              console.error(chalk.red('The state file uses an invalid header.'));
             // That's an unknown kind of data
             // If the 'console' object is defined...
             else
               // Log an error into it
-              console.error(chalk.red('The save file is corrupted'));
+              console.error(chalk.red('The state file is corrupted'));
           });
       }
     }
@@ -397,7 +397,7 @@ let debugMode = false;
 // Declare a local variable to store .match()'s result
 let match;
 
-// If a save file should be loaded...
+// If a state file should be loaded...
 if (typeof args.i === 'string' || typeof args.input === 'string')
   // Load it
   command('.import ' + (args.input || args.i));
