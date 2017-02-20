@@ -78,7 +78,7 @@ Lisa.understands(`My birthday is on {short_date}{?!}`, (request) => {
   // Memorize the information
   Lisa.learns('birthday', request.caught[0]);
   // Display the answer
-  return `Okay, I remembered it's ${request.formatted[0]}!`;
+  return `Okay, I remembered it's on ${request.formatted[0]}!`;
 });
 
 // Register another handler
@@ -108,7 +108,7 @@ for "My birthday is on {short_date}{?!}" =>
       end "Are you sure? Last time, you said me it was on %birthday%..."
 
   store _0 => birthday
-  end "Okay, I remembered it's %^0%!"
+  end "Okay, I remembered it's on %^0%!"
 
 for "I'd like to know when is my birthday?" =>
   if knows birthday
@@ -119,7 +119,7 @@ for "I'd like to know when is my birthday?" =>
 
 It's exactly the same script. Here is the result:  
 
-![Example of Lisa](https://s7.postimg.org/4jvo0em2j/Demo_of_Lisa.png)
+![Example of Lisa](https://s8.postimg.org/t5x92pbmt/Demo_of_Lisa.png)
 
 You see how simple this is? Just with one script, we made a robot that can answer smartly to your requests about its birthday. Sure, it's a very simple approach, but it works fine and the robot is able to ignore symbols like `!` or `?` (you can avoid to type these symbols when you input your request), it's case-insensitive, it supports multiple spaces, a locale pattern we set up ('d <=> would).  
 
