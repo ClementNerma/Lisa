@@ -4,6 +4,40 @@
 "use strict";
 
 /**
+ * Load Lisa (and reset it)
+ * @returns {void}
+ */
+function reset() {
+  // Remove Lisa from the cache
+  delete require.cache[require.resolve('./core.js')];
+  delete require.cache[require.resolve('./localdata.js')];
+
+  // Load the Lisa's core
+  Lisa = require('./core.js');
+
+  // Load the LIS parser
+  Lisa.loadParser();
+
+  // Load the 'localdata' module and register the Lisa's instance.
+  local = require('./localdata.js')(Lisa);
+
+  // When a message is displayed...
+  Lisa.when('message', (date, author, message) => {
+    // Message from Lisa
+    if (author === 'Lisa')
+      console.log(chalk.green(message));
+
+    // Message from the user
+    else if (author === 'You')
+      console.log(chalk.blue(message));
+
+    // Message from someone else
+    else
+      console.log(chalk.yellow(`[${author}] ${message}`));
+  });
+}
+
+/**
  * Exit the CLI
  * @returns {void}
  */
@@ -287,7 +321,16 @@ function command(input, avoidNewLine = false) {
           // If it works, load it as the current Lisa's state
           // If it fails, display an error message
           // Convert it to a save object
-          local.convertPlainSave(data, out => local.loadState(out), err => {
+          local.convertPlainSave(data, out => {
+            // Reset Lisa
+            // If she already understands some requests, or have a memory, that
+            // will cause duplicate values. Also, Lisa can throw an error if a
+            // handler is already in use. In order to avoid that, the Lisa's
+            // state it fully reset.
+            reset();
+            // Load the (new) Lisa's state
+            local.loadState(out);
+          }, err => {
             // Compressed data
             if (err === 'lzstring')
               console.error(chalk.red('The state file is compressed (LZString).'));
@@ -453,29 +496,11 @@ const fs    = require('fs'),
       clear = require('clear'),
       args  = require('optimist').argv;
 
-// Load the Lisa's core
-const Lisa = require('./core.js');
+// Declare two variables to contain Lisa and the 'localdata' module
+let Lisa, local;
 
-// Load the LIS parser
-Lisa.loadParser();
-
-// Load the 'localdata' module and register the Lisa's instance.
-const local = require('./localdata.js')(Lisa);
-
-// When a message is displayed...
-Lisa.when('message', (date, author, message) => {
-  // Message from Lisa
-  if (author === 'Lisa')
-    console.log(chalk.green(message));
-
-  // Message from the user
-  else if (author === 'You')
-    console.log(chalk.blue(message));
-
-  // Message from someone else
-  else
-    console.log(chalk.yellow(`[${author}] ${message}`));
-});
+// Load the Lisa's library
+reset();
 
 // Is the debug mode enabled?
 // TRUE: Inputs are debug instructions
