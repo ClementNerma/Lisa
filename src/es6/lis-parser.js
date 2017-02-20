@@ -89,7 +89,9 @@ Lisa.Script = {
     // Get the standard form of a content
     standard: 'Lisa.getStandard',
     // Join a list
-    join: 'Lisa.Script.libJoinList'
+    join: 'Lisa.Script.libJoinList',
+    // Sum of a list
+    sum: 'Lisa.Script.libSumList'
   },
 
   /**
@@ -689,5 +691,25 @@ Lisa.Script = {
   libJoinList(list, sep) {
     // Get the list, then join its values using the provided separator
     return (Lisa.thinksToList(list) || []).join(sep);
+  },
+
+  /**
+   * Do the summation of a list
+   * @param {string} list The list
+   * @returns {number} The summation
+   */
+  libSumList(list) {
+    // Get the list
+    let amounts = Lisa.thinksToList(list) || [];
+    // Define a variable to calcule its sum
+    let total = 0;
+
+    // For each transaction done...
+    for (let amount of amounts)
+      // Add it to the total
+      total += amount;
+
+    // Return the sum
+    return total;
   }
 };
