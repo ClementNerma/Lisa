@@ -397,6 +397,11 @@ let debugMode = false;
 // Declare a local variable to store .match()'s result
 let match;
 
+// If a save file should be loaded...
+if (typeof args.i === 'string' || typeof args.input === 'string')
+  // Load it
+  command('.import ' + (args.input || args.i));
+
 // If a command should be runned now...
 if (typeof args.e === 'string' || typeof args.execute === 'string') {
   // Run it
