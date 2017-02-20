@@ -473,8 +473,8 @@ let LisaAI = function() {
         + '"');
     // Else, if it's a function...
     else if (typeof callback === 'function') {
-      // If the 'store' argument was provided...
-      if (store) {
+      // If the 'store' argument was provided, and if it's not empty...
+      if (store && Reflect.ownKeys(store).length) {
         // Save the original callback under an other name
         let original = callback;
         // Make the callback a new function
