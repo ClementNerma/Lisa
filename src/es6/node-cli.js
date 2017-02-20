@@ -408,6 +408,11 @@ function command(input, avoidNewLine = false) {
   if (!avoidNewLine)
     // Display a white line
     console.log();
+
+  // If asked for...
+  if (syncFile)
+    // Write the Lisa's state to a file
+    exportState(syncFile);
 }
 
 /**
@@ -479,6 +484,14 @@ let debugMode = false;
 
 // Declare a local variable to store .match()'s result
 let match;
+
+// The file CLI should be synchronised with
+let syncFile = (typeof args.s === 'string' || typeof args.sync === 'string') ? (args.sync || args.s) : null;
+
+// If the CLI should be synchronised with a state file...
+if (syncFile)
+  // Set it
+  args.input = syncFile;
 
 // If a state file should be loaded...
 if (typeof args.i === 'string' || typeof args.input === 'string')
