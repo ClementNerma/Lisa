@@ -16,11 +16,45 @@ function exit() {
     debugMode = true;
 
     // Save it
-    command('export ' + (args.output || args.o), true);
+    exportState(args.output || args.o);
   }
 
   // Close the process
   process.exit(0);
+}
+
+/**
+ * Write the Lisa's state in a file
+ * @param {string} file The file to write in
+ * @param {boolean} [beautify] Write a beautified file (default: false)
+ * @returns {void}
+ */
+function exportState(file, beautify = false) {
+  try {
+    // Write the data in a file
+    // For that, get the Lisa's state
+    fs.writeFileSync(
+      // Normalize the path and make it relative to the current path
+      path.normalize(file),
+      // If data must be beautified...
+      beautify ?
+          // Beautify it
+          // NOTE: Because the string is not reversed and does not contain
+          // a header, this state file will not be loadable with the 'import'
+          // command.
+          JSON.stringify(local.saveState(), null, 2) :
+          // ELse,minimize and reverse it
+          local.convertObjectSave(local.saveState()), 'utf-8');
+
+    // Success!
+    return true;
+  } catch(e) {
+    // An error occured
+    // Display the error message
+    console.error(chalk.red(e.message));
+    // Failed
+    return false;
+  }
 }
 
 /**
@@ -211,29 +245,11 @@ function command(input, avoidNewLine = false) {
 
     // export <filepath> [beautify]
     else if (match = input.match(/^export +([a-z0-9\.\\\/\:]+)( +beautify|)$/i)) {
-      try {
-        // Write the data in a file
-        // For that, get the Lisa's state
-        fs.writeFileSync(
-          // Normalize the path and make it relative to the current path
-          path.normalize(match[1]),
-          // If data must be beautified...
-          match[2] ?
-              // Beautify it
-              // NOTE: Because the string is not reversed and does not contain
-              // a header, this state file will not be loadable with the 'import'
-              // command.
-              JSON.stringify(local.saveState(), null, 2) :
-              // ELse,minimize and reverse it
-              local.convertObjectSave(local.saveState()), 'utf-8');
-
+      // Export the file
+      // If it worked...
+      if (exportState(match[1], !!match[2]))
         // Display a warning message
         console.warn(chalk.yellow('/!\\ The Lisa\'s state is readable by any program, including the messages history and the memory! /!\\'));
-      } catch(e) {
-        // An error occured
-        // Display the error message
-        console.error(chalk.red(e.message));
-      }
     }
 
     // import <filepath>
