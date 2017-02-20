@@ -18,7 +18,7 @@ let LisaAI = function() {
     // time a regex is called, without losing much performances.
 
     // Anything
-    '*': () => `.*?`,
+    '*': () => `.+?`,
     // Single digit
     digit: () => `\\d`,
     // Number (integer or floating)
