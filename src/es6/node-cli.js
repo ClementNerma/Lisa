@@ -17,7 +17,7 @@ function reset() {
   // Load the LIS parser
   Lisa.loadParser();
 
-  // Load the states manager
+  // Load the state manager
   Lisa.loadManager();
 
   // When a message is displayed...

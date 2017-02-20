@@ -1,7 +1,7 @@
 /** @file Load and save the Lisa's data from and to the browser's localStorage */
 
 /**
- * The Lisa's states manager
+ * The Lisa's state manager
  * @type {Object.<string, Function>}
  */
 Lisa.State = {
