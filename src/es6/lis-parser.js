@@ -133,7 +133,7 @@ Lisa.Script = {
         return variable;
       // Else, that's a variable...
       else
-        return 'Lisa.thinksTo("' + variable + '")';
+        return 'Lisa.thinksToCell("' + variable + '")';
     }
 
     /**
@@ -213,7 +213,7 @@ Lisa.Script = {
               `"+${this.transpileVar(variable)}+"`
           )
         )
-        // There could be some parts like ""+Lisa.thinksTo("variable")+"", so
+        // There could be some parts like ""+Lisa.thinksToCell("variable")+"", so
         // it's useful to avoid them to make the JavaScript code more readable
         // and smaller.
         .replace(/""\+/g, '').replace(/\+""/g, '');
