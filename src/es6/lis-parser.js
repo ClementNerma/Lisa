@@ -251,6 +251,19 @@ Lisa.Script = {
       indented = indent;
     }
 
+    /**
+     * Generate a temporary variable
+     * @returns {string} The temporary variable's name
+     */
+    function generateTemp() {
+      // Get the variable's name
+      let name = '_tmp' + (temporary ++);
+      // Push it to the list of the variables to declare
+      vars.push(name);
+      // Return the name
+      return name;
+    }
+
     // If the source code is not a string...
     if (typeof source !== 'string')
       // Throw an error
@@ -290,6 +303,9 @@ Lisa.Script = {
 
     // The indentations that must close handlers' callback
     let closing = [];
+
+    // The temporary variables counter
+    let temporary = 0;
 
     // For each line of code...
     for (line of lines) {
@@ -477,6 +493,26 @@ Lisa.Script = {
         program += nl + `Lisa.understands("${match[2]}",function(){${nl?nl+'  ':''}var _a=arguments[0],Lisa=_a.caller;`;
         // Mark this indentation as closing a handler
         closing.push(indented);
+        // Expect for a new indentation
+        indented ++;
+      }
+
+      // -> Iterate for each value of a list or array...
+      // NOTE: Iterator must be a local variable
+      else if (match = line.match(/^for *each +\$([a-z][a-z0-9_]*) +(in|of) +(.*?)$/i)) {
+        // If this variable is not defined in the function...
+        if (!vars.includes(match[1]))
+          // List it as a variable to declare
+          vars.push(match[1]);
+
+        // Generate two new random variables
+        let subject = generateTemp(), iterator = generateTemp();
+
+        // Write the code
+        program += nl + `${subject}=${this.transpile(match[3])};`
+                +  nl + `for(${iterator}=0;${iterator}<${subject}.length;${iterator}++){`
+                +  nl + `  ${match[1]}=${subject}[${iterator}];`;
+
         // Expect for a new indentation
         indented ++;
       }
