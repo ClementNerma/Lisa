@@ -89,9 +89,9 @@ Lisa.Script = {
     // Get the standard form of a content
     standard: 'Lisa.getStandard',
     // Join a list
-    join: 'Lisa.Script.libJoinList',
+    join_list: 'Lisa.Script.libJoinList',
     // Sum of a list
-    sum: 'Lisa.Script.libSumList'
+    sum_list: 'Lisa.Script.libSumList'
   },
 
   /**
