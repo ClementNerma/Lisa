@@ -590,6 +590,11 @@ Lisa.Script = {
         // Write it
         program += nl + `eval("${match[2]}");`;
 
+      // -> LIS code
+      else if (match = line.match(/^(eval|evaluate|lis|run) +(.*)$/))
+        // Write it
+        program += nl + `eval(Lisa.Script.compile(${this.transpile(match[2])}));`;
+
       // Else, if the line is not empty...
       else if (line)
         // That's a syntax error -> throw an error
