@@ -437,7 +437,7 @@ Lisa.Script = {
       }
 
       // -> If it's a comparative condition...
-      else if (match = line.match(/^if +(.*?) *(=|==|\!|\!=|\!==|is not|isnt|is) *(.*?)$/i)) {
+      else if (match = line.match(/^if +(.*?) *(\b(?:=|==|\!|\!=|\!==|is not|isnt|is)\b) *(.*?)$/i)) {
         // Write it
         program += nl + `if(${this.transpile(match[1])}${this.comparators[match[2]]}${this.transpile(match[3])}){`;
         // Expect for a new indentation
