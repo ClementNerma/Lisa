@@ -539,7 +539,7 @@ Lisa.Script = {
         program += nl + `Lisa.hears("${match[2]}");Lisa.does("${match[2]}");`;
 
       // -> If it's an unstore instruction...
-      else if (match = line.match(/^(unstore|unset|unlearn|unremember|unmemorize|unsave|forget)[s]? +([a-z][a-z0-9_]*)$/i))
+      else if (match = line.match(/^(unstore|unset|unlearn|unremember|unmemorize|unsave|forget|delete)[s]? +([a-z][a-z0-9_]*)$/i))
         // Write it
         program += nl + `Lisa.forgets("${match[2]}");`;
 
