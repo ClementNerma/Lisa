@@ -150,7 +150,9 @@ Lisa.understands('Sort my transactions', p =>
 );
 ```
 
-We made it :smile:! Here is the full code:
+We made it :smile:!
+
+### Full code
 
 ```javascript
 // If the 'amounts' list is not defined...
