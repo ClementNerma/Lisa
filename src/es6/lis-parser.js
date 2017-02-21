@@ -99,6 +99,113 @@ Lisa.Script = {
   },
 
   /**
+   * Transpile a LIS variable call
+   * NOTE: THis function does NOT check the expression's syntax ; functions can be opened without be closed
+   * @param {string} variable The variable to transpile into JavaScript call
+   * @returns {string} Compiled JavaScript code
+   */
+  transpileVar(variable) {
+    // If that's a local variable...
+    if (variable.startsWith('$'))
+      return variable.substr(1);
+    // If that's a caught argument...
+    else if (variable.startsWith('_'))
+      return '_a.caught[' + variable.substr(1) + ']';
+    // If that's a standardly-formatted argument...
+    else if (variable.startsWith('^'))
+      return '_a.formatted[' + variable.substr(1) + ']';
+    // If that's a boolean...
+    else if (variable === 'true' || variable === 'false')
+      return variable;
+    // Else, that's a variable...
+    else
+      return 'Lisa.thinksToCell("' + variable + '")';
+  },
+
+  /**
+   * Transpile a LIS expression
+   * @param {string} str The content to transpile
+   * @returns {string} Compiled JavaScript code
+   */
+  transpile(str) {
+    // A quote is put at the beginning and the end of the string to transpile,
+    // so the regex put below can capture originally unquoted contents to
+    // transpile them!
+    // Else, that regex would capture quoted strings, which are the contents
+    // that doesn't have to be transpiled (strings are immutable contents).
+    return ('"' + str + '"')
+      // Get the originally unquoted parts of the string to transpile
+      .replace(/"(.*?)"/g, match =>
+        // In this expression, replace all function calls by their JavaScript
+        // equivalent.
+        // NOTE: The 'match' variable contains the quotes at the beginning
+        // and the end of the part, because they need to be saved. Else, the
+        // content will be considered as a originally quoted string for the
+        // next regex tests and will be confused with the really originally
+        // quoted strings (complex, right?)
+        match.replace(/([a-z]+) *\(/ig, (m, call) => {
+          // If this function is known...
+          // NOTE: Here, the 'this' keyword wasn't working. This may be due
+          // to the 'babel' usage, but it can also be due to JavaScript's
+          // behaviors. In all cases, the 'that' alias is used instead to
+          // prevent the keyword to be 'undefined' and throw a fatal
+          // JavaScript error inside this block of code.
+          if (this.functions.hasOwnProperty(call))
+            // Return it with an opening parenthesis for the call
+            return this.functions[call] + '(';
+          // Else...
+          else
+            // Throw an error
+            error(`Unknown function "${call}"`);
+        })
+        // Replace all variables (all [a-z\^_0-9]+ content which is not followed
+        // by potential space(s) and an opening parenthesis, else that's a
+        // function call ; or by a point, else that could be a transpiled
+        // function call like Math.random())
+        // NOTE: Imbricated lists calls are not supported
+        // e.g. list[another[index]] won't work, it will throw a syntax error
+        .replace(/([^a-z0-9\^_\$]|^)(\$?[a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))( *\[ *(.*?) *\]|)(?! *[\(\.a-z])/ig,
+          (m, before, variable, isList, index) =>
+            // Conserve the symbol placed before the call
+            before + (
+            // If that's a list call...
+            isList
+              // Transpile the variable call
+              // If it's a local list...
+              ? variable.startsWith('$')
+                // NOTE: In the two next lines, the '~' operand refers to the
+                // last value of a given list.
+
+                // Transpile the call as a local call
+                ? index === '~' ? variable.substr(1) + '.slice(-1)[0]' : variable.substr(1) + '[' + this.transpile(index) + ']'
+                // Else, transpile it as a Lisa's memory's cell
+                : index === '~' ? `Lisa.thinksToListLastValue("${variable}")` : `Lisa.thinksToListValue("${variable}",${this.transpile(index)})`
+
+              // Else, that's a plain variable call
+              // Transpile the variable call
+              : this.transpileVar(variable)
+            )
+        )
+      )
+      // Remove the first and last quotes in the string
+      .slice(1, -1)
+      // Now, replace some things in the really quoted strings
+      // The .slice() call above inversed all quoted strings with not-quoted
+      // strings and not-quotes strings with quoted strings.
+      .replace(/"(.*?)"/g, match =>
+        // Match all variable calls in the captured quoted string and
+        // transpile them
+        match.replace(/%([a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))%/g, (match, variable) =>
+            `"+${this.transpileVar(variable)}+"`
+        )
+      )
+      // There could be some parts like ""+Lisa.thinksToCell("variable")+"", so
+      // it's useful to avoid them to make the JavaScript code more readable
+      // and smaller.
+      .replace(/""\+/g, '').replace(/\+""/g, '');
+  },
+
+  /**
    * Make a JavaScript code from a LIS program
    * @param {string} source The LIS program
    * @param {boolean} [beautify] Display a beautified JavaScript code (default: false)
@@ -114,113 +221,6 @@ Lisa.Script = {
      */
     function error(text) {
       throw new Error(`[LIS:compile] At line ${lineIndex} :\n${line}\n^\n${text}`);
-    }
-
-    /**
-     * Transpile a LIS variable call
-     * NOTE: THis function does NOT check the expression's syntax ; functions can be opened without be closed
-     * @param {string} variable The variable to transpile into JavaScript call
-     * @returns {string} Compiled JavaScript code
-     */
-    this.transpileVar = (variable) => {
-      // If that's a local variable...
-      if (variable.startsWith('$'))
-        return variable.substr(1);
-      // If that's a caught argument...
-      else if (variable.startsWith('_'))
-        return '_a.caught[' + variable.substr(1) + ']';
-      // If that's a standardly-formatted argument...
-      else if (variable.startsWith('^'))
-        return '_a.formatted[' + variable.substr(1) + ']';
-      // If that's a boolean...
-      else if (variable === 'true' || variable === 'false')
-        return variable;
-      // Else, that's a variable...
-      else
-        return 'Lisa.thinksToCell("' + variable + '")';
-    }
-
-    /**
-     * Transpile a LIS expression
-     * @param {string} str The content to transpile
-     * @returns {string} Compiled JavaScript code
-     */
-    this.transpile = str => {
-      // A quote is put at the beginning and the end of the string to transpile,
-      // so the regex put below can capture originally unquoted contents to
-      // transpile them!
-      // Else, that regex would capture quoted strings, which are the contents
-      // that doesn't have to be transpiled (strings are immutable contents).
-      return ('"' + str + '"')
-        // Get the originally unquoted parts of the string to transpile
-        .replace(/"(.*?)"/g, match =>
-          // In this expression, replace all function calls by their JavaScript
-          // equivalent.
-          // NOTE: The 'match' variable contains the quotes at the beginning
-          // and the end of the part, because they need to be saved. Else, the
-          // content will be considered as a originally quoted string for the
-          // next regex tests and will be confused with the really originally
-          // quoted strings (complex, right?)
-          match.replace(/([a-z]+) *\(/ig, (m, call) => {
-            // If this function is known...
-            // NOTE: Here, the 'this' keyword wasn't working. This may be due
-            // to the 'babel' usage, but it can also be due to JavaScript's
-            // behaviors. In all cases, the 'that' alias is used instead to
-            // prevent the keyword to be 'undefined' and throw a fatal
-            // JavaScript error inside this block of code.
-            if (this.functions.hasOwnProperty(call))
-              // Return it with an opening parenthesis for the call
-              return this.functions[call] + '(';
-            // Else...
-            else
-              // Throw an error
-              error(`Unknown function "${call}"`);
-          })
-          // Replace all variables (all [a-z\^_0-9]+ content which is not followed
-          // by potential space(s) and an opening parenthesis, else that's a
-          // function call ; or by a point, else that could be a transpiled
-          // function call like Math.random())
-          // NOTE: Imbricated lists calls are not supported
-          // e.g. list[another[index]] won't work, it will throw a syntax error
-          .replace(/([^a-z0-9\^_\$]|^)(\$?[a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))( *\[ *(.*?) *\]|)(?! *[\(\.a-z])/ig,
-            (m, before, variable, isList, index) =>
-              // Conserve the symbol placed before the call
-              before + (
-              // If that's a list call...
-              isList
-                // Transpile the variable call
-                // If it's a local list...
-                ? variable.startsWith('$')
-                  // NOTE: In the two next lines, the '~' operand refers to the
-                  // last value of a given list.
-
-                  // Transpile the call as a local call
-                  ? index === '~' ? variable.substr(1) + '.slice(-1)[0]' : variable.substr(1) + '[' + this.transpile(index) + ']'
-                  // Else, transpile it as a Lisa's memory's cell
-                  : index === '~' ? `Lisa.thinksToListLastValue("${variable}")` : `Lisa.thinksToListValue("${variable}",${this.transpile(index)})`
-
-                // Else, that's a plain variable call
-                // Transpile the variable call
-                : this.transpileVar(variable)
-              )
-          )
-        )
-        // Remove the first and last quotes in the string
-        .slice(1, -1)
-        // Now, replace some things in the really quoted strings
-        // The .slice() call above inversed all quoted strings with not-quoted
-        // strings and not-quotes strings with quoted strings.
-        .replace(/"(.*?)"/g, match =>
-          // Match all variable calls in the captured quoted string and
-          // transpile them
-          match.replace(/%([a-z][a-z0-9_]*|_(?:\d|[1-9]\d+)|\^(?:\d|[1-9]\d+))%/g, (match, variable) =>
-              `"+${this.transpileVar(variable)}+"`
-          )
-        )
-        // There could be some parts like ""+Lisa.thinksToCell("variable")+"", so
-        // it's useful to avoid them to make the JavaScript code more readable
-        // and smaller.
-        .replace(/""\+/g, '').replace(/\+""/g, '');
     }
 
     /**
