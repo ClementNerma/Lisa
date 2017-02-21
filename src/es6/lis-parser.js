@@ -462,7 +462,7 @@ Lisa.Script = {
         // Write it
         program += nl + `Lisa.learns("${match[3]}",${this.transpile(match[2])});`;
 
-      // -> If it's a new hanlder...
+      // -> If it's a new handler...
       else if (match = line.match(/^(for +|understands? +|with +|)"(.*)" *(=>|do)$/i)) {
         // Write it
         // NOTE: If the output has to be beautified, a new indentation is set
