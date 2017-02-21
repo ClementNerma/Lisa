@@ -497,6 +497,20 @@ Lisa.Script = {
         indented ++;
       }
 
+      // -> Iterate from a number to another...
+      // NOTE: Iterator must be a local variable
+      else if (match = line.match(/^for +\$([a-z][a-z0-9_]*) +(in|of) +(.*?) +(to|\.\.|=>|->) +(.*)$/i)) {
+        // If this variable is not defined in the function...
+        if (!vars.includes(match[1]))
+          // List it as a variable to declare
+          vars.push(match[1]);
+
+        // Write the code
+        program += nl + `for(${match[1]}=${this.transpile(match[3])};${match[1]}<=${this.transpile(match[5])};i++){`;
+        // Expect for a new indentation
+        indented ++;
+      }
+
       // -> Iterate for each value of a list or array...
       // NOTE: Iterator must be a local variable
       else if (match = line.match(/^for *each +\$([a-z][a-z0-9_]*) +(in|of) +(.*?)$/i)) {
