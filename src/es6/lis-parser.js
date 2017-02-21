@@ -429,9 +429,9 @@ Lisa.Script = {
       }
 
       // -> If it's a mathematical condition...
-      else if (match = line.match(/^if +([a-z][a-z0-9_]*|_\d+|\^\d+) *(<=|>=|<|>) *(\d+[.]?|\d*\.\d+)$/i)) {
+      else if (match = line.match(/^if +(\$?[a-z][a-z0-9_]*|_\d+|\^\d+) *(<=|>=|<|>) *(\d+[.]?|\d*\.\d+)$/i)) {
         // Write it
-        program += nl + `if(Lisa.thinksTo("${match[1]}")${match[2]}${match[3]}){`;
+        program += nl + `if(${this.transpileVar(match[1])}${match[2]}${match[3]}){`;
         // Expect for a new indentation
         indented ++;
       }
