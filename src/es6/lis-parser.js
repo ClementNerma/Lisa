@@ -378,7 +378,7 @@ Lisa.Script = {
       // -> If it's a 'ELSE' block...
       // NOTE: This condition is the first of the chain because it's the faster
       //       to test
-      if (line === 'else') {
+      if (line.toLocaleLowerCase() /* Case-insensitive */ === 'else') {
         // Write it
         program += nl + 'else{';
         // Expect for a new indentation
@@ -467,7 +467,7 @@ Lisa.Script = {
       }
 
       // -> If it's a Lisa's message to display...
-      else if (match = line.match(/^say +(.*)$/))
+      else if (match = line.match(/^say +(.*)$/i))
         // Write it
         program += nl + `Lisa.says(${this.transpile(match[1])});`;
 
@@ -554,7 +554,7 @@ Lisa.Script = {
         program += nl + `Lisa.learnsListValue("${match[4]}",${this.transpile(match[2])});`;
 
       // -> Sort a list with ascending order
-      else if (match = line.match(/^(sorts?_?a?|sorts?_?asc|sorts?_?list|sorts?_?list_?asc) +([a-zA-Z][a-zA-Z0-9_]*)$/))
+      else if (match = line.match(/^(sorts?_?a?|sorts?_?asc|sorts?_?list|sorts?_?list_?asc) +([a-zA-Z][a-zA-Z0-9_]*)$/i))
         // Write it
         program += nl + `Lisa.sortsList("${match[2]}",true);`;
 
@@ -586,7 +586,7 @@ Lisa.Script = {
         program += nl + `Lisa.learnsLocaleTexts("${match[2].toLocaleLowerCase()}",${JSON.stringify(match[4].replace(/''/g, "'").split(/ *\| */))});`;
 
       // -> JavaScript code
-      else if (match = line.match(/^(js|javascript|script) +"(.*?)"$/))
+      else if (match = line.match(/^(js|javascript|script) +"(.*?)"$/i))
         // Write it
         program += nl + `eval("${match[2]}");`;
 
