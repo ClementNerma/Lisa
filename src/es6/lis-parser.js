@@ -586,9 +586,9 @@ Lisa.Script = {
         program += nl + `Lisa.learnsLocaleTexts("${match[2].toLocaleLowerCase()}",${JSON.stringify(match[4].replace(/''/g, "'").split(/ *\| */))});`;
 
       // -> JavaScript code
-      else if (match = line.match(/^(js|javascript|script) +"(.*?)"$/i))
+      else if (match = line.match(/^(js|javascript|script) +(.*)$/i))
         // Write it
-        program += nl + `eval("${match[2]}");`;
+        program += nl + `eval(${this.transpile(match[2])});`;
 
       // -> LIS code
       else if (match = line.match(/^(eval|evaluate|lis|run) +(.*)$/))
