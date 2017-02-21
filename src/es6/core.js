@@ -1102,6 +1102,19 @@ let Lisa = function() {
     : undefined;
 
   /**
+   * Get a value using its natural form
+   * @param {string} cell The cell to get
+   * @returns {string|number|boolean|Array|void} Plain value for plain cells, arrays for lists
+   */
+  this.thinksToCell = cell =>
+    // If it's a list...
+    memory['$'].hasOwnProperty(cell) ?
+      // Return an array
+      memory[cell].slice(0) :
+      // Else, return a plain value
+      memory[cell];
+
+  /**
    * Remove a cell from the memory
    * @param {string} cell The cell to remove
    * @returns {string|number|bolean|void} The cell's value before removing

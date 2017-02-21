@@ -396,6 +396,16 @@ Get a value from a cell in the memory
 
 **Returns**: `string | number | boolean | void`, The cell's value (undefined if the cell is not found)
 
+### Lisa.thinksToCell(cell) 
+
+Get a value using its natural form
+
+**Parameters**
+
+**cell**: `string`, The cell to get
+
+**Returns**: `string | number | boolean | Array | void`, Plain value for plain cells, arrays for lists
+
 ### Lisa.forgets(cell) 
 
 Remove a cell from the memory
