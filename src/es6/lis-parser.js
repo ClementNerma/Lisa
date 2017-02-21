@@ -95,7 +95,9 @@ Lisa.Script = {
     // Join an array to make a string
     join: 'Array.prototype.join.call',
     // Concatenate values
-    concat: 'Array.prototype.concat.call'
+    concat: 'Array.prototype.concat.call',
+    // Get a variable by its name
+    get: 'Lisa.thinksToCell'
   },
 
   /**
