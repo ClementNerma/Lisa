@@ -93,7 +93,9 @@ Lisa.Script = {
     // Sum of a list
     sum_list: 'Lisa.Script.libSumList',
     // Split a string to make an array
-    split: 'String.prototype.split.call'
+    split: 'String.prototype.split.call',
+    // Join an array to make a string
+    join: 'Array.prototype.join.call'
   },
 
   /**
