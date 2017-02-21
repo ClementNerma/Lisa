@@ -88,10 +88,8 @@ Lisa.Script = {
     string: 'Lisa.Script.libString',
     // Get the standard form of a content
     standard: 'Lisa.getStandard',
-    // Join a list
-    join_list: 'Lisa.Script.libJoinList',
-    // Sum of a list
-    sum_list: 'Lisa.Script.libSumList',
+    // Calculate the sum of an array
+    sum: 'Lisa.Script.libSumList',
     // Split a string to make an array
     split: 'String.prototype.split.call',
     // Join an array to make a string
@@ -689,33 +687,12 @@ Lisa.Script = {
   },
 
   /**
-   * Join values of a list
-   * @param {string} list The list
-   * @param {string} sep The separator
-   * @returns {string} The joined values
+   * Do the summation of an array
+   * @param {Array.<number>} array An array of numbers to calculate the sum
+   * @returns {number} The summation's result
    */
-  libJoinList(list, sep) {
-    // Get the list, then join its values using the provided separator
-    return (Lisa.thinksToList(list) || []).join(sep);
-  },
-
-  /**
-   * Do the summation of a list
-   * @param {string} list The list
-   * @returns {number} The summation
-   */
-  libSumList(list) {
-    // Get the list
-    let amounts = Lisa.thinksToList(list) || [];
-    // Define a variable to calcule its sum
-    let total = 0;
-
-    // For each transaction done...
-    for (let amount of amounts)
-      // Add it to the total
-      total += amount;
-
-    // Return the sum
-    return total;
+  libSumList(array) {
+    // Do the summation and return its result
+    return array.reduce((accumulator, currentValue) => accumulator + currentValue);
   }
 };
