@@ -652,6 +652,19 @@ Lisa.Script = {
         // Write it
         program += nl + `if(!Lisa.knows("${match[2]}"))Lisa.learnsList("${match[2]}",[],"${match[1]}");`;
 
+      // -> Run a code if a variable depending on an interrupt
+      // NOTE: That's an equivalent to:
+      // if NOT knows <variable>
+      //   <variable> = true
+      //   [code]
+      else if (match = line.match(/^init +([a-z][a-z0-9_]*)$/)) {
+        // Write it
+        program += nl + `if(!Lisa.knows("${match[1]}")){`
+                +  nl + (nl ? '  ' : '') + `Lisa.learns("${match[1]}",true);`
+        // Expect for a new indentation
+        indented ++;
+      }
+
       // Else, if the line is not empty...
       else if (line)
         // That's a syntax error -> throw an error
