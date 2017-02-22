@@ -855,6 +855,6 @@ Lisa.Script = {
    */
   libSumList(array) {
     // Do the summation and return its result
-    return array.reduce((accumulator, currentValue) => accumulator + currentValue);
+    return array.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
   }
 };
