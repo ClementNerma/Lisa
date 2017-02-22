@@ -400,22 +400,71 @@ Lisa.Script = {
       // -> Variable assignment
       // NOTE: This condition is placed as one of the first of the chain because
       // it matches a very commonly used syntax and because it's faster to test
-      else if (match = line.match(/^(\$|)([a-z][a-z0-9_]*) *= *(.*)$/i)) {
-        // Write it
+      else if (match = line.match(/^(\$|)([a-z][a-z0-9_]*)( *\[ *(.*?) *\])? *= *(.*)$/i)) {
+        // Define some local variables
+        let isLocal = !!match[1], target = match[2], isArray = !!match[3],
+            index = match[4] ? this.transpile(match[4]) : null,
+            value = this.transpile(match[5]);
+
         // If the '$' symbol was provided, the assignment is about a local
         // variable
-        if (match[1]) {
-          program += nl + `${match[2]}=${this.transpile(match[3])};`;
-
+        if (isLocal) {
+          // : $... = ...
           // If this variable is not defined in the function...
-          if (!vars.includes(match[2]))
+          if (!vars.includes(target))
             // List it as a variable to declare
-            vars.push(match[2]);
+            vars.push(target);
+
+          // If the assignment points to an index of an array...
+          if (isArray) {
+            // : $...[...] = ...
+            // If an index was given...
+            if (index)
+              // : $....[...] = ...
+              // The value must be assigned to this index
+              program += nl + `${target}[${index}]=${value};`;
+            // Else...
+            else
+              // : $...[] = ...
+              // The value must be pushed
+              program += nl + `${target}.push(${value});`
+          }
+          // Else, it refers to a plain assignment
+          else
+            // : $... = ...
+            // Write it
+            program += nl + `${target}=${value};`;
         }
-        // Else...
-        else
-          // It's a Lisa's memory assignment
-          program += nl + `Lisa.learns("${match[2]}",${this.transpile(match[3])})`;
+        // Else, it refers to a Lisa's memory's cell
+        else {
+          // If the assignment points to an index of a list...
+          if (isArray) {
+            // : ...[...] = ...
+            // If an index was given...
+            if (index)
+              // : ....[...] = ...
+              // The value must be assigned to this index
+              program += nl + `Lisa.learnsListValue("${target}",${value},${index});`;
+            // Else...
+            else
+              // : ...[] = ...
+              // The value must be pushed
+              program += nl + `Lisa.learnsListValue("${target}",${value});`
+          }
+          // Else, it refers to a plain assignment
+          else
+            // : ... = ...
+            // Write it
+            program += nl + `Lisa.learns("${target}",${value});`;
+        }
+
+        // if (match[1] /* Local variable */ && match[3] /* Array */ && !match[4] /* No index */)
+        // if (match[1] /* Local variable */ && match[3] /* Array */ && match[4] /* Index given */)
+        // if (match[1] /* Local varibale */ && !match[3] /* Plain assignment */)
+
+        // if (!match[1] /* Memory's cell */ && match[3] /* Array */ && !match[4] /* No index */)
+        // if (!match[1] /* Memory's cell */ && match[3] /* Array */ && match[4] /* Index given */)
+        // if (!match[1] /* Memory's cell */ && !match[3] /* Plain assignment */)
       }
 
       // -> If it's a boolean condition...
