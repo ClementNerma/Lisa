@@ -858,3 +858,15 @@ Lisa.Script = {
     return array.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
   }
 };
+
+// If the 'utils' module is not present...
+if (!Lisa.hasOwnProperty('Utils'))
+  // Load it
+  Lisa.loadUtils();
+
+// For each key in it...
+for (let key of Reflect.ownKeys(Lisa.Utils))
+  // If the given key is a function...
+  if (typeof Lisa.Utils[key] === 'function')
+    // Register it in the LIS' functions library
+    Lisa.Script.functions[key] = 'Lisa.Utils.' + key;
