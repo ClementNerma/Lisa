@@ -640,9 +640,17 @@ Lisa.Script = {
         program += nl + `eval(${this.transpile(match[2])});`;
 
       // -> LIS code
-      else if (match = line.match(/^(eval|evaluate|lis|run) +(.*)$/))
+      else if (match = line.match(/^(eval|evaluate|lis|run) +(.*)$/i))
         // Write it
         program += nl + `eval(Lisa.Script.compile(${this.transpile(match[2])}));`;
+
+      // -> Assure that a list exists
+      // NOTE: Only memory's cells can be imported, that doesn't make sense for
+      // local variables.
+      // NOTE: Also, only lists can be imported
+      else if (match = line.match(/^define +(bool|boolean|int|integer|float|floating|str|string) +([a-z][a-z0-9_]*) *\[ *\]$/i))
+        // Write it
+        program += nl + `if(!Lisa.knows("${match[2]}"))Lisa.learnsList("${match[2]}",[],"${match[1]}");`;
 
       // Else, if the line is not empty...
       else if (line)
