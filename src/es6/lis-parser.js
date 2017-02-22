@@ -89,7 +89,7 @@ Lisa.Script = {
     // Get the standard form of a content
     standard: 'Lisa.getStandard',
     // Calculate the sum of an array
-    sum: 'Lisa.Script.libSumList',
+    sum: 'Lisa.Script.libSum',
     // Split a string to make an array
     split: 'String.prototype.split.call',
     // Join an array to make a string
@@ -853,7 +853,7 @@ Lisa.Script = {
    * @param {Array.<number>} array An array of numbers to calculate the sum
    * @returns {number} The summation's result
    */
-  libSumList(array) {
+  libSum(array) {
     // Do the summation and return its result
     return array.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
   }
