@@ -860,9 +860,10 @@ let Lisa = function() {
    * Push a value into a list
    * @param {string} cell The memory's cell
    * @param {*} value The value to push
+   * @param {number} [index] The index to push the value in (default: a new one)
    * @returns {void}
    */
-  this.learnsListValue = (cell, value) => {
+  this.learnsListValue = (cell, value, index) => {
     // If the cell is not found...
     if (!memory['$'].hasOwnProperty(cell))
       // Throw an error
@@ -873,13 +874,37 @@ let Lisa = function() {
       // Throw an error
       throw new Error(`[Lisa] Provided value for list "${cell}" is not an ${memory['$'][cell]}`);
 
-    // Append the value to the end of the list
-    memory[cell].push(value);
+    // If an index was provided...
+    if (typeof index !== 'undefined') {
+      // If the index is not valid...
+      if (typeof index !== 'number' || index < 0 || Math.floor(index) !== index)
+        // Throw an error
+        throw new Error(`[Lisa] List\'s index must be a positive integer`);
+
+      // If the index exceed the list's size of 1...
+      if (index === memory[cell].length)
+        // Push the new value at the end of the list
+        memory[cell].push(value);
+
+      // Else, if the index exceed the list's size...
+      else if (index > memory[cell].length)
+        // Throw an error
+        throw new Error(`[Lisa] Length mismatch: List contains ${memory[cell].length} values, can't push a value as the ${index} index.`);
+
+      // Else...
+      else
+        // Just set the value to its place
+        memory[cell][index] = value;
+    }
+    // Else, no index was given...
+    else
+      // Append the value to the end of the list
+      memory[cell].push(cell);
 
     // If the related event has a handler...
     if (eventsHandler['learnt'])
       // Trigger its callback
-      eventsHandler['learnt'](cell, value, memory[cell].length - 1);
+      eventsHandler['learnt'](cell, value, typeof index === 'undefined' ? memory[cell].length - 1 : index);
   };
 
   /**
