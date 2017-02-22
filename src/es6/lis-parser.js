@@ -78,8 +78,6 @@ Lisa.Script = {
     pow: 'Math.pow',
     // Square root
     sqrt: 'Math.sqrt',
-    // Get a random integer
-    randInt: 'Lisa.Script.libRandomInteger',
     // Make a string an integer
     int: 'parseInt',
     // Make a string a floating number
@@ -88,8 +86,6 @@ Lisa.Script = {
     string: 'Lisa.Script.libString',
     // Get the standard form of a content
     standard: 'Lisa.getStandard',
-    // Calculate the sum of an array
-    sum: 'Lisa.Script.libSum',
     // Split a string to make an array
     split: 'String.prototype.split.call',
     // Join an array to make a string
@@ -796,66 +792,6 @@ Lisa.Script = {
     });
     // Launch the request
     xhr.send(null);
-  },
-
-  /**
-   * Generate a random integer between two borns (can be negative borns)
-   * @param {number} min The minimum integer. If 'max' is not given, this becomes the maximum integer and the minimum is 0.
-   * @param {number} [max] The maximum integer
-   * @returns {number} The generated number
-   */
-  libRandomInteger(min, max) {
-    // If no random maximum number was provided...
-    if (typeof max === 'undefined') {
-      // Set the 'min' the maximum number
-      max = min;
-      // Set 0 the minimum number
-      min = 0;
-    }
-
-    // Generate the random number and return it
-    return min + Math.floor(Math.random() * (max - min + 1));
-  },
-
-  /**
-   * Make any content a string
-   * @param {*} content The content
-   * @returns {string} The content, as a string
-   */
-  libString(content) {
-    // If it's a string...
-    if (typeof content === 'string')
-      // Return it without any treatment
-      return content;
-
-    // If it's a number of a boolean...
-    if (typeof content === 'number' || typeof content === 'boolean')
-      // Stringify it
-      return content.toString();
-
-    // If it's an array or an object...
-    if (Array.isArray(content) || (typeof content === 'object' && content))
-      // Stringify it
-      return JSON.stringify(content);
-
-    // For a few special values, return their string equivalent
-    if (content === null) return 'null';
-    if (content === undefined) return 'undefined';
-    if (content === Infinity) return 'Infinity';
-    if (Number.isNaN(content)) return 'NaN';
-
-    // Else, the content can't be returned as a string -> Throw an error
-    throw new Error('[LIS:exec] Content can\'t be stringified');
-  },
-
-  /**
-   * Do the summation of an array
-   * @param {Array.<number>} array An array of numbers to calculate the sum
-   * @returns {number} The summation's result
-   */
-  libSum(array) {
-    // Do the summation and return its result
-    return array.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
   }
 };
 
