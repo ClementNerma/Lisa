@@ -1683,10 +1683,19 @@ if (typeof module === 'object' && module && !Array.isArray(module)) {
     // Destroy this function
     delete module.exports.loadParser;
   };
+  
   // Allow to load the state manager
   module.exports.loadManager = () => {
     // Read the manager's file and run it
     eval(require('fs').readFileSync(require('path').join(__dirname, 'localdata.js'), 'utf-8'));
+    // Destroy this function
+    delete module.exports.loadManager;
+  };
+  
+  // Allow to load the utilities library
+  module.exports.loadManager = () => {
+    // Read the manager's file and run it
+    eval(require('fs').readFileSync(require('path').join(__dirname, 'utils.js'), 'utf-8'));
     // Destroy this function
     delete module.exports.loadManager;
   };
