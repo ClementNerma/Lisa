@@ -64,14 +64,6 @@ let Lisa = function() {
   const nativeCatchers = Reflect.ownKeys(RegexCatchers);
 
   /**
-   * The DOM discussion area (DDA)
-   * @type {HTMLDivElement|void}
-   * @constant
-   * @private
-   */
-  const discuss = (typeof document === 'object' ? document.createElement('div') : null);
-
-  /**
    * Available locales
    * @type {Object.<string, Array>}
    * @private
@@ -572,26 +564,10 @@ let Lisa = function() {
       // Make the message a string (grant support for booleans, numbers...)
       message = message.toString();
 
-    // If there is a discussion area...
-    if (discuss) {
-      // Inject a DOM element
-      let dom = document.createElement('div');
-      // Set its attributes
-      dom.setAttribute('class', `message message-${className}`);
-      // Set the message, with the author's name
-      dom.innerHTML = `<strong>${author} : </strong>` + (allowHtml ? message : this.format(message));
-      // Append the element to the area
-      discuss.appendChild(dom);
-
-      // Scroll to the end of the container
-      // Get the amount of pixels until the scroll's maximum value
-      let remaining = discuss.scrollHeight - discuss.scrollTop;
-      // For a duration of 2000 ms (2 seconds), regurarily scroll near to the
-      // bottom of the discussion area
-      let interval = setInterval(() => discuss.scrollTop ++, Math.floor(2000 / remaining));
-      // After this delay, don't scroll anymore
-      setTimeout(() => clearInterval(interval), 2000);
-    }
+    // If HTML is not allowed...
+    if (!allowHtml)
+      // Format the message
+      message = this.format(message);
 
     // If allowed to...
     if (rememberMessages)
@@ -1291,7 +1267,7 @@ let Lisa = function() {
           // Make it a string
           output = output.toString();
         // If the result is a DOM element...
-        else if (discuss && output && output instanceof HTMLElement) {
+        else if (typeof HTMLElement !== 'undefined' && output && output instanceof HTMLElement) {
           // Get its HTML content
           output = output.innerHTML;
           // Consider the message as a HTML content instead of a string
@@ -1678,8 +1654,6 @@ let Lisa = function() {
   this.learns('SECONDS_NAME', 'secondes');
   this.learns('MONTHS', 'january,february,march,april,may,june,july,august,september,october,november,december');
 
-  // Get the DDA and its children
-  this.__defineGetter__('dom', () => discuss);
   // Get the whole Lisa's memory (could be slow)
   this.__defineGetter__('memory', () => JSON.parse(JSON.stringify(memory)));
   // Get the whole messages' history (could be slow)
