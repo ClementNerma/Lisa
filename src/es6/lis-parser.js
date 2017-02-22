@@ -310,9 +310,10 @@ Lisa.Script = {
     let temporary = 0;
 
     // For each line of code...
-    for (line of lines) {
-      // Increase the line's index
-      lineIndex ++;
+    while (lineIndex < lines.length) {
+      // Increase the line's index and get the current line
+      line = lines[lineIndex++];
+
       // Get the line's indentation (two spaces = 1 indent)
       // Method used here: Double spaces and tabs are both counted, then
       // in the regex's result double spaces are replaced by tabs. Then, tabs
@@ -465,6 +466,40 @@ Lisa.Script = {
         // if (!match[1] /* Memory's cell */ && match[3] /* Array */ && !match[4] /* No index */)
         // if (!match[1] /* Memory's cell */ && match[3] /* Array */ && match[4] /* Index given */)
         // if (!match[1] /* Memory's cell */ && !match[3] /* Plain assignment */)
+      }
+
+      // -> Block of JavaScript code
+      else if (line === '{{{') {
+        // Define a variable to store the final JavaScript code inside
+        let code = '';
+
+        // While the script doesn't end...
+        while (++ lineIndex /* Forever */) {
+          // If the code's end has been reached...
+          if (lineIndex === lines.length)
+            // Throw an error
+            throw new Error(`[Lisa] JavaScript code's block has no end`);
+
+          // Get the current line
+          line = lines[lineIndex].trim();
+
+          // If the closing string is encounted...
+          if(line === '}}}')
+            // Break the loop
+            break ;
+
+          // Add the line's code to the script
+          // NOTE: Line breaks cannot be removed because multiple lines strings
+          // (`...\n...`) could be used in the block of code.
+          code += '\n' // A \n is needed, even if the script mustn't be beautified
+               + nl.substr(1) // Just remove the '\n'
+               + line; // The line's content (JavaScript code)
+        }
+
+        // Write the code
+        program += nl + code;
+        // Increase the line's index
+        lineIndex ++;
       }
 
       // -> If it's a boolean condition...
