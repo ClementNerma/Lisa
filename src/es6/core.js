@@ -875,7 +875,7 @@ let Lisa = function() {
     // Else, no index was given...
     else
       // Append the value to the end of the list
-      memory[cell].push(cell);
+      memory[cell].push(value);
 
     // If the related event has a handler...
     if (eventsHandler['learnt'])
