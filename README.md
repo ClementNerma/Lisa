@@ -155,6 +155,10 @@ whatsoever resulting from loss of use, data or profits, whether in an action
 of contract, negligence or other tortious action, arising out of or in
 connection with the use or performance of this software.
 
+# Releases
+
+The releases using the [semantic version](http://semver.org/) (**MAJOR**.**minor**.**patch**).
+
 # Credits
 
 Thanks to [pieroxy](http://pieroxy.net/) for the [LZString](https://github.com/pieroxy/lz-string) library ([built here](https://github.com/ClementNerma/Lisa/tree/master/build/lzstring.min.js)).
