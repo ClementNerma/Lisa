@@ -468,6 +468,8 @@ Lisa.Script = {
       else if (line === '{{{') {
         // Define a variable to store the final JavaScript code inside
         let code = '';
+        // Go to the previous line (fix a bug)
+        lineIndex --;
 
         // While the script doesn't end...
         while (++ lineIndex /* Forever */) {
