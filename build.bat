@@ -1,5 +1,5 @@
-:: NOTE: The Lisa's builder requires Node.js with the 'node-sass', 'babel' and
-::       'uglify-js' modules
+:: NOTE: The Lisa's builder requires Node.js with the 'node-sass', 'babel-cli',
+::       'babel-preset-es2015' and 'uglify-js' modules
 :: NOTE: The 'jsdox' module is required to generate the API documentation
 
 @echo off
