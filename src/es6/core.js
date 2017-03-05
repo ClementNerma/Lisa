@@ -564,15 +564,15 @@ let Lisa = function() {
       // Make the message a string (grant support for booleans, numbers...)
       message = message.toString();
 
-    // If HTML is not allowed...
-    if (!allowHtml)
-      // Format the message
-      message = this.format(message);
-
     // If allowed to...
     if (rememberMessages)
       // Remember this message
       messages.push([ Date.now(), author, message, className, !!allowHtml ]);
+
+    // If HTML is not allowed...
+    if (!allowHtml)
+      // Format the message
+      message = this.format(message);
 
     // If the related event has a handler...
     if (eventsHandler['message'])
