@@ -157,7 +157,9 @@ connection with the use or performance of this software.
 
 # Releases
 
-The releases using the [semantic version](http://semver.org/) (**MAJOR**.**minor**.**patch**).
+The releases uses the [semantic versionning](http://semver.org/) 
+notation (**MAJOR**.**minor**.**patch**). It stars from the 1.0.0 
+version.
 
 # Credits
 
